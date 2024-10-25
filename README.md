@@ -22,5 +22,3 @@ mvnw umlet:convert
 ```
 
 Προϋπόθεση είναι η αρχικοποίηση της μεταβλητή περιβάλλοντος JAVA_HOME με την τοποθεσία του Java JDK.
-
-test commit pls work
