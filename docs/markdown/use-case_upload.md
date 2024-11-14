@@ -65,4 +65,4 @@
 
 ### Διάγραμμα Δραστηριοτήτων για Ανέβασμα Αντικειμένου
 
-![Διάγραμμα Δραστηριοτήτων - Ανέβασμα Αντικειμένου](test_diagrams/activity-diagram-upload.png)
+![Διάγραμμα Δραστηριοτήτων - Ανέβασμα Αντικειμένου](uml/requirements/activity-diagram-upload.png)
