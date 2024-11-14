@@ -67,4 +67,4 @@
 
 * Η εφαρμογή είναι υλοποιημένη σε Java, χρησιμοποιώντας το ide Android Studio. Επίσης έχουμε χρησιμοποιήσει firebase για μία πιο ολοκληρωμένη ανάπτυξη του λογισμικού
 
-[Διάγραμμα_Περιπτώσεων](docs/markdown/uml/requirements/use-case-diagram.png)
+![Διάγραμμα περιπτώσεων χρήσης](docs/markdown/uml/requirements/use-case-diagram.png)
