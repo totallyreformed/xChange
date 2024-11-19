@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "637724762824",
+    "firebase_url": "https://xchangeapp-1ffe8-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "xchangeapp-1ffe8",
+    "storage_bucket": "xchangeapp-1ffe8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637724762824:android:ee0039dc000b747b5dfbfd",
+        "android_client_info": {
+          "package_name": "com.example.xchange"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmm1KCBUL52DiZMrpO8exW22vLPUCPXak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
