@@ -42,7 +42,7 @@
 
 ## Επισκόπηση Μοντέλου Περιπτώσεων Χρήσης
 
-![Διάγραμμα περιπτώσεων χρήσης](test_diagrams/use-case-diagram.png)
+![Διάγραμμα περιπτώσεων χρήσης](./uml/requirements/activity-diagram-upload.png)
 
 
 <!-- Σε αυτα πρεπει να συμπεριληφθουν hyperlinks για το καθε use case
