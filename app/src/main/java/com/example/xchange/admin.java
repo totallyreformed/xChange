@@ -10,8 +10,8 @@ public class admin extends User {
     private static Long nextId = 1L;
 
     // Constructor
-    public admin(String username, String email, LocalDate join_date,String password) {
-        super(nextId++, username, email, join_date,password);
+    public admin(String username, String email, LocalDate join_date,String password,String location) {
+        super(nextId++, username, email, join_date,password,location);
     }
 
     // Implement login method
@@ -27,7 +27,7 @@ public class admin extends User {
 
 
     @Override
-    public boolean register(String username, String email, String password){
+    public boolean register(String username, String email, String password,String location){
 
         // Check if the user already exists
         for (User user : MainActivity.admins) {
@@ -38,7 +38,7 @@ public class admin extends User {
         // Register the new user
         User newUser = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            newUser = new admin(username, email, LocalDate.now(),password);
+            newUser = new admin(username, email, LocalDate.now(),password,location);
         }
         MainActivity.admins.add(newUser);
         return true;

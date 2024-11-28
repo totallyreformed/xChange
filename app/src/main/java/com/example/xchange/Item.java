@@ -1,22 +1,26 @@
 package com.example.xchange;
 
+import android.graphics.Bitmap;
+
+import java.util.ArrayList;
+
 public class Item {
-    private final Long item_id;
+    private static Long lastItemId = 0L; // Static field to track the last used ID
+    private final Long item_id; // Unique ID for each item
     private String item_name;
     private String item_description;
     private String item_category;
     private String item_condition;
-    private ArrayList<ImageIO> item_image;
+    private ArrayList<Bitmap> item_images;
 
     // Constructor
-    Item(Long item_id, String item_name, String item_description, String item_category, String item_condition, String item_location, String item_image, Long user_id) {
-        this.item_id = item_id;
+    public Item(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images) {
+        this.item_id = ++lastItemId; // Increment the ID for each new item
         this.item_name = item_name;
         this.item_description = item_description;
         this.item_category = item_category;
         this.item_condition = item_condition;
-        this.item_image = item_image;
-        this.user_id = user_id;
+        this.item_images = item_images;
     }
 
     // Getters
@@ -40,10 +44,11 @@ public class Item {
         return item_condition;
     }
 
-    public String getItemImage() {
-        return item_image;
+    public ArrayList<Bitmap> getItemImages() {
+        return item_images;
     }
 
+    // Setters
     public void setItemName(String item_name) {
         this.item_name = item_name;
     }
@@ -60,16 +65,24 @@ public class Item {
         this.item_condition = item_condition;
     }
 
-    public void setItemImage(String item_image) {
-        this.item_image = item_image;
+    public void setItemImages(ArrayList<Bitmap> item_images) {
+        this.item_images = item_images;
     }
 
-    public void editItem(String item_name, String item_description, String item_category, String item_condition, String item_image) {
+    // Add a single image to the list
+    public void addItemImage(Bitmap image) {
+        if (this.item_images == null) {
+            this.item_images = new ArrayList<>();
+        }
+        this.item_images.add(image);
+    }
+
+    // Edit Item details including images
+    public void editItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images) {
         this.setItemName(item_name);
         this.setItemDescription(item_description);
         this.setItemCategory(item_category);
         this.setItemCondition(item_condition);
-        this.setItemImage(item_image);
-
+        this.setItemImages(item_images);
     }
 }
