@@ -1,8 +1,4 @@
 package com.example.xchange;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.ktx.Firebase;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,8 +18,6 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.login);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
-        myRef.setValue("ta swkratis !");
+
     }
 }

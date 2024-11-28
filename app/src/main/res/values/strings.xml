@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Your App Name</string>
+    <string name="logo_description">This is the logo of the application</string> <!-- Add this line -->
+    <!-- Add other string resources here -->
+</resources>
