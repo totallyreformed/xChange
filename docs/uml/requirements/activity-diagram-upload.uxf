@@ -1,0 +1,25 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>Relation</id><coordinates><x>360</x><y>0</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>UMLSpecialState</id><coordinates><x>360</x><y>0</y><w>20</w><h>20</h></coordinates><panel_attributes>type=initial</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>320</x><y>60</y><w>100</w><h>40</h></coordinates><panel_attributes>Insert Credentials
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLSpecialState</id><coordinates><x>320</x><y>130</y><w>100</w><h>50</h></coordinates><panel_attributes>bg=green
+type=decision
+login/register</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>90</y><w>30</w><h>60</h></coordinates><panel_attributes>lt=&lt;-
+</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>370</x><y>30</y><w>170</w><h>150</h></coordinates><panel_attributes>lt=&lt;-
+[auth failure]</panel_attributes><additional_attributes>10;10;80;10;80;130;50;130</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>170</y><w>110</w><h>80</h></coordinates><panel_attributes>lt=&lt;-
+[auth success]</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>UMLState</id><coordinates><x>320</x><y>230</y><w>100</w><h>40</h></coordinates><panel_attributes>Select :
+"Upload item"
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>320</x><y>320</y><w>100</w><h>60</h></coordinates><panel_attributes>Insert Item's
+information
+(title, description,
+category, etc)
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>260</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>UMLState</id><coordinates><x>320</x><y>430</y><w>100</w><h>40</h></coordinates><panel_attributes>Insert Item's 
+photos
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>370</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>UMLState</id><coordinates><x>320</x><y>520</y><w>100</w><h>40</h></coordinates><panel_attributes>Select Item's
+condition
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>460</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>550</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element><element><id>UMLSpecialState</id><coordinates><x>280</x><y>620</y><w>180</w><h>60</h></coordinates><panel_attributes>bg=green
+type=decision
+Upload
+Confirmation</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>670</y><w>80</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
+[Confirm]</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>630</y><w>180</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+[Reject]</panel_attributes><additional_attributes>160;20;10;20</additional_attributes></element><element><id>UMLSpecialState</id><coordinates><x>610</x><y>640</y><w>20</w><h>20</h></coordinates><panel_attributes>type=final</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>310</x><y>740</y><w>120</w><h>60</h></coordinates><panel_attributes>System: Item
+Placed in available
+items/database
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLSpecialState</id><coordinates><x>360</x><y>860</y><w>20</w><h>20</h></coordinates><panel_attributes>type=final</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>790</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element></diagram>
