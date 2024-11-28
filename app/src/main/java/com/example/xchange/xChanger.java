@@ -13,14 +13,16 @@ public class xChanger extends User{
     private ArrayList<Request> requests;
     private ArrayList<Counteroffer> counterOffers;
     private ArrayList<Finalized> finalized;
+    private String location;
 
 
-    xChanger(String username, String email, LocalDate join_date,String password) {
+    xChanger(String username, String email, LocalDate join_date,String password, String location) {
         super(nextId++, username, email, join_date,password);
         items=new ArrayList<>();
         requests=new ArrayList<>();
         counterOffers=new ArrayList<>();
         finalized=new ArrayList<>();
+        this.location = location;
     }
 
     // Implement login method
@@ -70,5 +72,12 @@ public class xChanger extends User{
     }
     public ArrayList<Finalized> getFinalized() {
         return this.finalized;
+    }
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
