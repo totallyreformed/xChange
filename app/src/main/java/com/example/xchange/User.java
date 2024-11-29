@@ -45,7 +45,7 @@ public abstract class User {
         this.email = email;
     }
     public void setPassword(String password) {
-        this.username = password;
+        this.password = password;
     }
 
     public String getPassword() {
