@@ -2,12 +2,7 @@ package com.example.xchange;
 
 import java.time.LocalDate;
 public class Finalized {
-    private enum status {
-        ACCEPTED,
-        REJECTED;
-    }
-
-    private status deal_status;
+    private String deal_status;
     private Request request;
     private Counteroffer counteroffer;
     private Long finalized_id;
@@ -17,15 +12,15 @@ public class Finalized {
     private Item offered_item;
     private Item requested_item;
 
-    public Finalized(Request reqeust, Long finalized_id, LocalDate date_finalized) {
-        this.request = reqeust;
-        this.finalized_id = finalized_id;
+    public Finalized(Request request, LocalDate date_finalized) {
+        this.request = request;
+        this.finalized_id = request.getRequestID();
         this.date_finalized = date_finalized;
         this.deal_status = null;
-        this.offerer = reqeust.getRequester();
-        this.offeree = reqeust.getRequestee();
-        this.offered_item = reqeust.getOfferedItem();
-        this.requested_item = reqeust.getRequestedItem();
+        this.offerer = request.getRequester();
+        this.offeree = request.getRequestee();
+        this.offered_item = request.getOfferedItem();
+        this.requested_item = request.getRequestedItem();
     }
 
     public Finalized(Counteroffer counteroffer, LocalDate date_finalized) {
@@ -71,7 +66,32 @@ public class Finalized {
         return requested_item;
     }
 
-    public void setDealStatus(status deal_status) {
+    public void setDealStatus(String deal_status) {
         this.deal_status = deal_status;
     }
+
+    public String getStatus(){return this.deal_status;}
+
+    public String acceptOffer(){
+        this.setDealStatus("Accepted");
+        this.offerer.deleteItem(this.getRequestedItem());
+        this.offeree.deleteItem(this.getOfferedItem());
+        this.offeree.getFinalized().add(this);
+        this.offerer.getFinalized().add(this);
+        this.getRequest().make_unactive();
+        this.getOfferee().plusOneSucceedDeal();
+        this.getOfferer().plusOneSucceedDeal();
+
+        return this.getOfferee().getEmail();
+    }
+    public void rejectOffer(){
+        this.setDealStatus("Rejected");
+        this.offeree.getFinalized().add(this);
+        this.offerer.getFinalized().add(this);
+        this.getRequest().make_unactive();
+        this.getOfferee().plusOneFailedDeal();
+        this.getOfferer().plusOneFailedDeal();
+    }
+
+
 }

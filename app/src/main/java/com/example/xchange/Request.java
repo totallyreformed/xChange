@@ -5,22 +5,28 @@ import java.time.LocalDate;
 public class Request {
     private final xChanger requester;
     private final xChanger requestee;
-    private Long request_id;
+    private Long previous_request_id=1L;
+    private Long requested_id;
     private Item offered_item;
     private Item requested_item;
     private LocalDate date_initiated;
+    private boolean active;
 
-    Request(xChanger requester, xChanger requestee, Long request_id, Item offered_item, Item requested_item, LocalDate date_initiated) {
+
+    Request(xChanger requester, xChanger requestee, Item offered_item, Item requested_item, LocalDate date_initiated) {
         this.requester = requester;
         this.requestee = requestee;
-        this.request_id = request_id;
+        this.requested_id = previous_request_id;
+        previous_request_id++;
         this.offered_item = offered_item;
         this.requested_item = requested_item;
         this.date_initiated = date_initiated;
+        this.active=true;
+        add_to_list();
     }
 
     public long getRequestID() {
-        return request_id;
+        return this.requested_id;
     }
 
     public xChanger getRequester() {
@@ -40,7 +46,16 @@ public class Request {
     public LocalDate getDateInitiated() {
         return date_initiated;
     }
+    public void add_to_list(){
+        this.getRequestee().getRequests().add(this);
+    }
+    public boolean isActive(){
+        return this.active;
+    }
 
+    public void make_unactive(){
+        this.active=false;
+    }
 //    public void setRequestID(Long request_id) {
 //        this.request_id = request_id;
 //    }

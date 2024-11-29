@@ -61,6 +61,11 @@ public class admin extends User {
     }
 
     public void viewReports() {
+        int i=0;
+        for(String report:MainActivity.reports){
+            System.out.println("Report "+i+":"+report);
+            i++;
+        }
     }
     public void viewStatistics() {
     }

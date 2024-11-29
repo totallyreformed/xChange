@@ -17,6 +17,7 @@ public class Counteroffer {
         this.counterofferee = request.getRequestee();
         this.counteroffer_id = request.getRequestID();
         this.message = message;
+        add_to_lists();
     }
 
     public Request getRequest() {
@@ -57,5 +58,9 @@ public class Counteroffer {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void add_to_lists(){
+        this.getCounterofferee().getCounterOffers().add(this);
     }
 }
