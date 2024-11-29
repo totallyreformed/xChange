@@ -1,5 +1,6 @@
 package com.example.xchange;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
 
@@ -138,4 +139,35 @@ public class xChanger extends User{
         MainActivity.reports.add(message);
     }
 
+
+
+    public void acceptRequest(Request request){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Finalized deal=new Finalized(request,LocalDate.now());
+            deal.acceptOffer();
+        }
+
+    }
+
+    public void acceptCounteroffer(Counteroffer counteroffer){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Finalized deal=new Finalized(counteroffer,LocalDate.now());
+            deal.acceptOffer();
+        }
+    }
+
+    public void rejectRequest(Request request){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Finalized deal=new Finalized(request,LocalDate.now());
+            deal.rejectOffer();
+        }
+
+    }
+
+    public void rejectCounteroffer(Counteroffer counteroffer){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Finalized deal=new Finalized(counteroffer,LocalDate.now());
+            deal.rejectOffer();
+        }
+    }
 }

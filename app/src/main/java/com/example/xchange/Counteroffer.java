@@ -8,6 +8,7 @@ public class Counteroffer {
     private final xChanger counterofferee;
     private final Long counteroffer_id;
     private String message;
+    private Boolean active;
 
     Counteroffer(Request request, String message) {
         this.request = request;
@@ -17,6 +18,7 @@ public class Counteroffer {
         this.counterofferee = request.getRequestee();
         this.counteroffer_id = request.getRequestID();
         this.message = message;
+        this.active = true ;
         add_to_lists();
     }
 
@@ -62,5 +64,13 @@ public class Counteroffer {
 
     public void add_to_lists(){
         this.getCounterofferee().getCounterOffers().add(this);
+    }
+
+    public boolean isActive(){
+        return this.active;
+    }
+
+    public void make_unactive(){
+        this.active=false;
     }
 }
