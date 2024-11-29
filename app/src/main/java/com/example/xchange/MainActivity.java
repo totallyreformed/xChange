@@ -15,12 +15,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     public static ArrayList<String> categories=initialize_Categories();
     public static ArrayList<User> xChangers=new ArrayList<>();
     public static ArrayList<User> admins=new ArrayList<>();
     public static ArrayList<String> reports=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,5 @@ public class MainActivity extends AppCompatActivity {
         categories.add("Housing");
         return categories;
     }
-
 
 }
