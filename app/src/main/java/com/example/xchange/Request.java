@@ -22,6 +22,7 @@ public class Request {
         this.requested_item = requested_item;
         this.date_initiated = date_initiated;
         this.active=true;
+        MainActivity.statistics.put("NUMBER OF ALL DEALS", MainActivity.statistics.get("NUMBER OF ALL DEALS") + 1);
         add_to_list();
     }
 

@@ -10,9 +10,9 @@ public class Counteroffer {
     private String message;
     private Boolean active;
 
-    Counteroffer(Request request, String message) {
+    Counteroffer(Request request, String message,Item item) {
         this.request = request;
-        this.offered_item = request.getOfferedItem();
+        this.offered_item = item;
         this.requested_item = request.getRequestedItem();
         this.counterofferer = request.getRequester();
         this.counterofferee = request.getRequestee();

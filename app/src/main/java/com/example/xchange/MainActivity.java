@@ -19,40 +19,38 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static HashMap<String,Integer> statistics=initialize_Statistics();
-    public static ArrayList<String> categories=initialize_Categories();
-    public static ArrayList<User> xChangers=new ArrayList<>();
-    public static ArrayList<User> admins=new ArrayList<>();
-    public static ArrayList<String> reports=new ArrayList<>();
+    public static ArrayList<String> categories = initialize_Categories(); // Initialize categories first
+    public static ArrayList<User> xChangers = new ArrayList<>();
+    public static ArrayList<User> admins = new ArrayList<>();
+    public static ArrayList<String> reports = new ArrayList<>();
+    public static HashMap<String, Integer> statistics = initialize_Statistics();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
     }
 
-    public static HashMap<String,Integer> initialize_Statistics(){
-        HashMap<String,Integer> hs=new HashMap<>();
-        hs.put("NUMBER OF ALL DEALS",0);
-        hs.put("NUMBER OF SUCCED DEALS",0);
-        hs.put("NUMBER OF FAILED DEALS",0);
-        hs.put("NUMBER OF REPORTS",0);
-        hs.put("NUMBER OF CATEGORIES",MainActivity.categories.size());
-        for (String cat :categories) {
-            hs.put(cat,0);
+    public static HashMap<String, Integer> initialize_Statistics() {
+        HashMap<String, Integer> hs = new HashMap<>();
+        hs.put("NUMBER OF ALL DEALS", 0);
+        hs.put("NUMBER OF SUCCED DEALS", 0);
+        hs.put("NUMBER OF FAILED DEALS", 0);
+        hs.put("NUMBER OF REPORTS", 0);
+        hs.put("NUMBER OF CATEGORIES", MainActivity.categories.size());
+        for (String cat : categories) {
+            hs.put(cat, 0);
         }
-        hs.put("NUMBER OF XCHANGERS",MainActivity.xChangers.size());
+        hs.put("NUMBER OF XCHANGERS", MainActivity.xChangers.size());
         return hs;
     }
 
     public static ArrayList<String> initialize_Categories() {
-        categories=new ArrayList<>();
+        ArrayList<String> categories = new ArrayList<>();
         categories.add("Fashion");
         categories.add("Gadgets");
         categories.add("Housing");
         return categories;
     }
-
 }

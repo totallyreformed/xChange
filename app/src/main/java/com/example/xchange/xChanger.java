@@ -1,6 +1,5 @@
 package com.example.xchange;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
 
@@ -15,7 +14,7 @@ public class xChanger extends User{
     private ArrayList<Item> items;
     private ArrayList<Request> requests;
     private ArrayList<Counteroffer> counterOffers;
-    private ArrayList<Finalized> finalized;
+    private ArrayList<xChange> finalized;
     private String location;
     private int succeed_Deals;
     private int failed_Deals;
@@ -60,6 +59,7 @@ public class xChanger extends User{
             newUser = new xChanger(username, email, LocalDate.now(),password,location);
         }
         MainActivity.xChangers.add(newUser);
+        MainActivity.statistics.put("NUMBER OF XCHANGERS", MainActivity.statistics.get("NUMBER XCHANGERS") + 1);
         return true;
     }
 
@@ -89,7 +89,7 @@ public class xChanger extends User{
     public ArrayList<Counteroffer> getCounterOffers() {
         return this.counterOffers;
     }
-    public ArrayList<Finalized> getFinalized() {
+    public ArrayList<xChange> getFinalized() {
         return this.finalized;
     }
     public String getLocation() {
@@ -131,43 +131,59 @@ public class xChanger extends User{
         this.failed_Deals++;
     }
 
-    public void report(xChanger xchanger,String message,Finalized finalized){
+    public void report(xChanger xchanger, String message, xChange finalized){
         if(finalized.getStatus()!=null){
             xchanger.setRating((float) (xchanger.getRating()-0.2));
             message="User "+this.getUsername()+"reported user "+xchanger.getUsername();
         }
         MainActivity.reports.add(message);
+        MainActivity.statistics.put("NUMBER OF REPORTS", MainActivity.statistics.get("NUMBER OF REPORTS") + 1);
     }
 
 
 
-    public void acceptRequest(Request request){
+    public String acceptRequest(Request request){
+        String email = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Finalized deal=new Finalized(request,LocalDate.now());
-            deal.acceptOffer();
+            xChange deal=new xChange(request,LocalDate.now());
+            email=deal.acceptOffer();
         }
-
+        MainActivity.statistics.replace(request.getRequestedItem().getItemCategory(),MainActivity.statistics.get(request.getRequestedItem().getItemCategory())+1);
+        MainActivity.statistics.replace(request.getOfferedItem().getItemCategory(),MainActivity.statistics.get(request.getOfferedItem().getItemCategory())+1);
+        MainActivity.statistics.put("NUMBER OF SUCCED DEALS", MainActivity.statistics.get("NUMBER OF SUCCED DEALS") + 1);
+        return email;
     }
 
-    public void acceptCounteroffer(Counteroffer counteroffer){
+    public String acceptCounteroffer(Counteroffer counteroffer){
+        String email="";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Finalized deal=new Finalized(counteroffer,LocalDate.now());
-            deal.acceptOffer();
+            xChange deal=new xChange(counteroffer,LocalDate.now());
+            email=deal.acceptOffer();
         }
+        MainActivity.statistics.replace(counteroffer.getRequestedItem().getItemCategory(),MainActivity.statistics.get(counteroffer.getRequestedItem().getItemCategory())+1);
+        MainActivity.statistics.replace(counteroffer.getOfferedItem().getItemCategory(),MainActivity.statistics.get(counteroffer.getOfferedItem().getItemCategory())+1);
+        MainActivity.statistics.put("NUMBER OF SUCCED DEALS", MainActivity.statistics.get("NUMBER OF SUCCED DEALS") + 1);
+        return email;
     }
 
     public void rejectRequest(Request request){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Finalized deal=new Finalized(request,LocalDate.now());
+            xChange deal=new xChange(request,LocalDate.now());
             deal.rejectOffer();
         }
+        MainActivity.statistics.put("NUMBER OF FAILED DEALS", MainActivity.statistics.get("FAILED OF SUCCED DEALS") + 1);
 
     }
 
     public void rejectCounteroffer(Counteroffer counteroffer){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Finalized deal=new Finalized(counteroffer,LocalDate.now());
+            xChange deal=new xChange(counteroffer,LocalDate.now());
             deal.rejectOffer();
         }
+        MainActivity.statistics.put("NUMBER OF FAILED DEALS", MainActivity.statistics.get("FAILED OF SUCCED DEALS") + 1);
+    }
+
+    public void counterOffer(Item item,String Message,Request request){
+        this.counterOffers.add(new Counteroffer(request,Message,item));
     }
 }

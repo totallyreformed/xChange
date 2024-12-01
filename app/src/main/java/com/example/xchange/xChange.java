@@ -1,7 +1,7 @@
 package com.example.xchange;
 
 import java.time.LocalDate;
-public class Finalized {
+public class xChange {
     private String deal_status;
     private Request request;
     private Counteroffer counteroffer;
@@ -12,7 +12,7 @@ public class Finalized {
     private Item offered_item;
     private Item requested_item;
 
-    public Finalized(Request request, LocalDate date_finalized) {
+    public xChange(Request request, LocalDate date_finalized) {
         this.request = request;
         this.finalized_id = request.getRequestID();
         this.date_finalized = date_finalized;
@@ -23,7 +23,7 @@ public class Finalized {
         this.requested_item = request.getRequestedItem();
     }
 
-    public Finalized(Counteroffer counteroffer, LocalDate date_finalized) {
+    public xChange(Counteroffer counteroffer, LocalDate date_finalized) {
         this.counteroffer = counteroffer;
         this.finalized_id = request.getRequestID();
         this.date_finalized = date_finalized;
@@ -79,6 +79,9 @@ public class Finalized {
         this.offeree.getFinalized().add(this);
         this.offerer.getFinalized().add(this);
         this.getRequest().make_unactive();
+        if(this.getCounterOffer().getRequest()==this.getRequest()){
+            this.getCounterOffer().make_unactive();
+        }
         this.getOfferee().plusOneSucceedDeal();
         this.getOfferer().plusOneSucceedDeal();
 

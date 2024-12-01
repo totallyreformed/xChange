@@ -18,12 +18,13 @@ public class admin extends User {
     @Override
     public boolean login(String username, String password) {
         for (User user : MainActivity.admins) {
-            if (user.getPassword().equals("IamtheAdmin") && user.getUsername().equals(username)) {
+            if (user.getPassword().equals(password) && user.getUsername().equals(username)) {
                 return true;
             }
         }
         return false;
     }
+
 
 
     @Override
@@ -68,8 +69,13 @@ public class admin extends User {
         }
     }
     public void viewStatistics() {
-
+        for(String key:MainActivity.statistics.keySet()){
+            System.out.println(key+": "+MainActivity.statistics.get(key));
+        }
     }
 
+    public int getSpecificStatistic(String key){
+        return MainActivity.statistics.get(key);
+    }
 
 }
