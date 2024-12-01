@@ -157,7 +157,7 @@ public class xChanger extends User{
     public String acceptCounteroffer(Counteroffer counteroffer){
         String email="";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            xChange deal=new xChange(counteroffer,LocalDate.now());
+            xChange deal=new xChange(counteroffer.getRequest(),counteroffer,LocalDate.now());
             email=deal.acceptOffer();
         }
         MainActivity.statistics.replace(counteroffer.getRequestedItem().getItemCategory(),MainActivity.statistics.get(counteroffer.getRequestedItem().getItemCategory())+1);
@@ -177,7 +177,7 @@ public class xChanger extends User{
 
     public void rejectCounteroffer(Counteroffer counteroffer){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            xChange deal=new xChange(counteroffer,LocalDate.now());
+            xChange deal=new xChange(counteroffer.getRequest(),counteroffer,LocalDate.now());
             deal.rejectOffer();
         }
         MainActivity.statistics.put("NUMBER OF FAILED DEALS", MainActivity.statistics.get("FAILED OF SUCCED DEALS") + 1);
