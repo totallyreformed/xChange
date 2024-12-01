@@ -6,11 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-// Test class for the abstract User class
 public class UserTest {
     private User testUser;
 
-    // Concrete implementation for testing purposes
     private static class TestUser extends User {
         public TestUser(Long user_id, String username, String email, LocalDate join_date, String password, String location) {
             super(user_id, username, email, join_date, password, location);

@@ -23,8 +23,9 @@ public class xChange {
         this.requested_item = request.getRequestedItem();
     }
 
-    public xChange(Counteroffer counteroffer, LocalDate date_finalized) {
+    public xChange(Request request,Counteroffer counteroffer, LocalDate date_finalized) {
         this.counteroffer = counteroffer;
+        this.request=request;
         this.finalized_id = request.getRequestID();
         this.date_finalized = date_finalized;
         this.deal_status = null;
@@ -92,6 +93,9 @@ public class xChange {
         this.offeree.getFinalized().add(this);
         this.offerer.getFinalized().add(this);
         this.getRequest().make_unactive();
+        if(this.getCounterOffer().getRequest()==this.getRequest()){
+            this.getCounterOffer().make_unactive();
+        }
         this.getOfferee().plusOneFailedDeal();
         this.getOfferer().plusOneFailedDeal();
     }
