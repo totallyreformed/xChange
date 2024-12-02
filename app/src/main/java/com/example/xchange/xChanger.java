@@ -113,8 +113,8 @@ public class xChanger extends User{
         return null;
     }
 
-    public void UploadItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images){
-        this.getItems().add(new Item(item_name,item_description,item_category,item_condition,item_images));
+    public void UploadItem(String item_name, String item_description, String item_category, String item_condition, Image item_image){
+        this.getItems().add(new Item(item_name,item_description,item_category,item_condition,item_image));
     }
 
     public void RequestItem(xChanger xchanger2, Item offered_item, Item requested_item){

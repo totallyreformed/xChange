@@ -17,11 +17,16 @@ public class AdminTest {
         MainActivity.categories = new ArrayList<>();
         MainActivity.reports = new ArrayList<>();
         MainActivity.statistics = new HashMap<>();
+        admin.resetNextId();
 
         testAdmin = new admin("admin1", "admin1@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
         MainActivity.admins.add(testAdmin);
     }
-
+    @Test
+    public void newAdmin(){
+        admin newAdmin=new admin("admin2", "admin2@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
+        assertEquals(2L,newAdmin.getUserId());
+    }
     @Test
     public void testLoginSuccess() {
         assertTrue(testAdmin.login("admin1", "IamtheAdmin"));

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Request {
     private final xChanger requester;
     private final xChanger requestee;
-    private Long previous_request_id=1L;
+    private static Long previous_request_id = 1L; // Static field to track the last used ID
     private Long requested_id;
     private Item offered_item;
     private Item requested_item;
@@ -21,7 +21,7 @@ public class Request {
         this.offered_item = offered_item;
         this.requested_item = requested_item;
         this.date_initiated = date_initiated;
-        this.active=true;
+        this.active = true;
         MainActivity.statistics.put("NUMBER OF ALL DEALS", MainActivity.statistics.get("NUMBER OF ALL DEALS") + 1);
         add_to_list();
     }

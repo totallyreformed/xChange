@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class admin extends User {
 
-    private static Long nextId = 1L;
+    private static long nextId = 1;
 
     // Constructor
     public admin(String username, String email, LocalDate join_date,String password,String location) {
@@ -76,6 +76,9 @@ public class admin extends User {
 
     public int getSpecificStatistic(String key){
         return MainActivity.statistics.get(key);
+    }
+    public static void resetNextId() {
+        nextId = 1L;
     }
 
 }

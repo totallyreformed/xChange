@@ -11,16 +11,16 @@ public class Item {
     private String item_description;
     private String item_category;
     private String item_condition;
-    private ArrayList<Bitmap> item_images;
+    private Image item_image;
 
     // Constructor
-    public Item(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images) {
+    public Item(String item_name, String item_description, String item_category, String item_condition, Image item_image) {
         this.item_id = ++lastItemId; // Increment the ID for each new item
         this.item_name = item_name;
         this.item_description = item_description;
         this.item_category = item_category;
         this.item_condition = item_condition;
-        this.item_images = item_images;
+        this.item_image = item_image;
     }
 
     // Getters
@@ -44,8 +44,8 @@ public class Item {
         return item_condition;
     }
 
-    public ArrayList<Bitmap> getItemImages() {
-        return item_images;
+    public Image getItemImage() {
+        return this.item_image;
     }
 
     // Setters
@@ -65,24 +65,17 @@ public class Item {
         this.item_condition = item_condition;
     }
 
-    public void setItemImages(ArrayList<Bitmap> item_images) {
-        this.item_images = item_images;
+    public void setItemImages(Image item_image) {
+        this.item_image = item_image;
     }
 
-    // Add a single image to the list
-    public void addItemImage(Bitmap image) {
-        if (this.item_images == null) {
-            this.item_images = new ArrayList<>();
-        }
-        this.item_images.add(image);
-    }
 
     // Edit Item details including images
-    public void editItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images) {
+    public void editItem(String item_name, String item_description, String item_category, String item_condition, Item item_image) {
         this.setItemName(item_name);
         this.setItemDescription(item_description);
         this.setItemCategory(item_category);
         this.setItemCondition(item_condition);
-        this.setItemImages(item_images);
+        this.setItemImages(item_image.getItemImage());
     }
 }
