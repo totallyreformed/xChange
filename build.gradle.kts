@@ -2,19 +2,16 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
-
 }
 // Top-level build.gradle.kts
 buildscript {
     dependencies {
         // Google services classpath
         classpath(libs.google.services)
-        classpath(libs.android.junit5)
     }
-    repositories{
+
+    repositories {
         google()
         mavenCentral()
     }
 }
-
-
