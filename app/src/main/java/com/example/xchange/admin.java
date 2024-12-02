@@ -78,4 +78,8 @@ public class admin extends User {
         return MainActivity.statistics.get(key);
     }
 
+    public static void resetNextId() {
+        nextId = 1L;
+    }
+
 }

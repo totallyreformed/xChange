@@ -1,8 +1,10 @@
 package com.example.xchange;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import java.util.ArrayList;
+import java.io.File;
 
 public class Item {
     private static Long lastItemId = 0L; // Static field to track the last used ID
@@ -11,10 +13,10 @@ public class Item {
     private String item_description;
     private String item_category;
     private String item_condition;
-    private ArrayList<Bitmap> item_images;
+    private ArrayList<Image> item_images;
 
     // Constructor
-    public Item(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images) {
+    public Item(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
         this.item_id = ++lastItemId; // Increment the ID for each new item
         this.item_name = item_name;
         this.item_description = item_description;
@@ -44,7 +46,7 @@ public class Item {
         return item_condition;
     }
 
-    public ArrayList<Bitmap> getItemImages() {
+    public ArrayList<Image> getItemImages() {
         return item_images;
     }
 
@@ -65,20 +67,42 @@ public class Item {
         this.item_condition = item_condition;
     }
 
-    public void setItemImages(ArrayList<Bitmap> item_images) {
+    public void setItemImages(ArrayList<Image> item_images) {
         this.item_images = item_images;
     }
 
     // Add a single image to the list
-    public void addItemImage(Bitmap image) {
+    public void addItemImage(Image image) {
         if (this.item_images == null) {
             this.item_images = new ArrayList<>();
         }
         this.item_images.add(image);
     }
 
+    // Add images from file paths
+    public void addImagesFromFilePaths(ArrayList<String> filePaths) {
+        if (this.item_images == null) {
+            this.item_images = new ArrayList<>();
+        }
+
+        for (String filePath : filePaths) {
+            try {
+                File imgFile = new File(filePath);
+                if (imgFile.exists()) {
+                    Image image = new Image(filePath, "Image description");
+                    this.item_images.add(image);
+                } else {
+                    System.err.println("File does not exist: " + filePath);
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading image from file: " + filePath);
+                e.printStackTrace();
+            }
+        }
+    }
+
     // Edit Item details including images
-    public void editItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Bitmap> item_images) {
+    public void editItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
         this.setItemName(item_name);
         this.setItemDescription(item_description);
         this.setItemCategory(item_category);
