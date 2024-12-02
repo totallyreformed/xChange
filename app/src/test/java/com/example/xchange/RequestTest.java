@@ -23,7 +23,7 @@ public class RequestTest {
     public void setUp() {
         requester = new xChanger("Requester", "requester@example.com", LocalDate.now(), "password", "Location");
         requestee = new xChanger("Requestee", "requestee@example.com", LocalDate.now(), "password", "Location");
-        ArrayList<Bitmap> images = new ArrayList<>();
+        ArrayList<Image> images = new ArrayList<>();
         offeredItem = new Item("Offered Item", "Description", "Category", "Condition", images);
         requestedItem = new Item("Requested Item", "Description", "Category", "Condition", images);
         dateInitiated = LocalDate.now();
