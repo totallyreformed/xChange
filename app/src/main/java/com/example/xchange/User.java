@@ -1,104 +1,65 @@
 package com.example.xchange;
 
 import java.time.LocalDate;
-public class xChange {
-    private String deal_status;
-    private Request request;
-    private Counteroffer counteroffer;
-    private Long finalized_id;
-    private LocalDate date_finalized;
-    private xChanger offerer;
-    private xChanger offeree;
-    private Item offered_item;
-    private Item requested_item;
 
-    public xChange(Request request, LocalDate date_finalized) {
-        this.request = request;
-        this.finalized_id = request.getRequestID();
-        this.date_finalized = date_finalized;
-        this.deal_status = null;
-        this.offerer = request.getRequester();
-        this.offeree = request.getRequestee();
-        this.offered_item = request.getOfferedItem();
-        this.requested_item = request.getRequestedItem();
+public abstract class User {
+    private final Long user_id;
+    private String username;
+    private String email;
+    private final LocalDate join_Date;
+    private String password;
+    private String location;
+
+    // Constructor
+    User(Long user_id, String username, String email, LocalDate join_date,String password,String location) {
+        this.user_id = user_id;
+        this.username = username;
+        this.email = email;
+        this.join_Date = join_date;
+        this.password=password;
+        this.location=location;
     }
 
-    public xChange(Request request,Counteroffer counteroffer, LocalDate date_finalized) {
-        this.counteroffer = counteroffer;
-        this.request=request;
-        this.finalized_id = request.getRequestID();
-        this.date_finalized = date_finalized;
-        this.deal_status = null;
-        this.offerer = counteroffer.getCounterofferer();
-        this.offeree = counteroffer.getCounterofferee();
-        this.offered_item = counteroffer.getOfferedItem();
-        this.requested_item = counteroffer.getRequestedItem();
+    // Getters
+    public Long getUserId() {
+        return user_id;
     }
 
-    public Request getRequest() {
-        return request;
+    public String getUsername() {
+        return username;
     }
 
-    public Counteroffer getCounterOffer() {
-        return counteroffer;
+    public String getEmail() {
+        return email;
     }
 
-    public Long getFinalizedID() {
-        return finalized_id;
+    public LocalDate getJoinDate() {
+        return join_Date;
     }
 
-    public LocalDate getDateFinalized() {
-        return date_finalized;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public xChanger getOfferer() {
-        return offerer;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public xChanger getOfferee() {
-        return offeree;
+    public String getPassword() {
+        return password;
     }
 
-    public Item getOfferedItem() {
-        return offered_item;
+    public String getLocation(){return  this.location;}
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public Item getRequestedItem() {
-        return requested_item;
-    }
+    // Abstract methods for login and registration
+    public abstract boolean login(String username, String password);
 
-    public void setDealStatus(String deal_status) {
-        this.deal_status = deal_status;
-    }
-
-    public String getStatus(){return this.deal_status;}
-
-    public String acceptOffer(){
-        this.setDealStatus("Accepted");
-        this.offerer.deleteItem(this.getRequestedItem());
-        this.offeree.deleteItem(this.getOfferedItem());
-        this.offeree.getFinalized().add(this);
-        this.offerer.getFinalized().add(this);
-        this.getRequest().make_unactive();
-        if(this.getCounterOffer().getRequest()==this.getRequest()){
-            this.getCounterOffer().make_unactive();
-        }
-        this.getOfferee().plusOneSucceedDeal();
-        this.getOfferer().plusOneSucceedDeal();
-
-        return this.getOfferee().getEmail();
-    }
-    public void rejectOffer(){
-        this.setDealStatus("Rejected");
-        this.offeree.getFinalized().add(this);
-        this.offerer.getFinalized().add(this);
-        this.getRequest().make_unactive();
-        if(this.getCounterOffer().getRequest()==this.getRequest()){
-            this.getCounterOffer().make_unactive();
-        }
-        this.getOfferee().plusOneFailedDeal();
-        this.getOfferer().plusOneFailedDeal();
-    }
-
-
+    public abstract boolean register(String username, String email, String password,String location);
 }
