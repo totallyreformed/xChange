@@ -19,6 +19,7 @@ public class AdminTest {
         MainActivity.statistics = new HashMap<>();
         admin.resetNextId();
 
+        admin.resetNextId();
         testAdmin = new admin("admin1", "admin1@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
         MainActivity.admins.add(testAdmin);
     }
@@ -90,5 +91,11 @@ public class AdminTest {
     public void testGetSpecificStatistic() {
         MainActivity.statistics.put("Total Users", 10);
         assertEquals(10, testAdmin.getSpecificStatistic("Total Users"));
+    }
+
+    @Test
+    public void newAdmin(){
+        admin newAdmin=new admin("admin2", "admin2@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
+        assertEquals(2L,newAdmin.getUserId());
     }
 }

@@ -18,7 +18,7 @@
 	</properties>
 
 	<dependencies>
-		
+
 	</dependencies>
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
@@ -29,21 +29,21 @@
 
 
 	<build>
-		<plugins> 
+		<plugins>
 			<plugin>
 				<groupId>com.kryshchuk.maven.plugins</groupId>
 				<artifactId>umlet-maven-plugin</artifactId>
 				<version>1.2</version>
-				 <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>./uml</directory>
-                            <includes>
-                                <include>**/*.uxf</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>./uml</directory>
+							<includes>
+								<include>**/*.uxf</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
 				<executions>
 					<execution>
 						<id>convert-uml</id>
@@ -60,7 +60,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>

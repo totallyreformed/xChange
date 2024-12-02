@@ -81,4 +81,8 @@ public class admin extends User {
         nextId = 1L;
     }
 
+    public static void resetNextId() {
+        nextId = 1L;
+    }
+
 }

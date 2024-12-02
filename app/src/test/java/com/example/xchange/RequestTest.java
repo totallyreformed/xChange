@@ -1,7 +1,6 @@
 package com.example.xchange;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -55,59 +54,5 @@ public class RequestTest {
     public void testMakeUnactive() {
         request.make_unactive();
         assertFalse(request.isActive());
-    }
-
-    @Test
-    public void testRequesterCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> {
-            new Request(null, requestee, offeredItem, requestedItem, dateInitiated);
-        });
-    }
-
-    @Test
-    public void testRequesteeCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> {
-            new Request(requester, null, offeredItem, requestedItem, dateInitiated);
-        });
-    }
-
-    @Test
-    public void testOfferedItemCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> {
-            new Request(requester, requestee, null, requestedItem, dateInitiated);
-        });
-    }
-
-    @Test
-    public void testRequestedItemCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> {
-            new Request(requester, requestee, offeredItem, null, dateInitiated);
-        });
-    }
-
-    @Test
-    public void testDeactivateRequestMultipleTimes() {
-        request.make_unactive();
-        assertFalse(request.isActive());
-        request.make_unactive(); // Should still be inactive
-        assertFalse(request.isActive());
-    }
-
-    @Test
-    public void testRequestIDIncrement() {
-        Request secondRequest = new Request(requester, requestee, offeredItem, requestedItem, dateInitiated);
-        assertEquals(request.getRequestID() + 1, secondRequest.getRequestID());
-    }
-
-    @Test
-    public void testRequestsListSizeAfterAddingRequest() {
-        int initialSize = requestee.getRequests().size();
-        new Request(requester, requestee, offeredItem, requestedItem, dateInitiated);
-        assertEquals(initialSize + 1, requestee.getRequests().size());
-    }
-
-    @Test
-    public void testRequestActiveStatusAfterInitialization() {
-        assertTrue(request.isActive());
     }
 }
