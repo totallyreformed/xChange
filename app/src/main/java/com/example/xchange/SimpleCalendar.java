@@ -28,4 +28,3 @@ public class SimpleCalendar {
         return year + "-" + month + "-" + day;
     }
 }
-

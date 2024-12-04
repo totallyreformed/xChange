@@ -37,7 +37,7 @@ public class admin extends User {
     }
     //TODO κραταμε τις συναρτησεις για την λογικη οταν βαλουμε τα αρχεια αποθηκευσης
 
-//    public void manageCategories(String category, String action) {
+    //    public void manageCategories(String category, String action) {
 //        if (action.equals("add")) {
 //            MainActivity.categories.add(category);
 //        } else {
