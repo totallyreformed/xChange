@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,89 +12,92 @@ public class AdminTest {
 
     @BeforeEach
     public void setUp() {
+        // Initialize shared state in MainActivity
         MainActivity.admins = new ArrayList<>();
         MainActivity.categories = new ArrayList<>();
         MainActivity.reports = new ArrayList<>();
         MainActivity.statistics = new HashMap<>();
-        admin.resetNextId();
 
-        admin.resetNextId();
-        testAdmin = new admin("admin1", "admin1@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
-        MainActivity.admins.add(testAdmin);
+        admin.resetNextId(); // Reset the ID generator for consistency across tests
+
+        testAdmin = new admin("admin1", "admin1@example.com", new SimpleCalendar(2024, 12, 3), "IamtheAdmin", "Location1");
+        MainActivity.admins.add(testAdmin); // Add the admin to the shared admin list
     }
+
     @Test
-    public void newAdmin(){
-        admin newAdmin=new admin("admin2", "admin2@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
-        assertEquals(2L,newAdmin.getUserId());
+    public void testNewAdminIdIncrement() {
+        admin newAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location1");
+        assertEquals(2L, newAdmin.getUserId()); // Verify unique ID generation
     }
+
     @Test
     public void testLoginSuccess() {
-        assertTrue(testAdmin.login("admin1", "IamtheAdmin"));
+        assertTrue(testAdmin.login("admin1", "IamtheAdmin")); // Verify successful login
     }
 
     @Test
     public void testLoginFailure() {
-        assertFalse(testAdmin.login("admin1", "wrongPassword"));
-        assertFalse(testAdmin.login("nonexistent", "IamtheAdmin"));
+        assertFalse(testAdmin.login("admin1", "wrongPassword")); // Incorrect password
+        assertFalse(testAdmin.login("nonexistent", "IamtheAdmin")); // Non-existent user
     }
 
     @Test
     public void testRegisterSuccess() {
-        assertTrue(testAdmin.register("admin2", "admin2@example.com", "IamtheAdmin", "Location2"));
-        assertEquals(2, MainActivity.admins.size());
+        admin newAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location2");
+        assertTrue(testAdmin.register(newAdmin)); // Register a new admin
+        assertEquals(2, MainActivity.admins.size()); // Verify admin list size
     }
 
     @Test
     public void testRegisterFailure_UserExists() {
-        assertFalse(testAdmin.register("admin1", "newemail@example.com", "IamtheAdmin", "Location3"));
-        assertFalse(testAdmin.register("newuser", "admin1@example.com", "IamtheAdmin", "Location4"));
+        admin duplicateUsernameAdmin = new admin("admin1", "newemail@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location3");
+        admin duplicateEmailAdmin = new admin("newuser", "admin1@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location4");
+
+        assertFalse(testAdmin.register(duplicateUsernameAdmin)); // Duplicate username
+        assertFalse(testAdmin.register(duplicateEmailAdmin)); // Duplicate email
     }
 
     @Test
     public void testManageCategories_AddCategory() {
-        testAdmin.manageCategories("Electronics", "add");
-        assertTrue(MainActivity.categories.contains("Electronics"));
+        testAdmin.manageCategories("Electronics", "add"); // Add a new category
+        assertTrue(MainActivity.categories.contains("Electronics")); // Verify addition
     }
 
     @Test
     public void testManageCategories_RemoveCategory() {
-        MainActivity.categories.add("Electronics");
-        testAdmin.manageCategories("Electronics", "remove");
-        assertFalse(MainActivity.categories.contains("Electronics"));
+        MainActivity.categories.add("Electronics"); // Pre-add category
+        testAdmin.manageCategories("Electronics", "remove"); // Remove category
+        assertFalse(MainActivity.categories.contains("Electronics")); // Verify removal
     }
 
     @Test
     public void testManageCategories_RemoveNonExistentCategory() {
         int initialSize = MainActivity.categories.size();
-        testAdmin.manageCategories("NonExistent", "remove");
-        assertEquals(initialSize, MainActivity.categories.size());
+        testAdmin.manageCategories("NonExistent", "remove"); // Attempt to remove non-existent category
+        assertEquals(initialSize, MainActivity.categories.size()); // Verify no changes
     }
 
     @Test
     public void testViewReports() {
         MainActivity.reports.add("Report 1");
         MainActivity.reports.add("Report 2");
-        testAdmin.viewReports();
-        // This test will only verify that the method runs without exceptions
+
+        // Call the method and verify it executes without exceptions
+        assertDoesNotThrow(() -> testAdmin.viewReports());
     }
 
     @Test
     public void testViewStatistics() {
         MainActivity.statistics.put("Total Users", 10);
         MainActivity.statistics.put("Total Trades", 5);
-        testAdmin.viewStatistics();
-        // This test will only verify that the method runs without exceptions
+
+        // Call the method and verify it executes without exceptions
+        assertDoesNotThrow(() -> testAdmin.viewStatistics());
     }
 
     @Test
     public void testGetSpecificStatistic() {
-        MainActivity.statistics.put("Total Users", 10);
-        assertEquals(10, testAdmin.getSpecificStatistic("Total Users"));
-    }
-
-    @Test
-    public void newAdmin(){
-        admin newAdmin=new admin("admin2", "admin2@example.com", LocalDate.now(), "IamtheAdmin", "Location1");
-        assertEquals(2L,newAdmin.getUserId());
+        MainActivity.statistics.put("Total Users", 10); // Add sample statistic
+        assertEquals(10, testAdmin.getSpecificStatistic("Total Users")); // Verify retrieval
     }
 }
