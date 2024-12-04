@@ -1,23 +1,22 @@
 package com.example.xchange;
 
-import android.os.Build;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class admin extends User {
 
-    private static Long nextId = 1L;
+    private static long nextId = 1;
+    ArrayList<User> admins;
 
-    // Constructor
-    public admin(String username, String email, LocalDate join_date,String password,String location) {
-        super(nextId++, username, email, join_date,password,location);
+    // Constructor using SimpleCalendar
+    public admin(String username, String email, SimpleCalendar join_date, String password, String location) {
+        super(nextId++, username, email, join_date, password, location);
+        admins=new ArrayList<>();
     }
 
     // Implement login method
     @Override
     public boolean login(String username, String password) {
-        for (User user : MainActivity.admins) {
+        for (User user : admins) {
             if (user.getPassword().equals(password) && user.getUsername().equals(username)) {
                 return true;
             }
@@ -25,61 +24,53 @@ public class admin extends User {
         return false;
     }
 
-
-
     @Override
-    public boolean register(String username, String email, String password,String location){
-
+    public boolean register(User user) {
         // Check if the user already exists
-        for (User user : MainActivity.admins) {
-            if (user.getUsername().equals(username) || user.getEmail().equals(email)) {
+        for (User temp_user : admins) {
+            if (temp_user.getUsername().equals(user.getUsername()) || temp_user.getEmail().equals(user.getEmail())) {
                 return false;
             }
         }
-        // Register the new user
-        User newUser = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            newUser = new admin(username, email, LocalDate.now(),password,location);
-        }
-        MainActivity.admins.add(newUser);
+        admins.add(user);
         return true;
     }
-    public void manageCategories(String category,String action) {
-        if(action.equals("add")){
-            MainActivity.categories.add(category);
-        }
-        else{
-            for(String cat:MainActivity.categories){
-                if(cat.equals(category)){
-                    MainActivity.categories.remove(category);
-                    return;
-                }
-                else{
-                    System.out.println("This category does not exist");
-                }
-            }
-        }
-    }
+    //TODO κραταμε τις συναρτησεις για την λογικη οταν βαλουμε τα αρχεια αποθηκευσης
 
-    public void viewReports() {
-        int i=0;
-        for(String report:MainActivity.reports){
-            System.out.println("Report "+i+":"+report);
-            i++;
-        }
-    }
-    public void viewStatistics() {
-        for(String key:MainActivity.statistics.keySet()){
-            System.out.println(key+": "+MainActivity.statistics.get(key));
-        }
-    }
-
-    public int getSpecificStatistic(String key){
-        return MainActivity.statistics.get(key);
-    }
-
+    //    public void manageCategories(String category, String action) {
+//        if (action.equals("add")) {
+//            MainActivity.categories.add(category);
+//        } else {
+//            for (String cat : MainActivity.categories) {
+//                if (cat.equals(category)) {
+//                    MainActivity.categories.remove(category);
+//                    return;
+//                } else {
+//                    System.out.println("This category does not exist");
+//                }
+//            }
+//        }
+//    }
+//
+//    public void viewReports() {
+//        int i = 0;
+//        for (String report : MainActivity.reports) {
+//            System.out.println("Report " + i + ": " + report);
+//            i++;
+//        }
+//    }
+//
+//    public void viewStatistics() {
+//        for (String key : MainActivity.statistics.keySet()) {
+//            System.out.println(key + ": " + MainActivity.statistics.get(key));
+//        }
+//    }
+//
+//    public int getSpecificStatistic(String key) {
+//        return MainActivity.statistics.get(key);
+//    }
+//
     public static void resetNextId() {
         nextId = 1L;
     }
-
 }

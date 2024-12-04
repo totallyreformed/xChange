@@ -1,10 +1,7 @@
 package com.example.xchange;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import java.util.ArrayList;
 import java.io.File;
+import java.util.ArrayList;
 
 public class Item {
     private static Long lastItemId = 0L; // Static field to track the last used ID
@@ -22,7 +19,7 @@ public class Item {
         this.item_description = item_description;
         this.item_category = item_category;
         this.item_condition = item_condition;
-        this.item_images = item_images;
+        this.item_images = item_images != null ? new ArrayList<>(item_images) : new ArrayList<>();
     }
 
     // Getters
@@ -47,7 +44,7 @@ public class Item {
     }
 
     public ArrayList<Image> getItemImages() {
-        return item_images;
+        return new ArrayList<>(item_images); // Return a copy to ensure immutability
     }
 
     // Setters
@@ -68,7 +65,7 @@ public class Item {
     }
 
     public void setItemImages(ArrayList<Image> item_images) {
-        this.item_images = item_images;
+        this.item_images = item_images != null ? new ArrayList<>(item_images) : new ArrayList<>();
     }
 
     // Add a single image to the list
