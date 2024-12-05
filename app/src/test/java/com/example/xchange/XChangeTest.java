@@ -100,4 +100,21 @@ class XChangeTest {
         exception = assertThrows(IllegalArgumentException.class, () -> exchange.setDealStatus(""));
         assertEquals("Deal status cannot be null or empty.", exception.getMessage());
     }
+
+    @Test
+    public void testGetFinalizedID() {
+        // Assertions
+        assertEquals(request.getRequestID(), exchange.getFinalizedID());
+    }
+
+    @Test
+    public void testGetDateFinalized() {
+        SimpleCalendar dateFinalized = exchange.getDateFinalized();
+
+        // Assertions
+        assertNotNull(dateFinalized);
+        assertEquals(2024, dateFinalized.getYear());
+        assertEquals(12, dateFinalized.getMonth());
+        assertEquals(2, dateFinalized.getDay());
+    }
 }

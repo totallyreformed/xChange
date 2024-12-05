@@ -15,25 +15,16 @@ public class XChangerTest {
 
     @BeforeEach
     public void setUp() {
-        MainActivity.xChangers = new ArrayList<>();
-        MainActivity.categories = new ArrayList<>();
-        MainActivity.reports = new ArrayList<>();
-        MainActivity.statistics = new HashMap<>();
-        MainActivity.statistics.put("NUMBER OF XCHANGERS", 0);
-        MainActivity.statistics.put("NUMBER OF SUCCEED DEALS", 0);
-        MainActivity.statistics.put("NUMBER OF FAILED DEALS", 0);
-        MainActivity.statistics.put("NUMBER OF REPORTS", 0);
-
         testXChanger = new xChanger("testXChanger", "test@example.com", new SimpleCalendar(2024, 12, 1), "password123", "TestLocation");
         otherXChanger = new xChanger("otherXChanger", "other@example.com", new SimpleCalendar(2024, 12, 1), "password123", "OtherLocation");
 
-        MainActivity.xChangers.add(testXChanger);
-        MainActivity.xChangers.add(otherXChanger);
     }
 
     @Test
     public void testLoginSuccess() {
+
         assertTrue(testXChanger.login("testXChanger", "password123"));
+        assertTrue(testXChanger.login("otherXChanger", "password123"));
     }
 
     @Test
@@ -45,8 +36,8 @@ public class XChangerTest {
     @Test
     public void testRegisterSuccess() {
         xChanger newXChanger = new xChanger("newXChanger", "new@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-        assertTrue(testXChanger.register(newXChanger));
-        assertEquals(3, MainActivity.xChangers.size());
+        assertTrue(newXChanger.login(newXChanger.getUsername(),newXChanger.getPassword()));
+        assertEquals(3, xChanger.getxChangers().size());
     }
 
     @Test
@@ -93,7 +84,7 @@ public class XChangerTest {
         Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
 
         testXChanger.RequestItem(otherXChanger, offeredItem, requestedItem);
-
+        assertEquals(1, otherXChanger.getRequests().size());
         assertEquals(1, testXChanger.getRequests().size());
     }
 
@@ -106,7 +97,7 @@ public class XChangerTest {
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
         testXChanger.acceptRequest(request);
 
-        assertEquals(1, MainActivity.statistics.get("NUMBER OF SUCCEED DEALS"));
+        assertEquals(1, testXChanger.getSucceed_Deals());
     }
 
     @Test
@@ -118,7 +109,7 @@ public class XChangerTest {
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
         testXChanger.rejectRequest(request);
 
-        assertEquals(1, MainActivity.statistics.get("NUMBER OF FAILED DEALS"));
+        assertEquals(1, testXChanger.getFailed_Deals());
     }
 
     @Test
@@ -131,10 +122,7 @@ public class XChangerTest {
 
         Request request = new Request(testXChanger, otherXChanger, item, item, new SimpleCalendar(2024, 12, 1));
         testXChanger.counterOffer(item, "Counteroffer message", request);
-
-        System.out.println("CounterOffers after: " + testXChanger.getCounterOffers().size());
-
-        // Verify counterOffer was added exactly once
+        assertEquals(1, otherXChanger.getCounterOffers().size());
         assertEquals(1, testXChanger.getCounterOffers().size());
     }
 
@@ -143,7 +131,54 @@ public class XChangerTest {
         xChange finalizedDeal = new xChange(new Request(testXChanger, otherXChanger, null, null, new SimpleCalendar(2024, 12, 1)), new SimpleCalendar(2024, 12, 2));
         testXChanger.report(otherXChanger, "Inappropriate behavior", finalizedDeal);
 
-        assertEquals(1, MainActivity.reports.size());
-        assertEquals(1, MainActivity.statistics.get("NUMBER OF REPORTS"));
+        assertEquals(1, testXChanger.getReports().size());
     }
+    @Test
+    public void testAcceptCounteroffer() {
+        ArrayList<Image> images = new ArrayList<>();
+        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
+        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item newrequestedItem=new Item("Shoes","Shoes","Fashion","Used",images);
+
+        Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
+        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newrequestedItem);
+
+        String email = testXChanger.acceptCounteroffer(counteroffer);
+        assertFalse(counteroffer.isActive());
+        assertFalse(request.isActive());
+
+        assertNotNull(email);
+        assertEquals(1, testXChanger.getSucceed_Deals());
+    }
+    @Test
+    public void testRejectCounteroffer() {
+        ArrayList<Image> images = new ArrayList<>();
+        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
+        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item newrequestedItem=new Item("Shoes","Shoes","Fashion","Used",images);
+
+        Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
+        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newrequestedItem);
+
+        testXChanger.rejectCounteroffer(counteroffer);
+        assertFalse(counteroffer.isActive());
+        assertFalse(request.isActive());
+        assertEquals(1, testXChanger.getFailed_Deals());
+    }
+    @Test
+    public void testGetItem() {
+        ArrayList<Image> images = new ArrayList<>();
+        Item item1 = new Item("Tablet", "Android tablet", "Electronics", "New", images);
+        Item item2 = new Item("Phone", "Smartphone", "Electronics", "Used", images);
+
+        testXChanger.getItems().add(item1);
+        testXChanger.getItems().add(item2);
+
+        Item fetchedItem = testXChanger.getItem(item1);
+
+        assertNotNull(fetchedItem);
+        assertEquals("Tablet", fetchedItem.getItemName());
+    }
+
+
 }

@@ -5,99 +5,78 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AdminTest {
     private admin testAdmin;
 
     @BeforeEach
     public void setUp() {
-        // Initialize shared state in MainActivity
-        MainActivity.admins = new ArrayList<>();
-        MainActivity.categories = new ArrayList<>();
-        MainActivity.reports = new ArrayList<>();
-        MainActivity.statistics = new HashMap<>();
-
-        admin.resetNextId(); // Reset the ID generator for consistency across tests
-
+        admin.resetNextId(); // Reset the ID generator for consistency in testing
         testAdmin = new admin("admin1", "admin1@example.com", new SimpleCalendar(2024, 12, 3), "IamtheAdmin", "Location1");
-        MainActivity.admins.add(testAdmin); // Add the admin to the shared admin list
+    }
+
+    @Test
+    public void testAdminInitialization() {
+        assertEquals(1L, testAdmin.getUserId()); // Verify ID initialization
+        assertEquals("admin1", testAdmin.getUsername());
+        assertEquals("admin1@example.com", testAdmin.getEmail());
+        assertEquals("IamtheAdmin", testAdmin.getPassword());
+        assertEquals("Location1", testAdmin.getLocation());
     }
 
     @Test
     public void testNewAdminIdIncrement() {
-        admin newAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location1");
-        assertEquals(2L, newAdmin.getUserId()); // Verify unique ID generation
+        admin newAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location2");
+        assertEquals(2L, newAdmin.getUserId()); // Verify unique ID increment
     }
 
     @Test
     public void testLoginSuccess() {
-        assertTrue(testAdmin.login("admin1", "IamtheAdmin")); // Verify successful login
+        // Set up the admin instance
+        admin testAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2023, 12, 4), "IamtheAdmin", "Location1");
+
+        // Simulate a login attempt
+        assertTrue(testAdmin.login("admin2", "IamtheAdmin")); // Verify successful login
     }
+
 
     @Test
     public void testLoginFailure() {
-        assertFalse(testAdmin.login("admin1", "wrongPassword")); // Incorrect password
-        assertFalse(testAdmin.login("nonexistent", "IamtheAdmin")); // Non-existent user
+        assertFalse(testAdmin.login("admin2", "WrongPassword")); // Incorrect password
+        assertFalse(testAdmin.login("nonexistent", "Password2")); // Non-existent user
     }
 
     @Test
     public void testRegisterSuccess() {
         admin newAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location2");
-        assertTrue(testAdmin.register(newAdmin)); // Register a new admin
-        assertEquals(2, MainActivity.admins.size()); // Verify admin list size
+        assertTrue(testAdmin.login(newAdmin.getUsername(),newAdmin.getPassword())); // Verify registration success
+        assertEquals(2, admin.getadmins().size()); // Verify admin list size
     }
 
     @Test
     public void testRegisterFailure_UserExists() {
-        admin duplicateUsernameAdmin = new admin("admin1", "newemail@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location3");
-        admin duplicateEmailAdmin = new admin("newuser", "admin1@example.com", new SimpleCalendar(2024, 12, 4), "IamtheAdmin", "Location4");
+        admin duplicateUsernameAdmin = new admin("admin1", "newemail@example.com", new SimpleCalendar(2024, 12, 5), "Password3", "Location3");
+        admin duplicateEmailAdmin = new admin("newuser", "admin1@example.com", new SimpleCalendar(2024, 12, 5), "Password3", "Location4");
 
         assertFalse(testAdmin.register(duplicateUsernameAdmin)); // Duplicate username
         assertFalse(testAdmin.register(duplicateEmailAdmin)); // Duplicate email
+        assertEquals(1, admin.getadmins().size()); // Ensure no duplicates added
     }
 
     @Test
-    public void testManageCategories_AddCategory() {
-        testAdmin.manageCategories("Electronics", "add"); // Add a new category
-        assertTrue(MainActivity.categories.contains("Electronics")); // Verify addition
+    public void testAdminsListAfterRegistration() {
+        admin newAdmin1 = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "Password2", "Location2");
+        admin newAdmin2 = new admin("admin3", "admin3@example.com", new SimpleCalendar(2024, 12, 5), "Password3", "Location3");
+
+        assertEquals(3, admin.getadmins().size()); // Ensure all admins are registered
+        assertTrue(admin.getadmins().contains(newAdmin1));
+        assertTrue(admin.getadmins().contains(newAdmin2));
     }
 
     @Test
-    public void testManageCategories_RemoveCategory() {
-        MainActivity.categories.add("Electronics"); // Pre-add category
-        testAdmin.manageCategories("Electronics", "remove"); // Remove category
-        assertFalse(MainActivity.categories.contains("Electronics")); // Verify removal
-    }
-
-    @Test
-    public void testManageCategories_RemoveNonExistentCategory() {
-        int initialSize = MainActivity.categories.size();
-        testAdmin.manageCategories("NonExistent", "remove"); // Attempt to remove non-existent category
-        assertEquals(initialSize, MainActivity.categories.size()); // Verify no changes
-    }
-
-    @Test
-    public void testViewReports() {
-        MainActivity.reports.add("Report 1");
-        MainActivity.reports.add("Report 2");
-
-        // Call the method and verify it executes without exceptions
-        assertDoesNotThrow(() -> testAdmin.viewReports());
-    }
-
-    @Test
-    public void testViewStatistics() {
-        MainActivity.statistics.put("Total Users", 10);
-        MainActivity.statistics.put("Total Trades", 5);
-
-        // Call the method and verify it executes without exceptions
-        assertDoesNotThrow(() -> testAdmin.viewStatistics());
-    }
-
-    @Test
-    public void testGetSpecificStatistic() {
-        MainActivity.statistics.put("Total Users", 10); // Add sample statistic
-        assertEquals(10, testAdmin.getSpecificStatistic("Total Users")); // Verify retrieval
+    public void testResetNextId() {
+        admin.resetNextId();
+        admin newAdmin = new admin("admin2", "admin2@example.com", new SimpleCalendar(2024, 12, 4), "Password2", "Location2");
+        assertEquals(1L, newAdmin.getUserId()); // Verify reset of ID generator
     }
 }
