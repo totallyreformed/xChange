@@ -5,12 +5,13 @@ import java.util.ArrayList;
 public class admin extends User {
 
     private static long nextId = 1;
-    ArrayList<User> admins;
+    private static ArrayList<User> admins=new ArrayList<>();
+
 
     // Constructor using SimpleCalendar
     public admin(String username, String email, SimpleCalendar join_date, String password, String location) {
         super(nextId++, username, email, join_date, password, location);
-        admins=new ArrayList<>();
+        this.register(this);
     }
 
     // Implement login method
@@ -34,6 +35,10 @@ public class admin extends User {
         }
         admins.add(user);
         return true;
+    }
+
+    public static ArrayList<User> getadmins(){
+        return admins;
     }
     //TODO κραταμε τις συναρτησεις για την λογικη οταν βαλουμε τα αρχεια αποθηκευσης
 

@@ -8,7 +8,7 @@ public class xChanger extends User {
     private int numOfratings;
     private float rating;
     ArrayList<String> reports;
-    private ArrayList<User> xchangers;
+    private static ArrayList<User> xchangers=new ArrayList<>();
     private ArrayList<Item> items;
     private ArrayList<Request> requests;
     private ArrayList<Counteroffer> counterOffers;
@@ -27,8 +27,8 @@ public class xChanger extends User {
         this.numOfratings = 0;
         this.sumOfratings = 0.0f;
         this.rating = 0;
-        xchangers=new ArrayList<>();
         this.reports=new ArrayList<>();
+        this.register(this);
     }
 
     // Implement login method
@@ -51,6 +51,10 @@ public class xChanger extends User {
         }
         xchangers.add(user);
         return true;
+    }
+
+    public static ArrayList<User> getxChangers(){
+        return xchangers;
     }
 
     public Float getRating() {
@@ -112,8 +116,6 @@ public class xChanger extends User {
 
     public void RequestItem(xChanger xchanger2, Item offered_item, Item requested_item) {
         Request request = new Request(this, xchanger2, offered_item, requested_item, new SimpleCalendar(2024, 12, 3));
-        this.getRequests().add(request);
-        xchanger2.getRequests().add(request);
     }
 
     public void plusOneSucceedDeal() {
@@ -161,6 +163,15 @@ public class xChanger extends User {
         if (item == null || message == null || request == null) {
             throw new IllegalArgumentException("Item, message, or request cannot be null.");
         }
-        this.counterOffers.add(new Counteroffer(request, message, item));
+        Counteroffer counter=new Counteroffer(request, message, item);
+    }
+    public int getSucceed_Deals(){
+        return this.succeed_Deals;
+    }
+    public int getFailed_Deals(){
+        return this.failed_Deals;
+    }
+    public ArrayList<String> getReports(){
+        return this.reports;
     }
 }

@@ -58,6 +58,7 @@ public class Request {
 
     public void add_to_list() {
         this.getRequestee().getRequests().add(this);
+        this.getRequester().getRequests().add(this);
     }
 
     public boolean isActive() {

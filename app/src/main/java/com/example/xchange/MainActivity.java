@@ -3,6 +3,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.ktx.Firebase;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.jakewharton.threetenabp.AndroidThreeTen;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,12 +32,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        AndroidThreeTen.init(this);
     }
 
     public static HashMap<String, Integer> initialize_Statistics() {
         HashMap<String, Integer> hs = new HashMap<>();
         hs.put("NUMBER OF ALL DEALS", 0);
-        hs.put("NUMBER OF SUCCED DEALS", 0);
+        hs.put("NUMBER OF SUCCEED DEALS", 0);
         hs.put("NUMBER OF FAILED DEALS", 0);
         hs.put("NUMBER OF REPORTS", 0);
         hs.put("NUMBER OF CATEGORIES", MainActivity.categories.size());
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         categories.add("Fashion");
         categories.add("Gadgets");
         categories.add("Housing");
+        categories.add("Electronics");
         return categories;
     }
 }
