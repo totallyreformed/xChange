@@ -1,0 +1,203 @@
+<diagram program="umletino" version="15.1"><zoom_level>6</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>360</x><y>96</y><w>486</w><h>258</h></coordinates><panel_attributes>xChanger
+--
+- rating: float
+- reports: ArrayList&lt;String&gt;
+- xchangers: ArrayList&lt;User&gt; (static)
+- succeed_Deals: int
+- failed_Deals: int
+--
++ xChanger(username: String, email: String, join_date: SimpleCalendar, password: String, location: String)
++ getRating(): Float
++ getItems(): ArrayList&lt;Item&gt;
++ getRequests(): ArrayList&lt;Request&gt;
++ getCounterOffers(): ArrayList&lt;Counteroffer&gt;
++ getFinalized(): ArrayList&lt;xChange&gt;
++ getLocation(): String
++ getSucceed_Deals(): int
++ getFailed_Deals(): int
++ getReports(): ArrayList&lt;String&gt;
++ setRating(rating: Float): void
++ deleteItem(item_for_deletion: Item): void
++ UploadItem(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;): void
++ RequestItem(xchanger2: xChanger, offered_item: Item, requested_item: Item): void
++ acceptRequest(request: Request): String
++ rejectRequest(request: Request): void
++ acceptCounteroffer(counteroffer: Counteroffer): String
++ rejectCounteroffer(counteroffer: Counteroffer): void
++ counterOffer(item: Item, message: String, request: Request): void
++ report(xchanger: xChanger, message: String, finalized: xChange): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>390</x><y>0</y><w>228</w><h>78</h></coordinates><panel_attributes>Admin
+--
+- admins: ArrayList&lt;User&gt;
+--
++ login(username: String, password: String): boolean //Override
++ register(user: User): boolean // Override
++ getadmins(): ArrayList&lt;User&gt;
++ resetNextId(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>348</x><y>30</y><w>54</w><h>54</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;70;70;10</additional_attributes></element><element><id>Relation</id><coordinates><x>348</x><y>120</y><w>24</w><h>36</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;40;20;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>162</x><y>72</y><w>192</w><h>126</h></coordinates><panel_attributes>User
+--
+- user_id: Long
+- username: String
+- email: String
+- joinDate: SimpleCalendar
+- password:String
+- location: String
+--
++ getUserId(): Long
++ getUsername(): String
++ setUsername(username: String): void
++ login(username: String, password: String): boolean
++ register(user: User): boolean
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>78</x><y>132</y><w>96</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+-simpleCalendar</panel_attributes><additional_attributes>140;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>102</y><w>84</w><h>72</h></coordinates><panel_attributes>SimpleCalendar
+--
+- year: int
+- month: int
+- day: int
+--
++ getYear(): int
++ getMonth(): int
++ getDay(): int</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>216</y><w>138</w><h>36</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1..*
+requests &gt;
+upload &gt;
+</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1086</x><y>72</y><w>156</w><h>84</h></coordinates><panel_attributes>Image
+--
+- filePath: String
+- description: String
+--
++ Image(filePath: String, description: String)
++ getFilePath(): String
++ getDescription(): String
++ setFilePath(filePath: String): void
++ setDescription(description: String): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1140</x><y>150</y><w>42</w><h>78</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+- image</panel_attributes><additional_attributes>10;110;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1074</x><y>492</y><w>234</w><h>174</h></coordinates><panel_attributes>CounterOffer
+--
+- counteroffer_id: Long (final)
+- message: String
+- active: Boolean
+--
++ Counteroffer(request: Request, message: String, item: Item)
++ getRequest(): Request
++ getOfferedItem(): Item
++ getRequestedItem(): Item
++ getCounterofferer(): xChanger
++ getCounterofferee(): xChanger
++ getCounterofferID(): Long
++ getMessage(): String
++ isActive(): Boolean
++ setRequestedItem(requested_item: Item): void
++ setOfferedItem(offered_item: Item): void
++ setMessage(message: String): void
++ make_unactive(): void
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>282</x><y>474</y><w>444</w><h>138</h></coordinates><panel_attributes>Request
+--
+- requested_id: Long
+- date_initiated: SimpleCalendar
+- active: boolean
+--
++ Request(requester: xChanger, requestee: xChanger, offered_item: Item, requested_item: Item, date_initiated: SimpleCalendar)
++ getRequestID(): long
++ getRequester(): xChanger
++ getRequestee(): xChanger
++ getOfferedItem(): Item
++ getRequestedItem(): Item
++ getDateInitiated(): SimpleCalendar
++ isActive(): boolean
+ make_unactive(): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>24</x><y>168</y><w>270</w><h>318</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+-simpleCalendar</panel_attributes><additional_attributes>430;510;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>582</x><y>750</y><w>330</w><h>180</h></coordinates><panel_attributes>xChange
+--
+- deal_status: String
+- finalized_id: Long
+- date_finalized: SimpleCalendar
+--
++ xChange(request: Request, date_finalized: SimpleCalendar)
++ xChange(request: Request, counteroffer: Counteroffer, date_finalized: SimpleCalendar)
++ getRequest(): Request
++ getCounterOffer(): Counteroffer
++ getFinalizedID(): Long
++ getDateFinalized(): SimpleCalendar
++ getOfferer(): xChanger
++ getOfferee(): xChanger
++ getOfferedItem(): Item
++ getRequestedItem(): Item
++ setDealStatus(deal_status: String): void
++ getStatus(): String
++ acceptOffer(): String
++ rejectOffer(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>24</x><y>168</y><w>570</w><h>594</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+-simpleCalendar</panel_attributes><additional_attributes>930;970;250;900;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>906</x><y>402</y><w>162</w><h>360</h></coordinates><panel_attributes>lt=-
+m1=    *
+m2=  2	
+r2=-offered item, -requested item
+
+
+
+
+
+</panel_attributes><additional_attributes>10;580;100;10</additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>330</y><w>258</w><h>156</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1
+r2=-offered item, -requested item</panel_attributes><additional_attributes>10;240;410;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1302</x><y>402</y><w>126</w><h>102</h></coordinates><panel_attributes>lt=-
+m1=    1
+r2=-offered item, -requested item	
+m2=  1..*
+</panel_attributes><additional_attributes>10;150;30;10</additional_attributes></element><element><id>Relation</id><coordinates><x>666</x><y>348</y><w>216</w><h>414</h></coordinates><panel_attributes>lt=-
+m1=    1
+r1=-offerer,-offeree
+m2=  1..*
+accept &gt;
+reject &gt;
+</panel_attributes><additional_attributes>10;10;320;670</additional_attributes></element><element><id>UMLClass</id><coordinates><x>966</x><y>216</y><w>486</w><h>192</h></coordinates><panel_attributes>Item
+--
+- item_name: String
+- item_description: String
+- item_category: String
+- item_condition: String
+--
++ Item(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;)
++ getItemName(): String
++ getItemDescription(): String
++ getItemCategory(): String
++ getItemCondition(): String
++ getItemImages(): ArrayList&lt;Image&gt;
++ setItemName(item_name: String): void
++ setItemDescription(item_description: String): void
++ setItemCategory(item_category: String): void
++ setItemCondition(item_condition: String): void
++ setItemImages(item_images: ArrayList&lt;Image&gt;): void
++ addItemImage(image: Image): void
++ addImagesFromFilePaths(filePaths: ArrayList&lt;String&gt;): void
++ editItem(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>354</x><y>348</y><w>126</w><h>138</h></coordinates><panel_attributes>lt=-
+r1=-offerer,-offeree
+m1= 1
+m2=  1..*
+receives v
+initiates v
+
+</panel_attributes><additional_attributes>10;10;170;210</additional_attributes></element><element><id>Relation</id><coordinates><x>648</x><y>606</y><w>156</w><h>156</h></coordinates><panel_attributes>lt=-
+m1=    1
+r2=-reuest
+m2=  1
+leads to
+</panel_attributes><additional_attributes>10;10;210;240</additional_attributes></element><element><id>Relation</id><coordinates><x>906</x><y>660</y><w>180</w><h>126</h></coordinates><panel_attributes>lt=-
+m1=1	
+m2=0..1
+r2=-counteroffer
+leads to
+</panel_attributes><additional_attributes>280;10;10;190</additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>564</y><w>366</w><h>54</h></coordinates><panel_attributes>lt=-
+m1=    1
+r2=-request
+m2=  1
+leads to
+</panel_attributes><additional_attributes>10;60;590;20</additional_attributes></element><element><id>Relation</id><coordinates><x>726</x><y>348</y><w>360</w><h>228</h></coordinates><panel_attributes>lt=-
+m1=							1
+r1=-offerer,-offeree
+m2=  1..*
+initiates &gt;
+receivies &gt;
+</panel_attributes><additional_attributes>10;10;40;60;580;360</additional_attributes></element></diagram>
