@@ -1,0 +1,195 @@
+<diagram program="umletino" version="15.1"><zoom_level>6</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>366</x><y>96</y><w>486</w><h>282</h></coordinates><panel_attributes>xChanger
+--
+- rating: float
+- reports: ArrayList&lt;String&gt;
+- xchangers: ArrayList&lt;User&gt; (static)
+- items: ArrayList&lt;Item&gt;
+- requests: ArrayList&lt;Request&gt;
+- counterOffers: ArrayList&lt;Counteroffer&gt;
+- finalized: ArrayList&lt;xChange&gt;
+- succeed_Deals: int
+- failed_Deals: int
+--
++ xChanger(username: String, email: String, join_date: SimpleCalendar, password: String, location: String)
++ getRating(): Float
++ getItems(): ArrayList&lt;Item&gt;
++ getRequests(): ArrayList&lt;Request&gt;
++ getCounterOffers(): ArrayList&lt;Counteroffer&gt;
++ getFinalized(): ArrayList&lt;xChange&gt;
++ getLocation(): String
++ getSucceed_Deals(): int
++ getFailed_Deals(): int
++ getReports(): ArrayList&lt;String&gt;
++ setRating(rating: Float): void
++ deleteItem(item_for_deletion: Item): void
++ UploadItem(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;): void
++ RequestItem(xchanger2: xChanger, offered_item: Item, requested_item: Item): void
++ acceptRequest(request: Request): String
++ rejectRequest(request: Request): void
++ acceptCounteroffer(counteroffer: Counteroffer): String
++ rejectCounteroffer(counteroffer: Counteroffer): void
++ counterOffer(item: Item, message: String, request: Request): void
++ report(xchanger: xChanger, message: String, finalized: xChange): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>372</x><y>0</y><w>228</w><h>78</h></coordinates><panel_attributes>Admin
+--
+- admins: ArrayList&lt;User&gt;
+--
++ login(username: String, password: String): boolean //Override
++ register(user: User): boolean // Override
++ getadmins(): ArrayList&lt;User&gt;
++ resetNextId(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>330</x><y>30</y><w>54</w><h>54</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;70;70;10</additional_attributes></element><element><id>Relation</id><coordinates><x>330</x><y>120</y><w>48</w><h>36</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;40;60;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>144</x><y>72</y><w>192</w><h>126</h></coordinates><panel_attributes>User
+--
+- user_id: Long
+- username: String
+- email: String
+- joinDate: SimpleCalendar
+- password:String
+- location: String
+--
++ getUserId(): Long
++ getUsername(): String
++ setUsername(username: String): void
++ login(username: String, password: String): boolean
++ register(user: User): boolean
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>78</x><y>138</y><w>78</w><h>18</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>110;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>102</y><w>84</w><h>72</h></coordinates><panel_attributes>SimpleCalendar
+--
+- year: int
+- month: int
+- day: int
+--
++ getYear(): int
++ getMonth(): int
++ getDay(): int</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>846</x><y>222</y><w>348</w><h>72</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1..*
+</panel_attributes><additional_attributes>10;10;560;90</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1488</x><y>72</y><w>156</w><h>84</h></coordinates><panel_attributes>Image
+--
+- filePath: String
+- description: String
+--
++ Image(filePath: String, description: String)
++ getFilePath(): String
++ getDescription(): String
++ setFilePath(filePath: String): void
++ setDescription(description: String): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1470</x><y>150</y><w>90</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;180;130;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1206</x><y>642</y><w>234</w><h>210</h></coordinates><panel_attributes>CounterOffer
+--
+- request: Request (final)
+- offered_item: Item
+- requested_item: Item
+- counterofferer: xChanger (final)
+- counterofferee: xChanger (final)
+- counteroffer_id: Long (final)
+- message: String
+- active: Boolean
+--
++ Counteroffer(request: Request, message: String, item: Item)
++ getRequest(): Request
++ getOfferedItem(): Item
++ getRequestedItem(): Item
++ getCounterofferer(): xChanger
++ getCounterofferee(): xChanger
++ getCounterofferID(): Long
++ getMessage(): String
++ isActive(): Boolean
++ setRequestedItem(requested_item: Item): void
++ setOfferedItem(offered_item: Item): void
++ setMessage(message: String): void
++ make_unactive(): void
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>234</x><y>480</y><w>444</w><h>174</h></coordinates><panel_attributes>Request
+--
+- requester: xChanger (final)
+- requestee: xChanger (final)
+- previous_request_id: Long (static)
+- requested_id: Long
+- offered_item: Item
+- requested_item: Item
+- date_initiated: SimpleCalendar
+- active: boolean
+--
++ Request(requester: xChanger, requestee: xChanger, offered_item: Item, requested_item: Item, date_initiated: SimpleCalendar)
++ getRequestID(): long
++ getRequester(): xChanger
++ getRequestee(): xChanger
++ getOfferedItem(): Item
++ getRequestedItem(): Item
++ getDateInitiated(): SimpleCalendar
++ isActive(): boolean
+ make_unactive(): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>24</x><y>168</y><w>222</w><h>324</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>350;520;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>822</y><w>330</w><h>228</h></coordinates><panel_attributes>xChange
+--
+- deal_status: String
+- request: Request
+- counteroffer: Counteroffer
+- finalized_id: Long
+- date_finalized: SimpleCalendar
+- offerer: xChanger
+- offeree: xChanger
+- offered_item: Item
+- requested_item: Item
+--
++ xChange(request: Request, date_finalized: SimpleCalendar)
++ xChange(request: Request, counteroffer: Counteroffer, date_finalized: SimpleCalendar)
++ getRequest(): Request
++ getCounterOffer(): Counteroffer
++ getFinalizedID(): Long
++ getDateFinalized(): SimpleCalendar
++ getOfferer(): xChanger
++ getOfferee(): xChanger
++ getOfferedItem(): Item
++ getRequestedItem(): Item
++ setDealStatus(deal_status: String): void
++ getStatus(): String
++ acceptOffer(): String
++ rejectOffer(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>24</x><y>168</y><w>600</w><h>666</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>980;1090;220;900;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>936</x><y>426</y><w>258</w><h>408</h></coordinates><panel_attributes>lt=-
+m1=    *
+m2=  2
+</panel_attributes><additional_attributes>10;660;410;10</additional_attributes></element><element><id>Relation</id><coordinates><x>672</x><y>372</y><w>522</w><h>120</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1
+</panel_attributes><additional_attributes>10;180;850;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1434</x><y>444</y><w>132</w><h>210</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1..*
+</panel_attributes><additional_attributes>10;330;180;10</additional_attributes></element><element><id>Relation</id><coordinates><x>684</x><y>372</y><w>228</w><h>462</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1..*
+</panel_attributes><additional_attributes>10;10;340;750</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1188</x><y>258</y><w>486</w><h>192</h></coordinates><panel_attributes>Item
+--
+- item_name: String
+- item_description: String
+- item_category: String
+- item_condition: String
+- item_images: ArrayList&lt;Image&gt;
+--
++ Item(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;)
++ getItemName(): String
++ getItemDescription(): String
++ getItemCategory(): String
++ getItemCondition(): String
++ getItemImages(): ArrayList&lt;Image&gt;
++ setItemName(item_name: String): void
++ setItemDescription(item_description: String): void
++ setItemCategory(item_category: String): void
++ setItemCondition(item_condition: String): void
++ setItemImages(item_images: ArrayList&lt;Image&gt;): void
++ addItemImage(image: Image): void
++ addImagesFromFilePaths(filePaths: ArrayList&lt;String&gt;): void
++ editItem(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>372</y><w>72</w><h>120</h></coordinates><panel_attributes>lt=-
+m1= 1
+m2=  1..*
+</panel_attributes><additional_attributes>10;10;80;180</additional_attributes></element><element><id>Relation</id><coordinates><x>600</x><y>648</y><w>216</w><h>186</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1
+</panel_attributes><additional_attributes>10;10;340;290</additional_attributes></element><element><id>Relation</id><coordinates><x>936</x><y>816</y><w>282</w><h>114</h></coordinates><panel_attributes>lt=-
+m1=1											
+m2=0..1
+</panel_attributes><additional_attributes>450;10;10;170</additional_attributes></element><element><id>Relation</id><coordinates><x>672</x><y>648</y><w>546</w><h>96</h></coordinates><panel_attributes>lt=-
+m1=    1
+m2=  1
+</panel_attributes><additional_attributes>10;10;890;130</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>372</y><w>516</w><h>354</h></coordinates><panel_attributes>lt=-
+m1=							1
+m2=  1..*
+</panel_attributes><additional_attributes>10;10;840;570</additional_attributes></element></diagram>
