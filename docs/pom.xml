@@ -16,12 +16,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<umlet.targetDir>markdown/uml</umlet.targetDir>
 	</properties>
-	<dependency>
-		<groupId>org.junit.jupiter</groupId>
-		<artifactId>junit-jupiter</artifactId>
-		<version>5.x.x</version>
-		<scope>test</scope>
-	</dependency>
 
 
 	<build>
