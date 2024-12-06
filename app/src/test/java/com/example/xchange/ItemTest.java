@@ -10,7 +10,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class ItemTest {
-
     @BeforeEach
     void resetLastItemId() throws Exception {
         // Use reflection to reset the private static lastItemId field before each test
@@ -137,8 +136,8 @@ public class ItemTest {
         // Arrange
         Item item = new Item("Item", "Description", "Category", "Condition", null);
         ArrayList<String> filePaths = new ArrayList<>();
-        filePaths.add("png_path/png2.png");
-        filePaths.add("png_path/png1.png");
+        filePaths.add("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png1.png");
+        filePaths.add("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png2.png");
 
         // Act
         item.addImagesFromFilePaths(filePaths);
@@ -146,8 +145,9 @@ public class ItemTest {
         // Assert
         ArrayList<Image> images = item.getItemImages();
         assertNotNull(images, "Item images should not be null");
+        assertEquals("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png1.png", images.get(0).getFilePath(), "First image file path mismatch");
+        assertEquals("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png2.png", images.get(1).getFilePath(), "Second image file path mismatch");
         assertEquals(2, images.size(), "Item should have 2 images");
-        assertEquals("png_path/png2.png", images.get(0).getFilePath(), "First image file path mismatch");
-        assertEquals("png_path/png1.png", images.get(1).getFilePath(), "Second image file path mismatch");
+
     }
 }

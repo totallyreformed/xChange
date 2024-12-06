@@ -88,6 +88,7 @@ public class Counteroffer {
     // Additional Methods
     private void addToLists() {
         this.counterofferee.getCounterOffers().add(this);
+        this.getCounterofferer().getCounterOffers().add(this);
     }
 
     public void make_unactive() {
