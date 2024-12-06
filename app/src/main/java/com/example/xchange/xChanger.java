@@ -93,10 +93,6 @@ public class xChanger extends User {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public void deleteItem(Item item_for_deletion) {
         this.getItems().removeIf(item -> item == item_for_deletion);
     }
