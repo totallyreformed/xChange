@@ -11,9 +11,11 @@ public class AdminTest {
 
     @BeforeEach
     public void setUp() {
-        admin.resetNextId(); // Reset the ID generator for consistency in testing
+        admin.resetNextId();
+        admin.getadmins().clear(); // Clear the admins list
         testAdmin = new admin("admin1", "admin1@example.com", new SimpleCalendar(2024, 12, 3), "IamtheAdmin", "Location1");
     }
+
 
     @Test
     public void testAdminInitialization() {
