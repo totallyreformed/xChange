@@ -106,8 +106,8 @@ public class xChange {
 
     public void rejectOffer() {
         this.setDealStatus("Rejected");
-        this.offeree.getFinalized().add(this);
-        this.offerer.getFinalized().add(this);
+        this.getOfferee().getFinalized().add(this);
+        this.getOfferer().getFinalized().add(this);
         this.getRequest().make_unactive();
 
         // Check if counteroffer is not null
