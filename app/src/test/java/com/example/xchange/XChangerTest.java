@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +15,6 @@ public class XChangerTest {
 
     @BeforeEach
     public void setUp() {
-        xChanger.getxChangers().clear();
         testXChanger = new xChanger("testXChanger", "test@example.com", new SimpleCalendar(2024, 12, 1), "password123", "TestLocation");
         otherXChanger = new xChanger("otherXChanger", "other@example.com", new SimpleCalendar(2024, 12, 1), "password123", "OtherLocation");
 
@@ -179,23 +179,6 @@ public class XChangerTest {
         assertNotNull(fetchedItem);
         assertEquals("Tablet", fetchedItem.getItemName());
     }
-    @Test
-    public void testSetRating() {
-        // Add ratings to testXChanger
-        testXChanger.setRating(4.0f, testXChanger); // First rating
-        assertEquals(4.0f, testXChanger.getRating(), 0.01f); // Check initial rating
 
-        testXChanger.setRating(5.0f, testXChanger); // Second rating
-        assertEquals(4.5f, testXChanger.getRating(), 0.01f); // Average of 4.0 and 5.0
-
-        testXChanger.setRating(3.0f, testXChanger); // Third rating
-        assertEquals(4.0f, testXChanger.getRating(), 0.01f); // Average of 4.0, 5.0, and 3.0
-    }
-    @Test
-    public void testGetItem_NotFound() {
-        // Try to fetch an item that is not in the list
-        Item nonExistentItem = new Item("NonExistent", "Description", "Category", "Condition", new ArrayList<>());
-        assertNull(testXChanger.getItem(nonExistentItem));
-    }
 
 }

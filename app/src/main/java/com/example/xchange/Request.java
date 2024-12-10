@@ -4,7 +4,7 @@ public class Request {
     private final xChanger requester;
     private final xChanger requestee;
     private static Long previous_request_id = 1L; // Static field to track the last used ID
-    private final Long requested_id;
+    private Long requested_id;
     private Item offered_item;
     private Item requested_item;
     private SimpleCalendar date_initiated;

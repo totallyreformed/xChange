@@ -87,10 +87,10 @@ public class xChange {
     // Methods to accept or reject the offer
     public String acceptOffer() {
         this.setDealStatus("Accepted");
-        this.getOfferer().deleteItem(this.getRequestedItem());
-        this.getOfferee().deleteItem(this.getOfferedItem());
-        this.getOfferee().getFinalized().add(this);
-        this.getOfferer().getFinalized().add(this);
+        this.offerer.deleteItem(this.getRequestedItem());
+        this.offeree.deleteItem(this.getOfferedItem());
+        this.offeree.getFinalized().add(this);
+        this.offerer.getFinalized().add(this);
         this.getRequest().make_unactive();
 
         // Check if counteroffer is not null
