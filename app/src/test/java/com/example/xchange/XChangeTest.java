@@ -33,8 +33,9 @@ class XChangeTest {
 
     @Test
     public void testAcceptOffer() {
-        // Accept the offer
-        String offereeEmail = exchange.acceptOffer();
+        // Accept the offer and add a rating
+        float ratingValue = 4.5f;
+        String offereeEmail = exchange.acceptOffer(ratingValue);
 
         // Assertions
         assertEquals("Accepted", exchange.getStatus());
@@ -45,12 +46,21 @@ class XChangeTest {
         assertEquals("offeree@example.com", offereeEmail);
         assertEquals(1, offerer.getFinalized().size());
         assertEquals(1, offeree.getFinalized().size());
+
+        // Validate Rating
+        ArrayList<Rating> ratings = offeree.getRatings();
+        assertEquals(1, ratings.size());
+        Rating rating = ratings.get(0);
+        assertEquals(ratingValue, rating.getRating());
+        assertEquals(offerer, rating.getRater());
+        assertEquals(offeree, rating.getRatee());
     }
 
     @Test
     public void testRejectOffer() {
-        // Reject the offer
-        exchange.rejectOffer();
+        // Reject the offer and add a rating
+        float ratingValue = 2.0f;
+        exchange.rejectOffer(ratingValue);
 
         // Assertions
         assertEquals("Rejected", exchange.getStatus());
@@ -58,6 +68,14 @@ class XChangeTest {
         assertTrue(offerer.getFinalized().contains(exchange)); // Exchange added to offerer's finalized list
         assertEquals(1, offeree.getFinalized().size());
         assertEquals(1, offerer.getFinalized().size());
+
+        // Validate Rating
+        ArrayList<Rating> ratings = offeree.getRatings();
+        assertEquals(1, ratings.size());
+        Rating rating = ratings.get(0);
+        assertEquals(ratingValue, rating.getRating());
+        assertEquals(offerer, rating.getRater());
+        assertEquals(offeree, rating.getRatee());
     }
 
     @Test

@@ -1,6 +1,7 @@
-<diagram program="umletino" version="15.1"><zoom_level>12</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>600</x><y>192</y><w>972</w><h>372</h></coordinates><panel_attributes>xChanger
+<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>400</x><y>168</y><w>648</w><h>264</h></coordinates><panel_attributes>xChanger
 --
-- rating: float
+-averageRating: float
+-totalRatings: int
 - reports: ArrayList&lt;String&gt;
 - xchangers: ArrayList&lt;User&gt; (static)
 - succeed_Deals: int
@@ -19,14 +20,14 @@
 + report(xchanger: xChanger, message: String, finalized: xChange): void
 +plusOneSucceedDeal():void
 +pluOneFailedDeal():void
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>660</x><y>0</y><w>684</w><h>132</h></coordinates><panel_attributes>Admin
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>440</x><y>56</y><w>456</w><h>88</h></coordinates><panel_attributes>Admin
 --
 - admins: ArrayList&lt;User&gt;
 --
 +admin(String username, String email, SimpleCalendar join_date, String password, String location)
 + login(username: String, password: String): boolean //Override
 + register(user: User): boolean // Override
-+ resetNextId(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>552</x><y>60</y><w>132</w><h>108</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;70;90;10</additional_attributes></element><element><id>Relation</id><coordinates><x>552</x><y>240</y><w>72</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;40;40;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>180</x><y>144</y><w>384</w><h>180</h></coordinates><panel_attributes>User
++ resetNextId(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>368</x><y>96</y><w>88</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;70;90;10</additional_attributes></element><element><id>Relation</id><coordinates><x>368</x><y>216</y><w>48</w><h>48</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;40;40;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>120</x><y>152</y><w>256</w><h>120</h></coordinates><panel_attributes>User
 --
 - user_id: Long
 - username: String
@@ -38,26 +39,26 @@
 + login(username: String, password: String): boolean
 + register(user: User): boolean
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>156</x><y>312</y><w>144</w><h>516</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
--joinDate</panel_attributes><additional_attributes>90;10;10;410</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>804</y><w>168</w><h>84</h></coordinates><panel_attributes>SimpleCalendar
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>104</x><y>264</y><w>96</w><h>344</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+-joinDate</panel_attributes><additional_attributes>90;10;10;410</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>592</y><w>112</w><h>56</h></coordinates><panel_attributes>SimpleCalendar
 --
 - year: int
 - month: int
 - day: int
---</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1560</x><y>432</y><w>276</w><h>72</h></coordinates><panel_attributes>lt=-
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1040</x><y>344</y><w>184</w><h>48</h></coordinates><panel_attributes>lt=-
 m1=    1
 m2=  1..*
 requests &gt;
 upload &gt;
-</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>2052</x><y>216</y><w>312</w><h>96</h></coordinates><panel_attributes>Image
+</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1368</x><y>200</y><w>208</w><h>64</h></coordinates><panel_attributes>Image
 --
 - filePath: String
 - description: String
 --
 + Image(filePath: String, description: String)
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>2160</x><y>300</y><w>84</w><h>156</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-- image</panel_attributes><additional_attributes>10;110;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1896</x><y>828</y><w>468</w><h>168</h></coordinates><panel_attributes>CounterOffer
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1440</x><y>256</y><w>56</w><h>104</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+- image</panel_attributes><additional_attributes>10;110;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1264</x><y>608</y><w>312</w><h>112</h></coordinates><panel_attributes>CounterOffer
 --
 - counteroffer_id: Long (final)
 - message: String
@@ -67,7 +68,7 @@ upload &gt;
 + isActive(): Boolean
 + make_unactive(): void
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>468</x><y>900</y><w>888</w><h>192</h></coordinates><panel_attributes>Request
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>312</x><y>656</y><w>592</w><h>128</h></coordinates><panel_attributes>Request
 --
 - requested_id: Long
 - date_initiated: SimpleCalendar
@@ -78,8 +79,8 @@ upload &gt;
  make_unactive(): void
 +add_to_lists(): void
 +resetId(): void
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>156</x><y>864</y><w>336</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
--date_initiated</panel_attributes><additional_attributes>260;30;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1116</x><y>1368</y><w>660</w><h>168</h></coordinates><panel_attributes>xChange
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>104</x><y>632</y><w>224</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+-date_initiated</panel_attributes><additional_attributes>260;30;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>744</x><y>968</y><w>440</w><h>112</h></coordinates><panel_attributes>xChange
 --
 - deal_status: String
 - finalized_id: Long
@@ -88,8 +89,8 @@ upload &gt;
 + xChange(request: Request, date_finalized: SimpleCalendar)
 + xChange(request: Request, counteroffer: Counteroffer, date_finalized: SimpleCalendar)
 + acceptOffer(): String
-+ rejectOffer(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>156</x><y>876</y><w>984</w><h>516</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
--date_initiated</panel_attributes><additional_attributes>800;410;230;300;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1764</x><y>612</y><w>276</w><h>780</h></coordinates><panel_attributes>lt=-
++ rejectOffer(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>104</x><y>640</y><w>656</w><h>344</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+-date_initiated</panel_attributes><additional_attributes>800;410;230;300;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1176</x><y>464</y><w>184</w><h>520</h></coordinates><panel_attributes>lt=-
 m1=    *
 m2=  2	
 r2=-offered item, -requested item
@@ -98,20 +99,20 @@ r2=-offered item, -requested item
 
 
 
-</panel_attributes><additional_attributes>10;630;40;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1212</x><y>528</y><w>624</w><h>396</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;630;40;10</additional_attributes></element><element><id>Relation</id><coordinates><x>808</x><y>408</y><w>416</w><h>264</h></coordinates><panel_attributes>lt=-
 m1=    1
 m2=  1
-r2=-offered item, -requested item</panel_attributes><additional_attributes>10;310;500;10</additional_attributes></element><element><id>Relation</id><coordinates><x>2352</x><y>612</y><w>384</w><h>240</h></coordinates><panel_attributes>lt=-
+r2=-offered item, -requested item</panel_attributes><additional_attributes>10;310;500;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1568</x><y>464</y><w>256</w><h>160</h></coordinates><panel_attributes>lt=-
 m1=    1
 r2=-offered item, -requested item	
 m2=  1..*
-</panel_attributes><additional_attributes>10;180;140;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1212</x><y>552</y><w>504</w><h>840</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;180;140;10</additional_attributes></element><element><id>Relation</id><coordinates><x>808</x><y>424</y><w>336</w><h>560</h></coordinates><panel_attributes>lt=-
 m1=    1
 r1=-offerer,-offeree
 m2=  1..*
 accept &gt;
 reject &gt;
-</panel_attributes><additional_attributes>10;10;380;680</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1812</x><y>432</y><w>972</w><h>192</h></coordinates><panel_attributes>Item
+</panel_attributes><additional_attributes>10;10;380;680</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1208</x><y>344</y><w>648</w><h>128</h></coordinates><panel_attributes>Item
 --
 - item_name: String
 - item_description: String
@@ -122,32 +123,41 @@ reject &gt;
 + addItemImage(image: Image): void
 + addImagesFromFilePaths(filePaths: ArrayList&lt;String&gt;): void
 + editItem(item_name: String, item_description: String, item_category: String, item_condition: String, item_images: ArrayList&lt;Image&gt;): void
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>588</x><y>552</y><w>276</w><h>372</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>392</x><y>424</y><w>184</w><h>248</h></coordinates><panel_attributes>lt=-
 r1=-offerer,-offeree
 m1= 1
 m2=  1..*
 receives v
 initiates v
 
-</panel_attributes><additional_attributes>10;10;190;290</additional_attributes></element><element><id>Relation</id><coordinates><x>1200</x><y>1080</y><w>324</w><h>312</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;190;290</additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>776</y><w>216</w><h>208</h></coordinates><panel_attributes>lt=-
 m1=    1
 r2=-request
 m2=  1
 leads to
-</panel_attributes><additional_attributes>10;10;250;240</additional_attributes></element><element><id>Relation</id><coordinates><x>1764</x><y>984</y><w>252</w><h>456</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;250;240</additional_attributes></element><element><id>Relation</id><coordinates><x>1176</x><y>712</y><w>168</w><h>304</h></coordinates><panel_attributes>lt=-
 m1=1	
 m2=0..1
 r2=-counteroffer
 leads to
-</panel_attributes><additional_attributes>190;10;10;360</additional_attributes></element><element><id>Relation</id><coordinates><x>1344</x><y>972</y><w>576</w><h>132</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>190;10;10;360</additional_attributes></element><element><id>Relation</id><coordinates><x>896</x><y>704</y><w>384</w><h>88</h></coordinates><panel_attributes>lt=-
 m1=    1
 r2=-request
 m2=  1
 leads to
-</panel_attributes><additional_attributes>10;80;460;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1332</x><y>552</y><w>588</w><h>432</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;80;460;20</additional_attributes></element><element><id>Relation</id><coordinates><x>888</x><y>424</y><w>392</w><h>288</h></coordinates><panel_attributes>lt=-
 m1=							1
 r1=-offerer,-offeree
 m2=  1..*
 initiates &gt;
 receivies &gt;
-</panel_attributes><additional_attributes>10;10;120;120;470;340</additional_attributes></element></diagram>
+</panel_attributes><additional_attributes>10;10;120;120;470;340</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1040</x><y>16</y><w>104</w><h>88</h></coordinates><panel_attributes>Rating
+--
+-rating:float
+-rater:xChanger
+-ratee:xChanger
+-request:Request
+-xchange:xChange</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1032</x><y>96</y><w>56</w><h>88</h></coordinates><panel_attributes>lt=-
+m1=1
+-rating
+m2=*</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1040</x><y>96</y><w>96</w><h>112</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;120;100;10</additional_attributes></element></diagram>

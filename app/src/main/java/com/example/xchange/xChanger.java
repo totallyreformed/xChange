@@ -4,11 +4,10 @@ import java.util.ArrayList;
 
 public class xChanger extends User {
     private static Long nextId = 10L;
-    private Float sumOfratings;
-    private int numOfratings;
-    private float rating;
-    ArrayList<String> reports;
-    private static ArrayList<User> xchangers=new ArrayList<>();
+    private float averageRating;
+    private int totalRatings;
+    private ArrayList<Rating> ratings = new ArrayList<>();
+    private ArrayList<String> reports;
     private ArrayList<Item> items;
     private ArrayList<Request> requests;
     private ArrayList<Counteroffer> counterOffers;
@@ -17,6 +16,8 @@ public class xChanger extends User {
     private int succeed_Deals;
     private int failed_Deals;
 
+    private static ArrayList<User> xchangers = new ArrayList<>();
+
     xChanger(String username, String email, SimpleCalendar join_date, String password, String location) {
         super(nextId++, username, email, join_date, password, location);
         items = new ArrayList<>();
@@ -24,10 +25,9 @@ public class xChanger extends User {
         counterOffers = new ArrayList<>();
         finalized = new ArrayList<>();
         this.location = location;
-        this.numOfratings = 0;
-        this.sumOfratings = 0.0f;
-        this.rating = 0;
-        this.reports=new ArrayList<>();
+        this.averageRating = 0;
+        this.totalRatings = 0;
+        this.reports = new ArrayList<>();
         this.register(this);
     }
 
@@ -57,21 +57,23 @@ public class xChanger extends User {
         return xchangers;
     }
 
-    public Float getRating() {
-        return rating;
+    public float getAverageRating() {
+        return averageRating;
     }
 
-    public void setRating(Float rating, xChanger xchanger) {
-        xchanger.numOfratings++;
-        xchanger.sumOfratings += rating;
-        xchanger.rating = xchanger.sumOfratings / xchanger.numOfratings;
+    public int getTotalRatings() {
+        return totalRatings;
     }
 
-    public void setRating(Float rating) {
-        this.numOfratings++;
-        this.sumOfratings += rating;
-        this.rating = this.sumOfratings / this.numOfratings;
+    public void addRating(Rating rating) {
+        if (rating != null) {
+            this.ratings.add(rating);
+            this.totalRatings++;
+            this.averageRating = (this.averageRating * (this.totalRatings - 1) + rating.getRating()) / this.totalRatings;
+        }
     }
+
+
 
     public ArrayList<Item> getItems() {
         return this.items;
@@ -125,35 +127,35 @@ public class xChanger extends User {
 
     public void report(xChanger xchanger, String message, xChange finalized) {
         if (finalized.getStatus() != null) {
-            xchanger.setRating((float) (xchanger.getRating() - 0.2));
+//            xchanger.setRating((float) (xchanger.getRating() - 0.2));
             message = "User " + this.getUsername() + " reported user " + xchanger.getUsername();
         }
         this.reports.add(message);
     }
 
-    public String acceptRequest(Request request) {
+    public String acceptRequest(Request request,float rating) {
         String email = "";
         xChange deal = new xChange(request, new SimpleCalendar(2024, 12, 3));
-        email = deal.acceptOffer();
+        email = deal.acceptOffer(rating);
         return email;
     }
 
 
-    public String acceptCounteroffer(Counteroffer counteroffer) {
+    public String acceptCounteroffer(Counteroffer counteroffer,float rating) {
         String email = "";
         xChange deal = new xChange(counteroffer.getRequest(), counteroffer, new SimpleCalendar(2024, 12, 3));
-        email = deal.acceptOffer();
+        email = deal.acceptOffer(rating);
         return email;
     }
 
-    public void rejectRequest(Request request) {
+    public void rejectRequest(Request request,float rating) {
         xChange deal = new xChange(request, new SimpleCalendar(2024, 12, 3));
-        deal.rejectOffer();
+        deal.rejectOffer(rating);
     }
 
-    public void rejectCounteroffer(Counteroffer counteroffer) {
+    public void rejectCounteroffer(Counteroffer counteroffer,float rating) {
         xChange deal = new xChange(counteroffer.getRequest(), counteroffer, new SimpleCalendar(2024, 12, 3));
-        deal.rejectOffer();
+        deal.rejectOffer(rating);
     }
 
     public void counterOffer(Item item, String message, Request request) {
@@ -171,4 +173,6 @@ public class xChanger extends User {
     public ArrayList<String> getReports(){
         return this.reports;
     }
+    public ArrayList<Rating> getRatings(){return this.ratings;}
+
 }
