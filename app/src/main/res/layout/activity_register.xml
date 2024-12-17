@@ -22,19 +22,21 @@
             android:id="@+id/logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-170dp"
+            android:layout_marginTop="-250dp"
             android:src="@drawable/logo" />
 
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/login_card"
-        android:layout_width="358dp"
-        android:layout_height="393dp"
+        android:layout_width="355dp"
+        android:layout_height="464dp"
         android:layout_below="@id/top_section"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="-230dp"
+        android:layout_marginTop="-290dp"
         android:layout_marginRight="20dp"
+        android:layout_marginBottom="8dp"
         android:background="@android:color/white"
         android:elevation="8dp"
         android:padding="20dp"
@@ -42,7 +44,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="396dp"
+            android:layout_height="451dp"
             android:orientation="vertical">
 
             <TextView
@@ -52,7 +54,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:padding="12dp"
-                android:text="Login"
+                android:text="Register"
                 android:textColor="@color/button"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -67,12 +69,30 @@
                 android:inputType="text" />
 
             <EditText
+                android:id="@+id/email"
+                android:layout_width="312dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:hint="Email"
+                android:inputType="text" />
+
+            <EditText
                 android:id="@+id/password"
+                android:layout_width="312dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:hint="Password"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/confirm_password"
                 android:layout_width="310dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:hint="Password"
+                android:hint="Confirm Password"
                 android:inputType="textPassword" />
 
             <Button
@@ -82,7 +102,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/button"
-                android:text="LOGIN"
+                android:text="Register"
                 android:textColor="@android:color/white" />
 
             <TextView
@@ -91,7 +111,7 @@
                 android:layout_height="34dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="30dp"
-                android:text="Not Registered yet? Click Here to SignUp"
+                android:text="Already Registered? Click here to Sign In"
                 android:textColor="@color/button" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

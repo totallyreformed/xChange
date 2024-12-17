@@ -6,7 +6,7 @@ public class xChanger extends User {
     private static Long nextId = 10L;
     private float averageRating;
     private int totalRatings;
-    private ArrayList<Rating> ratings = new ArrayList<>();
+    private ArrayList<Rating> ratings;
     private ArrayList<String> reports;
     private ArrayList<Item> items;
     private ArrayList<Request> requests;
@@ -29,6 +29,7 @@ public class xChanger extends User {
         this.totalRatings = 0;
         this.reports = new ArrayList<>();
         this.register(this);
+        this.ratings= new ArrayList<>();
     }
 
     // Implement login method
