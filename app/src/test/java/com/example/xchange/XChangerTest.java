@@ -14,41 +14,10 @@ public class XChangerTest {
 
     @BeforeEach
     public void setUp() {
-        xChanger.getxChangers().clear();
         testXChanger = new xChanger("testXChanger", "test@example.com", new SimpleCalendar(2024, 12, 1), "password123", "TestLocation");
         otherXChanger = new xChanger("otherXChanger", "other@example.com", new SimpleCalendar(2024, 12, 1), "password123", "OtherLocation");
 
     }
-
-    @Test
-    public void testLoginSuccess() {
-
-        assertTrue(testXChanger.login("testXChanger", "password123"));
-        assertTrue(testXChanger.login("otherXChanger", "password123"));
-    }
-
-    @Test
-    public void testLoginFailure() {
-        assertFalse(testXChanger.login("wrongUsername", "password123"));
-        assertFalse(testXChanger.login("testXChanger", "wrongPassword"));
-    }
-
-    @Test
-    public void testRegisterSuccess() {
-        xChanger newXChanger = new xChanger("newXChanger", "new@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-        assertTrue(newXChanger.login(newXChanger.getUsername(),newXChanger.getPassword()));
-        assertEquals(3, xChanger.getxChangers().size());
-    }
-
-    @Test
-    public void testRegisterFailure_DuplicateUser() {
-        xChanger duplicateUsername = new xChanger("testXChanger", "new@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-        xChanger duplicateEmail = new xChanger("newXChanger", "test@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-
-        assertFalse(testXChanger.register(duplicateUsername));
-        assertFalse(testXChanger.register(duplicateEmail));
-    }
-
 
     @Test
     public void testUploadItem() {

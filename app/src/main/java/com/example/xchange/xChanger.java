@@ -3,7 +3,6 @@ package com.example.xchange;
 import java.util.ArrayList;
 
 public class xChanger extends User {
-    private static Long nextId = 10L;
     private float averageRating;
     private int totalRatings;
     private ArrayList<Rating> ratings;
@@ -12,52 +11,22 @@ public class xChanger extends User {
     private ArrayList<Request> requests;
     private ArrayList<Counteroffer> counterOffers;
     private ArrayList<xChange> finalized;
-    private String location;
-    private int succeed_Deals;
-    private int failed_Deals;
+    private int succeedDeals;
+    private int failedDeals;
 
-    private static ArrayList<User> xchangers = new ArrayList<>();
-
-    xChanger(String username, String email, SimpleCalendar join_date, String password, String location) {
-        super(nextId++, username, email, join_date, password, location);
-        items = new ArrayList<>();
-        requests = new ArrayList<>();
-        counterOffers = new ArrayList<>();
-        finalized = new ArrayList<>();
-        this.location = location;
+    public xChanger(String username, String email, SimpleCalendar join_date, String password, String location) {
+        super(username, email, join_date, password, location, "xChanger");
         this.averageRating = 0;
         this.totalRatings = 0;
+        this.ratings = new ArrayList<>();
         this.reports = new ArrayList<>();
-        this.register(this);
-        this.ratings= new ArrayList<>();
+        this.items = new ArrayList<>();
+        this.requests = new ArrayList<>();
+        this.counterOffers = new ArrayList<>();
+        this.finalized = new ArrayList<>();
+        this.succeedDeals=0;
+        this.failedDeals=0;
     }
-
-    // Implement login method
-    @Override
-    public boolean login(String username, String password) {
-        for (User user : xchangers) {
-            if (user.getPassword().equals(password) && user.getUsername().equals(username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean register(User user) {
-        for (User temp_user : xchangers) {
-            if (temp_user.getUsername().equals(user.getUsername()) || temp_user.getEmail().equals(user.getEmail())) {
-                return false;
-            }
-        }
-        xchangers.add(user);
-        return true;
-    }
-
-    public static ArrayList<User> getxChangers(){
-        return xchangers;
-    }
-
     public float getAverageRating() {
         return averageRating;
     }
@@ -73,8 +42,6 @@ public class xChanger extends User {
             this.averageRating = (this.averageRating * (this.totalRatings - 1) + rating.getRating()) / this.totalRatings;
         }
     }
-
-
 
     public ArrayList<Item> getItems() {
         return this.items;
@@ -93,20 +60,15 @@ public class xChanger extends User {
     }
 
     public String getLocation() {
-        return location;
+        return this.getLocation();
     }
 
-    public void deleteItem(Item item_for_deletion) {
-        this.getItems().removeIf(item -> item == item_for_deletion);
+    public void deleteItem(Item item) {
+        this.items.removeIf(i -> i.equals(item));
     }
 
-    public Item getItem(Item item_to_get) {
-        for (Item item : this.getItems()) {
-            if (item == item_to_get) {
-                return item;
-            }
-        }
-        return null;
+    public Item getItem(Item item) {
+        return this.items.stream().filter(i -> i.equals(item)).findFirst().orElse(null);
     }
 
     public void UploadItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
@@ -119,11 +81,11 @@ public class xChanger extends User {
     }
 
     public void plusOneSucceedDeal() {
-        this.succeed_Deals++;
+        this.succeedDeals++;
     }
 
     public void plusOneFailedDeal() {
-        this.failed_Deals++;
+        this.failedDeals++;
     }
 
     public void report(xChanger xchanger, String message, xChange finalized) {
@@ -166,10 +128,10 @@ public class xChanger extends User {
         Counteroffer counter=new Counteroffer(request, message, item);
     }
     public int getSucceed_Deals(){
-        return this.succeed_Deals;
+        return this.succeedDeals;
     }
     public int getFailed_Deals(){
-        return this.failed_Deals;
+        return this.failedDeals;
     }
     public ArrayList<String> getReports(){
         return this.reports;
