@@ -2,6 +2,8 @@ package com.example.xchange.repository;
 
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.dao.UserDao;
@@ -58,7 +60,7 @@ public class UserRepository {
         executor.execute(() -> {
             try {
                 // Check for duplicates before inserting
-                User existingUser = userDao.findByUsername(newUser.getUsername());
+                User existingUser = userDao.findByUsername_initial(newUser.getUsername());
                 if (existingUser != null) {
                     callback.onFailure("Username already exists");
                 } else {
@@ -69,5 +71,8 @@ public class UserRepository {
                 callback.onFailure("Registration failed: " + e.getMessage());
             }
         });
+    }
+    public LiveData<User> getUserByUsername(String username) {
+        return userDao.findByUsername(username);
     }
 }

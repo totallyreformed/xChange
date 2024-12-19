@@ -43,4 +43,7 @@ public class LoginViewModel extends ViewModel implements LoginPresenter.LoginVie
     public void onLoginFailure(String message) {
         loginFailure.postValue(message);
     }
+    public LiveData<User> getUserByUsername(String username) {
+        return presenter.getUserByUsername(username);
+    }
 }

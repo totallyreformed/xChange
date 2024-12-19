@@ -2,6 +2,8 @@ package com.example.xchange.Login;
 
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.xchange.User;
 import com.example.xchange.repository.UserRepository;
 
@@ -45,4 +47,9 @@ public class LoginPresenter {
             }
         });
     }
+
+    public LiveData<User> getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username);
+    }
+
 }

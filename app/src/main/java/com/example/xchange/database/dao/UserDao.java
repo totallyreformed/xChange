@@ -1,5 +1,6 @@
 package com.example.xchange.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -27,5 +28,8 @@ public interface UserDao {
     User loginadmin(String username, String password);
 
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
-    User findByUsername(String username);
+    LiveData<User> findByUsername(String username);
+
+    @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
+    User findByUsername_initial(String username);
 }
