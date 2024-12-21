@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.getLoginSuccess().observe(this, user -> {
             if (user != null) {
                 Toast.makeText(this, "Login Successful: " + user.getUsername(), Toast.LENGTH_SHORT).show();
-                Log.d("LoginActivity", "Username: " + user.getUsername());
 
                 // Pass the username to the next activity
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -51,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish(); // Close LoginActivity
             } else {
-                Log.e("LoginActivity", "User is null after login success");
                 Toast.makeText(this, "Unexpected error occurred", Toast.LENGTH_SHORT).show();
             }
         });

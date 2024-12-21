@@ -1,8 +1,11 @@
 package com.example.xchange;
 
+import com.example.xchange.database.dao.ItemDao;
+
 import java.util.ArrayList;
 
 public class xChanger extends User {
+    private ItemDao itemDao;
     private float averageRating;
     private int totalRatings;
     private ArrayList<Rating> ratings;
@@ -73,7 +76,7 @@ public class xChanger extends User {
 
     public void UploadItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
         Item item = new Item(item_name, item_description, item_category, item_condition, item_images);
-        this.getItems().add(item);
+        new Thread(() -> itemDao.insertItem(item)).start();
     }
 
     public void RequestItem(xChanger xchanger2, Item offered_item, Item requested_item) {
