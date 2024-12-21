@@ -20,7 +20,7 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE user_type = 'admin'")
     List<User> getAllAdmins();
 
-    @Query("SELECT * FROM users WHERE username = :username AND password = :password AND user_type = 'xChanger'")
+    @Query("SELECT * FROM users WHERE username = :username AND password = :password")
     User loginxChanger(String username, String password);
 
     // Login for admin using username and password

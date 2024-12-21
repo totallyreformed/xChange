@@ -14,6 +14,7 @@ import com.example.xchange.User;
 import com.example.xchange.database.CalendarConverter;
 
 import com.example.xchange.database.dao.UserDao;
+import com.example.xchange.xChanger;
 
 import java.util.concurrent.Executors;
 
@@ -44,14 +45,12 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-
-            // Insert default users using the DAO
             Executors.newSingleThreadExecutor().execute(() -> {
                 UserDao dao = INSTANCE.userDao();
 
                 // Add default users
-                dao.insertUser(new User("admin", "admin@example.com", new SimpleCalendar(2024,18,12), "IamtheAdmin", "HQ", "admin"));
-                dao.insertUser(new User("testXChanger", "xchanger@example.com", new SimpleCalendar(2024,18,12), "password123", "NY", "xChanger"));
+                dao.insertUser(new User("admin", "admin@example.com", null, "IamtheAdmin", "HQ", "admin"));
+                dao.insertUser(new xChanger("testXChanger", "xchanger@example.com", null, "password123", "NY"));
             });
         }
     };

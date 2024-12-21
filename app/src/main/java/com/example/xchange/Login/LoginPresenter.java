@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 
 import com.example.xchange.User;
-import com.example.xchange.repository.UserRepository;
+import com.example.xchange.database.UserRepository;
 
 public class LoginPresenter {
     private final UserRepository userRepository;

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.User;
+import com.example.xchange.database.AppDatabase;
 
 public class LoginViewModel extends ViewModel implements LoginPresenter.LoginView {
 
@@ -16,6 +17,7 @@ public class LoginViewModel extends ViewModel implements LoginPresenter.LoginVie
 
     public LoginViewModel(Context context) {
         this.presenter = new LoginPresenter(context);
+        AppDatabase db = AppDatabase.getInstance(context);
     }
 
     public void loginAsXChanger(String username, String password) {

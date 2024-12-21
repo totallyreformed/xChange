@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.User;
-import com.example.xchange.repository.UserRepository;
+import com.example.xchange.database.UserRepository;
 
 public class RegisterViewModel extends ViewModel {
     private final UserRepository repository;

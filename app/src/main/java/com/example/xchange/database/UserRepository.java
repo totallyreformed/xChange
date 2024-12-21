@@ -1,4 +1,4 @@
-package com.example.xchange.repository;
+package com.example.xchange.database;
 
 import android.content.Context;
 
@@ -10,6 +10,7 @@ import com.example.xchange.database.dao.UserDao;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 
 public class UserRepository {
     private final UserDao userDao;
@@ -41,9 +42,9 @@ public class UserRepository {
                 callback.onFailure("Invalid xChanger credentials");
             }
         });
+
     }
 
-    // Login as Admin
     public void loginAsAdmin(String username, String password, LoginCallback callback) {
         executor.execute(() -> {
             User user = userDao.loginadmin(username, password);
@@ -55,7 +56,6 @@ public class UserRepository {
         });
     }
 
-    // Register a new user
     public void registerUser(User newUser, RegisterCallback callback) {
         executor.execute(() -> {
             try {

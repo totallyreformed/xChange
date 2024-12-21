@@ -1,7 +1,7 @@
 package com.example.xchange.Register;
 
 import com.example.xchange.User;
-import com.example.xchange.repository.UserRepository;
+import com.example.xchange.database.UserRepository;
 
 public class RegisterPresenter {
 

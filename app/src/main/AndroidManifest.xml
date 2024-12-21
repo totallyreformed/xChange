@@ -3,12 +3,12 @@
     package="com.example.xchange">
 
     <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
-        <activity
-            android:name=".Register.RegisterActivity"
-            android:exported="false" />
+
         <!-- LoginActivity setup as the Launcher Activity -->
         <activity
             android:name=".Login.LoginActivity"
@@ -17,12 +17,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- MainActivity setup as a regular Activity -->
+        </activity>
+
+        <!-- RegisterActivity for user registration -->
+        <activity
+            android:name=".Register.RegisterActivity"
+            android:exported="false" />
+
+        <!-- MainActivity as a regular activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
     </application>
 
 </manifest>
