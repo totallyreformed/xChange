@@ -62,9 +62,6 @@ public class xChanger extends User {
         return this.finalized;
     }
 
-    public String getLocation() {
-        return this.getLocation();
-    }
 
     public void deleteItem(Item item) {
         this.items.removeIf(i -> i.equals(item));
@@ -76,7 +73,8 @@ public class xChanger extends User {
 
     public void UploadItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
         Item item = new Item(item_name, item_description, item_category, item_condition, item_images);
-        new Thread(() -> itemDao.insertItem(item)).start();
+        this.getItems().add(item);
+//        new Thread(() -> itemDao.insertItem(item)).start();
     }
 
     public void RequestItem(xChanger xchanger2, Item offered_item, Item requested_item) {

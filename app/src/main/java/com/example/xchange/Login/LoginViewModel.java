@@ -17,7 +17,6 @@ public class LoginViewModel extends ViewModel implements LoginPresenter.LoginVie
 
     public LoginViewModel(Context context) {
         this.presenter = new LoginPresenter(context);
-        AppDatabase db = AppDatabase.getInstance(context);
     }
 
     public void loginAsXChanger(String username, String password) {

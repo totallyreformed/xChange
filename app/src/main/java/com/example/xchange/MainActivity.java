@@ -20,14 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve User object from Intent
         User user = getIntent().getParcelableExtra("USER");
-        xChanger xchanger = (xChanger) user;
+//        xChanger xchanger = (xChanger) user;
         if (user != null) {
             // Display username and email
             TextView usernameTextView = findViewById(R.id.usernameTextView);
             TextView emailTextView = findViewById(R.id.emailTextView);
 
-            usernameTextView.setText("Username: " + xchanger.getUsername());
-            emailTextView.setText(xchanger.getItems().get(0).getItemCategory());
+            usernameTextView.setText("Username: " + user.getUsername());
+//            emailTextView.setText(xchanger.getItems().get(0).getItemCategory());
 
 
 
