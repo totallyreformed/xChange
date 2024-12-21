@@ -1,13 +1,15 @@
 package com.example.xchange.MainActivity;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.xchange.Item;
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivityPresenter {
-
     private final MainActivityViewModel viewModel;
 
     public MainActivityPresenter(MainActivityViewModel viewModel) {
@@ -17,27 +19,19 @@ public class MainActivityPresenter {
     public void loadUser(User user) {
         if (user != null) {
             viewModel.updateUsername(user.getUsername());
-            loadItems();
+        } else {
+            viewModel.updateUsername("Guest");
         }
     }
 
-    private void loadItems() {
-        // Observe LiveData instead of trying to fetch synchronously
-        AppDatabase.getItemDao().getAllItems().observeForever(items -> {
-            if (items != null && !items.isEmpty()) {
-                StringBuilder itemsText = new StringBuilder();
-                for (Item item : items) {
-                    itemsText.append("Item: ").append(item.getItemName())
-                            .append("\nCategory: ").append(item.getItemCategory())
-                            .append("\nCondition: ").append(item.getItemCondition())
-                            .append("\nDescription: ").append(item.getItemDescription())
-                            .append("\n\n");
-                }
-                viewModel.updateItemsText(itemsText.toString());
-            } else {
-                viewModel.updateItemsText("No items available");
-            }
-        });
+    public LiveData<List<Item>> loadItems() {
+        // Fetch items from database (returns LiveData)
+        return AppDatabase.getItemDao().getAllItems();
     }
 
+    private List<Item> fetchItemsFromDatabase() {
+        // Replace this with your database query logic
+        return AppDatabase.getItemDao().getAllItems().getValue();
+    }
 }
+

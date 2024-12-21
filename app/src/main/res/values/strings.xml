@@ -42,6 +42,11 @@
         sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
-    </string> <!-- Add this line -->
+    </string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+    <string name="browse">Browse</string>
+    <string name="items">Items</string>
+    <string name="username">Username</string> <!-- Add this line -->
     <!-- Add other string resources here -->
 </resources>

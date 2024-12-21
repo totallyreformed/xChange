@@ -72,7 +72,7 @@ public class xChanger extends User {
     }
 
     public void UploadItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
-        Item item = new Item(item_name, item_description, item_category, item_condition, item_images);
+        Item item = new Item(this.getUsername(),item_name, item_description, item_category, item_condition, item_images);
         this.getItems().add(item);
         new Thread(() -> AppDatabase.getItemDao().insertItem(item)).start();
     }

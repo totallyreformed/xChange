@@ -15,21 +15,25 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     private final MainActivityPresenter presenter;
     private final MutableLiveData<String> usernameLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> itemsTextLiveData = new MutableLiveData<>();
+    private LiveData<List<Item>> itemsLiveData;
 
     public MainActivityViewModel(Application application) {
         super(application);
         presenter = new MainActivityPresenter(this);
+        itemsLiveData = presenter.loadItems();
     }
 
+    // Getter for username LiveData
     public LiveData<String> getUsername() {
         return usernameLiveData;
     }
 
-    public LiveData<String> getItemsText() {
-        return itemsTextLiveData;
+    // Getter for items LiveData
+    public LiveData<List<Item>> getItemsList() {
+        return itemsLiveData;
     }
 
+    // Method to load user
     public void loadUser(User user) {
         presenter.loadUser(user);
     }
@@ -39,8 +43,4 @@ public class MainActivityViewModel extends AndroidViewModel {
         usernameLiveData.setValue(username);
     }
 
-    // Called by the Presenter to update items' text
-    public void updateItemsText(String itemsText) {
-        itemsTextLiveData.setValue(itemsText);
-    }
 }

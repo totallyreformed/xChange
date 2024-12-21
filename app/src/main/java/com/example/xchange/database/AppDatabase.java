@@ -62,6 +62,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
 
                swkratis.UploadItem("iphone11","Iphone 11 bought back in 2022, it works perfectly","Technology","Like new",null);
+               swkratis.UploadItem("Airforce1","White nike's airforce 1, bought 2024","Fashion","Used",null);
+               testXchanger.UploadItem("TV Lg500","Brand new TV out of the box","Home","Brand New",null);
 
 
             });

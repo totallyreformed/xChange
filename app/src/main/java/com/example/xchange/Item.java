@@ -9,6 +9,7 @@ import com.example.xchange.database.ImageConverter;
 
 import java.io.File;
 import java.util.ArrayList;
+
 @Entity(tableName = "items")
 public class Item {
     @PrimaryKey(autoGenerate = true)
@@ -29,9 +30,15 @@ public class Item {
     @TypeConverters(ImageConverter.class)
     private ArrayList<Image> itemImages;
 
+    private String xchanger;
 
-    // Constructor with parameter names matching field names
-    public Item(String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+    // Default constructor for Room
+    public Item() {
+    }
+
+    // Constructor for creating objects
+    public Item(String xchanger, String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+        this.xchanger = xchanger;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
         this.itemCategory = itemCategory;
@@ -49,6 +56,16 @@ public class Item {
         this.itemId = itemId;
     }
 
+    public String getxChanger() {
+        return xchanger;
+    }
+
+    public String getXchanger() {
+        return xchanger;
+    }
+    public void setXchanger(String xchanger) {
+        this.xchanger = xchanger;
+    }
     public String getItemName() {
         return itemName;
     }
@@ -120,15 +137,11 @@ public class Item {
     }
 
     // Edit Item details including images
-    public void editItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
-        this.setItemName(item_name);
-        this.setItemDescription(item_description);
-        this.setItemCategory(item_category);
-        this.setItemCondition(item_condition);
-        this.setItemImages(item_images);
+    public void editItem(String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+        this.setItemName(itemName);
+        this.setItemDescription(itemDescription);
+        this.setItemCategory(itemCategory);
+        this.setItemCondition(itemCondition);
+        this.setItemImages(itemImages);
     }
-
-//    public String toString(){
-//
-//    }
 }
