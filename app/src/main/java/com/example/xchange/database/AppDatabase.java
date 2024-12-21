@@ -26,7 +26,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 
     public abstract UserDao userDao();
-    public abstract ItemDao ItemDao();
+    public abstract ItemDao itemDao();
 
     public static AppDatabase getInstance(final Context context) {
         context.deleteDatabase("xChange_db");
@@ -51,7 +51,7 @@ public abstract class AppDatabase extends RoomDatabase {
             super.onCreate(db);
             Executors.newSingleThreadExecutor().execute(() -> {
                 UserDao dao = INSTANCE.userDao();
-                ItemDao dao_item= (ItemDao) INSTANCE.ItemDao();
+                ItemDao dao_item= (ItemDao) INSTANCE.itemDao();
 
                 // Add default users
                 dao.insertUser(new User("admin", "admin@example.com", null, "IamtheAdmin", "HQ", "admin"));
@@ -67,4 +67,7 @@ public abstract class AppDatabase extends RoomDatabase {
             });
         }
     };
+    public static ItemDao getItemDao() {
+        return INSTANCE.itemDao();
+    }
 }
