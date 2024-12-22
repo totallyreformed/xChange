@@ -7,6 +7,19 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <!-- Categories Array for Search Spinner -->
+    <string-array name="categories_array">
+        <item>All</item>
+        <item>Technology</item>
+        <item>Books</item>
+        <item>Fashion</item>
+        <item>Home Appliances</item>
+        <item>Sports</item>
+        <item>Furniture</item>
+        <item>Toys</item>
+        <!-- Add more categories as needed -->
+    </string-array>
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus

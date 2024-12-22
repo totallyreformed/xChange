@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.xchange.Item;
 import com.example.xchange.ItemsAdapter;
+import com.example.xchange.Profile.ProfileActivity;
 import com.example.xchange.R;
+import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -64,13 +66,21 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_browse) {
-                // Handle Browse action
+                // Currently in MainActivity, no action needed
                 return true;
             } else if (itemId == R.id.menu_search) {
-                // Handle Search action
+                // Navigate to SearchActivity
+                Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
+                searchIntent.putExtra("USER", user); // Pass the current User object
+                startActivity(searchIntent);
+                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
             } else if (itemId == R.id.menu_profile) {
-                // Handle Profile action
+                // Navigate to ProfileActivity
+                Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
+                profileIntent.putExtra("USER", user); // Pass the current User object
+                startActivity(profileIntent);
+                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
             } else {
                 return false;

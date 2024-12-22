@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import com.example.xchange.Item;
 import com.example.xchange.User;
 
 import java.util.List;
@@ -13,6 +14,12 @@ import java.util.List;
 public interface UserDao {
     @Insert
     void insertUser(User user);
+
+    @Query("SELECT COUNT(*) FROM items WHERE xchanger = :username")
+    int getItemCountByUsername(String username);
+
+    @Query("SELECT * FROM items WHERE xchanger = :username")
+    List<Item> getItemsByUsername(String username);
 
     @Query("SELECT * FROM users WHERE user_type = 'xChanger'")
     List<User> getAllXChangers();

@@ -28,6 +28,16 @@
         <activity
             android:name=".MainActivity.MainActivity"
             android:exported="true" />
+
+        <!-- ProfileActivity for user profile -->
+        <activity
+            android:name=".Profile.ProfileActivity"
+            android:exported="true" />
+
+        <!-- SearchActivity for searching items -->
+        <activity
+            android:name=".Search.SearchActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

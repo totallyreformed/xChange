@@ -21,6 +21,34 @@ public interface ItemDao {
     @Query("SELECT * FROM items")
     LiveData<List<Item>> getAllItems();
 
+    /**
+     * Search for items where the name contains the query string (case-insensitive).
+     *
+     * @param query The search query.
+     * @return A list of matching items.
+     */
+    @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%'")
+    List<Item> searchItemsByName(String query);
+
+    /**
+     * Retrieve items filtered by a specific category.
+     *
+     * @param category The category to filter by.
+     * @return A list of items in the specified category.
+     */
+    @Query("SELECT * FROM items WHERE item_category = :category")
+    List<Item> filterItemsByCategory(String category);
+
+    /**
+     * Search for items by name and filter by category simultaneously.
+     *
+     * @param query    The search query.
+     * @param category The category to filter by.
+     * @return A list of items matching both criteria.
+     */
+    @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%' AND item_category = :category")
+    List<Item> searchItemsByNameAndCategory(String query, String category);
+
     // Retrieve an item by ID
     @Query("SELECT * FROM items WHERE itemId = :itemId")
     Item getItemById(long itemId);
