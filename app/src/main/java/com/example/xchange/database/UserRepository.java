@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.UserDao;
 
 import java.util.concurrent.ExecutorService;
@@ -19,6 +20,7 @@ public class UserRepository {
     public UserRepository(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
         userDao = db.userDao();
+        ItemDao itemDao = AppDatabase.getItemDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -59,12 +61,11 @@ public class UserRepository {
     public void registerUser(User newUser, RegisterCallback callback) {
         executor.execute(() -> {
             try {
-                // Check for duplicates before inserting
                 User existingUser = userDao.findByUsername_initial(newUser.getUsername());
                 if (existingUser != null) {
                     callback.onFailure("Username already exists");
                 } else {
-                    userDao.insertUser(newUser); // Insert the new user
+                    userDao.insertUser(newUser);
                     callback.onSuccess();
                 }
             } catch (Exception e) {

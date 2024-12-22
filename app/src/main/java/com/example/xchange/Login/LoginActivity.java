@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
             if (user != null) {
                 Toast.makeText(this, "Login Successful: " + user.getUsername(), Toast.LENGTH_SHORT).show();
 
-                // Pass the username to the next activity
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("USER", user);
                 startActivity(intent);
@@ -57,9 +56,9 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel.getLoginFailure().observe(this, message ->
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
         );
 
-        // Handle Login Button Click
         loginButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();

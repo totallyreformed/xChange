@@ -7,15 +7,19 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.User;
-import com.example.xchange.database.UserRepository;
 
-public class RegisterViewModel extends ViewModel {
-    private final UserRepository repository;
+public class RegisterViewModel extends ViewModel implements RegisterPresenter.RegisterView {
+
+    private final RegisterPresenter presenter;
     private final MutableLiveData<String> registerSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> registerFailure = new MutableLiveData<>();
 
     public RegisterViewModel(Context context) {
-        repository = new UserRepository(context);
+        this.presenter = new RegisterPresenter(context);
+    }
+
+    public void registerUser(User user) {
+        presenter.registerUser(user, this);
     }
 
     public LiveData<String> getRegisterSuccess() {
@@ -26,17 +30,15 @@ public class RegisterViewModel extends ViewModel {
         return registerFailure;
     }
 
-    public void registerUser(User user) {
-        repository.registerUser(user, new UserRepository.RegisterCallback() {
-            @Override
-            public void onSuccess() {
-                registerSuccess.postValue("Registration Successful!");
-            }
 
-            @Override
-            public void onFailure(String message) {
-                registerFailure.postValue(message);
-            }
-        });
+    @Override
+    public void onRegisterSuccess(String message) {
+        registerSuccess.postValue(message);
+    }
+
+
+    @Override
+    public void onRegisterFailure(String message) {
+        registerFailure.postValue(message);
     }
 }

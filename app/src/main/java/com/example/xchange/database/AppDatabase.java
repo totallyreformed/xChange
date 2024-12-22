@@ -29,13 +29,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ItemDao itemDao();
 
     public static AppDatabase getInstance(final Context context) {
-        context.deleteDatabase("xChange_db");
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xChange_db")
-
+                                    AppDatabase.class, "NewDatabase.db")
+                            .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
                 }
@@ -63,7 +62,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
                swkratis.UploadItem("iphone11","Iphone 11 bought back in 2022, it works perfectly","Technology","Like new",null);
                swkratis.UploadItem("Airforce1","White nike's airforce 1, bought 2024","Fashion","Used",null);
-               testXchanger.UploadItem("TV Lg500","Brand new TV out of the box","Home","Brand New",null);
+               Item item =new Item("testXChanger","TV Lg500","Brand new TV out of the box","Home","Brand New",null);
+               dao_item.insertItem(item);
 
 
             });
