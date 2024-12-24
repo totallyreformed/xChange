@@ -4,5 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue_background">#143447</color>
     <color name="button">#ff0763</color> <!-- Example color -->
+    <color name="gray">#9E9E9E</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="cardview_light_background">#FFFFFF</color>
 
 </resources>

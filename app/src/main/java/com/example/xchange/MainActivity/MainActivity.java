@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.xchange.Upload.UploadActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView usernameTextView;
     private RecyclerView itemsRecyclerView;
     private ItemsAdapter itemsAdapter;
+    private FloatingActionButton uploadFab;
 
     @SuppressLint({"MissingInflatedId", "SetTextI18n"})
     @Override
@@ -36,6 +40,23 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         User user = intent.getParcelableExtra("USER");
 
+        // Initialize FAB
+        uploadFab = findViewById(R.id.uploadFab);
+
+        // Set click listener for upload fab
+        uploadFab.setOnClickListener(v -> {
+            // Retrieve current user from intent or session
+            User currentUser = intent.getParcelableExtra("USER");
+            if (currentUser == null) {
+                Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Navigate to UploadActivity, passing the current user
+            Intent uploadIntent = new Intent(MainActivity.this, UploadActivity.class);
+            uploadIntent.putExtra("USER", currentUser);
+            startActivity(uploadIntent);
+        });
 
         // Initialize Views
         usernameTextView = findViewById(R.id.usernameTextView);
