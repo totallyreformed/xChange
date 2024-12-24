@@ -85,37 +85,53 @@ public class xChange {
     }
 
     // Methods to accept or reject the offer
-    public String acceptOffer() {
+    public String acceptOffer(float ratingValue) {
         this.setDealStatus("Accepted");
+
+        // Remove items from inventories
         this.getOfferer().deleteItem(this.getRequestedItem());
         this.getOfferee().deleteItem(this.getOfferedItem());
+
+        // Finalize the exchange
         this.getOfferee().getFinalized().add(this);
         this.getOfferer().getFinalized().add(this);
         this.getRequest().make_unactive();
 
-        // Check if counteroffer is not null
+        // Deactivate counteroffer if present
         if (this.getCounterOffer() != null && this.getCounterOffer().getRequest() == this.getRequest()) {
             this.getCounterOffer().make_unactive();
         }
 
+        // Update deals statistics
         this.getOfferee().plusOneSucceedDeal();
         this.getOfferer().plusOneSucceedDeal();
+
+        // Add rating to offeree
+        Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
+        this.getOfferee().addRating(rating); // Using addRating for dynamic average rating updates
 
         return this.getOfferee().getEmail();
     }
 
-    public void rejectOffer() {
+    public void rejectOffer(float ratingValue) {
         this.setDealStatus("Rejected");
+
+        // Finalize the exchange
         this.getOfferee().getFinalized().add(this);
         this.getOfferer().getFinalized().add(this);
         this.getRequest().make_unactive();
 
-        // Check if counteroffer is not null
+        // Deactivate counteroffer if present
         if (this.getCounterOffer() != null && this.getCounterOffer().getRequest() == this.getRequest()) {
             this.getCounterOffer().make_unactive();
         }
 
+        // Update deals statistics
         this.getOfferee().plusOneFailedDeal();
         this.getOfferer().plusOneFailedDeal();
+
+        // Add rating to offeree
+        Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
+        this.getOfferee().addRating(rating); // Using addRating for dynamic average rating updates
     }
 }

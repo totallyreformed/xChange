@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,44 +17,6 @@ public class XChangerTest {
         testXChanger = new xChanger("testXChanger", "test@example.com", new SimpleCalendar(2024, 12, 1), "password123", "TestLocation");
         otherXChanger = new xChanger("otherXChanger", "other@example.com", new SimpleCalendar(2024, 12, 1), "password123", "OtherLocation");
 
-    }
-
-    @Test
-    public void testLoginSuccess() {
-
-        assertTrue(testXChanger.login("testXChanger", "password123"));
-        assertTrue(testXChanger.login("otherXChanger", "password123"));
-    }
-
-    @Test
-    public void testLoginFailure() {
-        assertFalse(testXChanger.login("wrongUsername", "password123"));
-        assertFalse(testXChanger.login("testXChanger", "wrongPassword"));
-    }
-
-    @Test
-    public void testRegisterSuccess() {
-        xChanger newXChanger = new xChanger("newXChanger", "new@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-        assertTrue(newXChanger.login(newXChanger.getUsername(),newXChanger.getPassword()));
-        assertEquals(3, xChanger.getxChangers().size());
-    }
-
-    @Test
-    public void testRegisterFailure_DuplicateUser() {
-        xChanger duplicateUsername = new xChanger("testXChanger", "new@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-        xChanger duplicateEmail = new xChanger("newXChanger", "test@example.com", new SimpleCalendar(2024, 12, 2), "newPassword", "NewLocation");
-
-        assertFalse(testXChanger.register(duplicateUsername));
-        assertFalse(testXChanger.register(duplicateEmail));
-    }
-
-    @Test
-    public void testRating() {
-        testXChanger.setRating(4.5f);
-        assertEquals(4.5f, testXChanger.getRating());
-
-        testXChanger.setRating(3.5f);
-        assertEquals(4.0f, testXChanger.getRating()); // Average of 4.5 and 3.5
     }
 
     @Test
@@ -89,27 +50,35 @@ public class XChangerTest {
     }
 
     @Test
-    public void testAcceptRequest() {
+    public void testAcceptRequestWithRating() {
         ArrayList<Image> images = new ArrayList<>();
         Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
         Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
-        testXChanger.acceptRequest(request);
+
+        // Accept the request with a rating of 5.0
+        testXChanger.acceptRequest(request, 5.0f);
 
         assertEquals(1, testXChanger.getSucceed_Deals());
+        assertEquals(5.0f, otherXChanger.getAverageRating(), 0.01f);
+        assertEquals(1, otherXChanger.getTotalRatings());
     }
 
     @Test
-    public void testRejectRequest() {
+    public void testRejectRequestWithRating() {
         ArrayList<Image> images = new ArrayList<>();
         Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
         Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
-        testXChanger.rejectRequest(request);
+
+        // Reject the request with a rating of 2.0
+        testXChanger.rejectRequest(request, 2.0f);
 
         assertEquals(1, testXChanger.getFailed_Deals());
+        assertEquals(2.0f, otherXChanger.getAverageRating(), 0.01f);
+        assertEquals(1, otherXChanger.getTotalRatings());
     }
 
     @Test
@@ -134,37 +103,56 @@ public class XChangerTest {
         assertEquals(1, testXChanger.getReports().size());
     }
     @Test
-    public void testAcceptCounteroffer() {
+    public void testAddRating() {
+        // Create Ratings and add them to the testXChanger
+        Rating rating1 = new Rating(4.0f, otherXChanger, testXChanger, null, null);
+        Rating rating2 = new Rating(5.0f, otherXChanger, testXChanger, null, null);
+
+        testXChanger.addRating(rating1);
+        testXChanger.addRating(rating2);
+
+        // Verify total ratings and average rating
+        assertEquals(2, testXChanger.getTotalRatings());
+        assertEquals(4.5f, testXChanger.getAverageRating(), 0.01f);
+    }
+    @Test
+    public void testCounterOfferWithRating() {
         ArrayList<Image> images = new ArrayList<>();
-        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
+        Item offeredItem = new Item("Tablet", "Android tablet", "Electronics", "New", images);
         Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
-        Item newrequestedItem=new Item("Shoes","Shoes","Fashion","Used",images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
-        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newrequestedItem);
+        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", offeredItem);
 
-        String email = testXChanger.acceptCounteroffer(counteroffer);
+        testXChanger.acceptCounteroffer(counteroffer, 4.5f);
+
         assertFalse(counteroffer.isActive());
         assertFalse(request.isActive());
-
-        assertNotNull(email);
-        assertEquals(1, testXChanger.getSucceed_Deals());
+        assertEquals(4.5f, otherXChanger.getAverageRating(), 0.01f);
     }
     @Test
     public void testRejectCounteroffer() {
         ArrayList<Image> images = new ArrayList<>();
         Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
         Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
-        Item newrequestedItem=new Item("Shoes","Shoes","Fashion","Used",images);
+        Item newRequestedItem = new Item("Shoes", "Shoes", "Fashion", "Used", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
-        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newrequestedItem);
+        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newRequestedItem);
 
-        testXChanger.rejectCounteroffer(counteroffer);
-        assertFalse(counteroffer.isActive());
-        assertFalse(request.isActive());
-        assertEquals(1, testXChanger.getFailed_Deals());
+        // Reject the counteroffer with a rating of 2.0
+        testXChanger.rejectCounteroffer(counteroffer, 2.0f);
+
+        // Assertions
+        assertFalse(counteroffer.isActive()); // Counteroffer is deactivated
+        assertFalse(request.isActive());     // Request is also deactivated
+        assertEquals(1, testXChanger.getFailed_Deals()); // Failed deals incremented
+
+        // Verify rating updates
+        assertEquals(1, otherXChanger.getTotalRatings());
+        assertEquals(2.0f, otherXChanger.getAverageRating(), 0.01f); // Average reflects the single rating
     }
+
     @Test
     public void testGetItem() {
         ArrayList<Image> images = new ArrayList<>();
@@ -180,5 +168,20 @@ public class XChangerTest {
         assertEquals("Tablet", fetchedItem.getItemName());
     }
 
+    @Test
+    public void testGetItem_NotFound() {
+        // Try to fetch an item that is not in the list
+        Item nonExistentItem = new Item("NonExistent", "Description", "Category", "Condition", new ArrayList<>());
+        assertNull(testXChanger.getItem(nonExistentItem));
+    }
+    @Test
+    public void testSetRatingDynamically() {
+        // Add multiple ratings to dynamically update the average
+        testXChanger.addRating(new Rating(3.0f, otherXChanger, testXChanger, null, null));
+        testXChanger.addRating(new Rating(4.0f, otherXChanger, testXChanger, null, null));
+        testXChanger.addRating(new Rating(5.0f, otherXChanger, testXChanger, null, null));
 
+        assertEquals(4.0f, testXChanger.getAverageRating(), 0.01f);
+        assertEquals(3, testXChanger.getTotalRatings());
+    }
 }

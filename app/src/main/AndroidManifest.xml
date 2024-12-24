@@ -1,13 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.app">
+    package="com.example.xchange">
+
     <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
 
         <!-- LoginActivity setup as the Launcher Activity -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".Login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -15,11 +19,25 @@
             </intent-filter>
         </activity>
 
-        <!-- MainActivity setup as a regular Activity -->
+        <!-- RegisterActivity for user registration -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:name=".Register.RegisterActivity"
+            android:exported="false" />
 
+        <!-- MainActivity as a regular activity -->
+        <activity
+            android:name=".MainActivity.MainActivity"
+            android:exported="true" />
+
+        <!-- ProfileActivity for user profile -->
+        <activity
+            android:name=".Profile.ProfileActivity"
+            android:exported="true" />
+
+        <!-- SearchActivity for searching items -->
+        <activity
+            android:name=".Search.SearchActivity"
+            android:exported="true" />
     </application>
+
 </manifest>

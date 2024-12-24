@@ -32,7 +32,7 @@ public class ItemTest {
         Item item = new Item(name, description, category, condition, images);
 
         // Assert
-        assertEquals(1L, item.getItemId(), "Item ID should be 1");
+        assertEquals(1L, item.getItemid(), "Item ID should be 1");
         assertEquals(name, item.getItemName(), "Item name mismatch");
         assertEquals(description, item.getItemDescription(), "Item description mismatch");
         assertEquals(category, item.getItemCategory(), "Item category mismatch");
@@ -48,9 +48,9 @@ public class ItemTest {
         Item item3 = new Item("Item3", "Description3", "Category3", "Condition3", null);
 
         // Assert
-        assertEquals(1L, item1.getItemId(), "First item ID should be 1");
-        assertEquals(2L, item2.getItemId(), "Second item ID should be 2");
-        assertEquals(3L, item3.getItemId(), "Third item ID should be 3");
+        assertEquals(1L, item1.getItemid(), "First item ID should be 1");
+        assertEquals(2L, item2.getItemid(), "Second item ID should be 2");
+        assertEquals(3L, item3.getItemid(), "Third item ID should be 3");
     }
 
     @Test

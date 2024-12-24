@@ -1,85 +1,123 @@
 package com.example.xchange;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.xchange.database.ImageConverter;
+
 import java.io.File;
 import java.util.ArrayList;
 
+@Entity(tableName = "items")
 public class Item {
-    private static Long lastItemId = 0L; // Static field to track the last used ID
-    private final Long item_id; // Unique ID for each item
-    private String item_name;
-    private String item_description;
-    private String item_category;
-    private String item_condition;
-    private ArrayList<Image> item_images;
+    @PrimaryKey(autoGenerate = true)
+    private Long itemId;
 
-    // Constructor
-    public Item(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
-        this.item_id = ++lastItemId; // Increment the ID for each new item
-        this.item_name = item_name;
-        this.item_description = item_description;
-        this.item_category = item_category;
-        this.item_condition = item_condition;
-        this.item_images = item_images != null ? new ArrayList<>(item_images) : new ArrayList<>();
+    @ColumnInfo(name = "item_name")
+    private String itemName;
+
+    @ColumnInfo(name = "item_description")
+    private String itemDescription;
+
+    @ColumnInfo(name = "item_category")
+    private String itemCategory;
+
+    @ColumnInfo(name = "item_condition")
+    private String itemCondition;
+
+    @TypeConverters(ImageConverter.class)
+    private ArrayList<Image> itemImages;
+
+    private String xchanger;
+
+    // Default constructor for Room
+    public Item() {
     }
 
-    // Getters
+    // Constructor for creating objects
+    public Item(String xchanger, String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+        this.xchanger = xchanger;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+        this.itemCategory = itemCategory;
+        this.itemCondition = itemCondition;
+        this.itemImages = itemImages;
+    }
+
+    // Getters and setters
+
     public Long getItemId() {
-        return item_id;
+        return itemId;
     }
 
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getxChanger() {
+        return xchanger;
+    }
+
+    public String getXchanger() {
+        return xchanger;
+    }
+    public void setXchanger(String xchanger) {
+        this.xchanger = xchanger;
+    }
     public String getItemName() {
-        return item_name;
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public String getItemDescription() {
-        return item_description;
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
     }
 
     public String getItemCategory() {
-        return item_category;
+        return itemCategory;
+    }
+
+    public void setItemCategory(String itemCategory) {
+        this.itemCategory = itemCategory;
     }
 
     public String getItemCondition() {
-        return item_condition;
+        return itemCondition;
+    }
+
+    public void setItemCondition(String itemCondition) {
+        this.itemCondition = itemCondition;
     }
 
     public ArrayList<Image> getItemImages() {
-        return new ArrayList<>(item_images); // Return a copy to ensure immutability
+        return itemImages;
     }
 
-    // Setters
-    public void setItemName(String item_name) {
-        this.item_name = item_name;
-    }
-
-    public void setItemDescription(String item_description) {
-        this.item_description = item_description;
-    }
-
-    public void setItemCategory(String item_category) {
-        this.item_category = item_category;
-    }
-
-    public void setItemCondition(String item_condition) {
-        this.item_condition = item_condition;
-    }
-
-    public void setItemImages(ArrayList<Image> item_images) {
-        this.item_images = item_images != null ? new ArrayList<>(item_images) : new ArrayList<>();
+    public void setItemImages(ArrayList<Image> itemImages) {
+        this.itemImages = itemImages;
     }
 
     // Add a single image to the list
     public void addItemImage(Image image) {
-        if (this.item_images == null) {
-            this.item_images = new ArrayList<>();
+        if (this.itemImages == null) {
+            this.itemImages = new ArrayList<>();
         }
-        this.item_images.add(image);
+        this.itemImages.add(image);
     }
 
     // Add images from file paths
     public void addImagesFromFilePaths(ArrayList<String> filePaths) {
-        if (this.item_images == null) {
-            this.item_images = new ArrayList<>();
+        if (this.itemImages == null) {
+            this.itemImages = new ArrayList<>();
         }
 
         for (String filePath : filePaths) {
@@ -87,7 +125,7 @@ public class Item {
                 File imgFile = new File(filePath);
                 if (imgFile.exists()) {
                     Image image = new Image(filePath, "Image description");
-                    this.item_images.add(image);
+                    this.itemImages.add(image);
                 } else {
                     System.err.println("File does not exist: " + filePath);
                 }
@@ -99,11 +137,11 @@ public class Item {
     }
 
     // Edit Item details including images
-    public void editItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
-        this.setItemName(item_name);
-        this.setItemDescription(item_description);
-        this.setItemCategory(item_category);
-        this.setItemCondition(item_condition);
-        this.setItemImages(item_images);
+    public void editItem(String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+        this.setItemName(itemName);
+        this.setItemDescription(itemDescription);
+        this.setItemCategory(itemCategory);
+        this.setItemCondition(itemCondition);
+        this.setItemImages(itemImages);
     }
 }
