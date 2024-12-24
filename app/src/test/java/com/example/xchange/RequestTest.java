@@ -15,6 +15,8 @@ public class RequestTest {
     private Item requestedItem;
     private SimpleCalendar dateInitiated;
     private Request request;
+    private Category category = Category.fromDisplayName("Fashion");
+
 
     @BeforeEach
     public void setUp() {
@@ -22,8 +24,8 @@ public class RequestTest {
         requester = new xChanger("Requester", "requester@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
         requestee = new xChanger("Requestee", "requestee@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
         ArrayList<Image> images = new ArrayList<>();
-        offeredItem = new Item("Offered Item", "Description", "Category", "Condition", images);
-        requestedItem = new Item("Requested Item", "Description", "Category", "Condition", images);
+        offeredItem = new Item(requester.toString(), "Offered Item", "Description", category, "Condition", images);
+        requestedItem = new Item(requester.toString(), "Requested Item", "Description", category, "Condition", images);
         dateInitiated = new SimpleCalendar(2024, 12, 1);
         request = new Request(requester, requestee, offeredItem, requestedItem, dateInitiated);
     }

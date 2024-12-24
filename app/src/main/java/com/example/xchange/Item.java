@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.example.xchange.database.ImageConverter;
+import com.example.xchange.database.CategoryConverter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class Item {
     private String itemDescription;
 
     @ColumnInfo(name = "item_category")
-    private String itemCategory;
+    @TypeConverters(CategoryConverter.class)
+    private Category itemCategory;
 
     @ColumnInfo(name = "item_condition")
     private String itemCondition;
@@ -37,7 +39,7 @@ public class Item {
     }
 
     // Constructor for creating objects
-    public Item(String xchanger, String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+    public Item(String xchanger, String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImages) {
         this.xchanger = xchanger;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
@@ -82,11 +84,11 @@ public class Item {
         this.itemDescription = itemDescription;
     }
 
-    public String getItemCategory() {
+    public Category getItemCategory() {
         return itemCategory;
     }
 
-    public void setItemCategory(String itemCategory) {
+    public void setItemCategory(Category itemCategory) {
         this.itemCategory = itemCategory;
     }
 
@@ -137,7 +139,7 @@ public class Item {
     }
 
     // Edit Item details including images
-    public void editItem(String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+    public void editItem(String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImages) {
         this.setItemName(itemName);
         this.setItemDescription(itemDescription);
         this.setItemCategory(itemCategory);

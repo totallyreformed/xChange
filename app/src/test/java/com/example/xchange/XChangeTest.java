@@ -21,8 +21,8 @@ class XChangeTest {
         offerer = new xChanger("offerer", "offerer@example.com", new SimpleCalendar(2024, 12, 1), "password123", "Location1");
         offeree = new xChanger("offeree", "offeree@example.com", new SimpleCalendar(2024, 12, 1), "password456", "Location2");
 
-        offeredItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", new ArrayList<>());
-        requestedItem = new Item("Phone", "Smartphone", "Electronics", "Used", new ArrayList<>());
+        offeredItem = new Item(offerer.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", new ArrayList<>());
+        requestedItem = new Item(offeree.toString(), "Phone", "Smartphone", Category.TECHNOLOGY, "Used", new ArrayList<>());
 
         offerer.getItems().add(offeredItem);
         offeree.getItems().add(requestedItem);

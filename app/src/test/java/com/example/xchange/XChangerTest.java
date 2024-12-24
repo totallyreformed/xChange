@@ -22,7 +22,7 @@ public class XChangerTest {
     @Test
     public void testUploadItem() {
         ArrayList<Image> images = new ArrayList<>();
-        testXChanger.UploadItem("Laptop", "Gaming laptop", "Electronics", "New", images);
+        testXChanger.UploadItem("Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
 
         assertEquals(1, testXChanger.getItems().size());
         assertEquals("Laptop", testXChanger.getItems().get(0).getItemName());
@@ -31,7 +31,7 @@ public class XChangerTest {
     @Test
     public void testDeleteItem() {
         ArrayList<Image> images = new ArrayList<>();
-        Item item = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item item = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
         testXChanger.getItems().add(item);
 
         testXChanger.deleteItem(item);
@@ -41,8 +41,8 @@ public class XChangerTest {
     @Test
     public void testRequestItem() {
         ArrayList<Image> images = new ArrayList<>();
-        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
-        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item offeredItem = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
+        Item requestedItem = new Item(otherXChanger.toString(), "Phone", "Smartphone", Category.TECHNOLOGY, "Used", images);
 
         testXChanger.RequestItem(otherXChanger, offeredItem, requestedItem);
         assertEquals(1, otherXChanger.getRequests().size());
@@ -52,8 +52,8 @@ public class XChangerTest {
     @Test
     public void testAcceptRequestWithRating() {
         ArrayList<Image> images = new ArrayList<>();
-        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
-        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item offeredItem = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
+        Item requestedItem = new Item(otherXChanger.toString(), "Phone", "Smartphone", Category.TECHNOLOGY, "Used", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
 
@@ -68,8 +68,8 @@ public class XChangerTest {
     @Test
     public void testRejectRequestWithRating() {
         ArrayList<Image> images = new ArrayList<>();
-        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
-        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item offeredItem = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
+        Item requestedItem = new Item(otherXChanger.toString(), "Phone", "Smartphone", Category.TECHNOLOGY, "Used", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
 
@@ -84,7 +84,7 @@ public class XChangerTest {
     @Test
     public void testCounterOffer() {
         ArrayList<Image> images = new ArrayList<>();
-        Item item = new Item("Tablet", "Android tablet", "Electronics", "New", images);
+        Item item = new Item(otherXChanger.toString(), "Tablet", "Android tablet", Category.TECHNOLOGY, "New", images);
 
         // Ensure initial state
         System.out.println("CounterOffers before: " + testXChanger.getCounterOffers().size());
@@ -118,8 +118,8 @@ public class XChangerTest {
     @Test
     public void testCounterOfferWithRating() {
         ArrayList<Image> images = new ArrayList<>();
-        Item offeredItem = new Item("Tablet", "Android tablet", "Electronics", "New", images);
-        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
+        Item offeredItem = new Item(otherXChanger.toString(), "Tablet", "Android tablet", Category.TECHNOLOGY, "New", images);
+        Item requestedItem = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
         Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", offeredItem);
@@ -133,9 +133,9 @@ public class XChangerTest {
     @Test
     public void testRejectCounteroffer() {
         ArrayList<Image> images = new ArrayList<>();
-        Item offeredItem = new Item("Phone", "Smartphone", "Electronics", "Used", images);
-        Item requestedItem = new Item("Laptop", "Gaming laptop", "Electronics", "New", images);
-        Item newRequestedItem = new Item("Shoes", "Shoes", "Fashion", "Used", images);
+        Item offeredItem = new Item(otherXChanger.toString(), "Tablet", "Android tablet", Category.TECHNOLOGY, "New", images);
+        Item requestedItem = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
+        Item newRequestedItem = new Item(testXChanger.toString(), "Shoes", "Shoes", Category.FASHION, "Used", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
         Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newRequestedItem);
@@ -156,8 +156,8 @@ public class XChangerTest {
     @Test
     public void testGetItem() {
         ArrayList<Image> images = new ArrayList<>();
-        Item item1 = new Item("Tablet", "Android tablet", "Electronics", "New", images);
-        Item item2 = new Item("Phone", "Smartphone", "Electronics", "Used", images);
+        Item item1 = new Item(testXChanger.toString(), "Tablet", "Android tablet", Category.TECHNOLOGY, "New", images);
+        Item item2 = new Item(otherXChanger.toString(), "Phone", "Smartphone", Category.TECHNOLOGY, "Used", images);
 
         testXChanger.getItems().add(item1);
         testXChanger.getItems().add(item2);
@@ -171,7 +171,7 @@ public class XChangerTest {
     @Test
     public void testGetItem_NotFound() {
         // Try to fetch an item that is not in the list
-        Item nonExistentItem = new Item("NonExistent", "Description", "Category", "Condition", new ArrayList<>());
+        Item nonExistentItem = new Item(testXChanger.toString(), "NonExistent", "Description", Category.fromDisplayName("Category"), "Condition", new ArrayList<>());
         assertNull(testXChanger.getItem(nonExistentItem));
     }
     @Test

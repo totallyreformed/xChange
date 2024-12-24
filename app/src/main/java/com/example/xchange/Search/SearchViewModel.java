@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.xchange.Category;
 import com.example.xchange.Item;
 
 import java.util.List;
@@ -47,8 +48,15 @@ public class SearchViewModel extends AndroidViewModel implements SearchPresenter
      * @param query    The search query (item name).
      * @param category The category to filter by (can be null or empty for no filtering).
      */
-    public void searchItems(String query, String category) {
-        presenter.performSearch(query, category);
+
+    public void searchItems(String query, Category category) {
+        if (category == null) {
+            // Perform search without category filter
+            presenter.performSearch(query, null);
+        } else {
+            // Perform search with category filter
+            presenter.performSearch(query, category);
+        }
     }
 
     @Override

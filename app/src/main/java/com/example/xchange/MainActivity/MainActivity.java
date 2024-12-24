@@ -73,14 +73,12 @@ public class MainActivity extends AppCompatActivity {
                 Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
                 searchIntent.putExtra("USER", user); // Pass the current User object
                 startActivity(searchIntent);
-                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
             } else if (itemId == R.id.menu_profile) {
                 // Navigate to ProfileActivity
                 Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
                 profileIntent.putExtra("USER", user); // Pass the current User object
                 startActivity(profileIntent);
-                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
             } else {
                 return false;

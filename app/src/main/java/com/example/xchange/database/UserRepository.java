@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.xchange.Category;
 import com.example.xchange.Item;
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
@@ -136,7 +137,7 @@ public class UserRepository {
      * @param category The category to filter by.
      * @param callback The callback to handle the results.
      */
-    public void filterItemsByCategory(String category, UserItemsCallback callback) {
+    public void filterItemsByCategory(Category category, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
                 List<Item> items = itemDao.filterItemsByCategory(category);
@@ -154,7 +155,7 @@ public class UserRepository {
      * @param category The category to filter by.
      * @param callback The callback to handle the results.
      */
-    public void searchItemsByNameAndCategory(String query, String category, UserItemsCallback callback) {
+    public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
                 List<Item> items = itemDao.searchItemsByNameAndCategory(query, category);

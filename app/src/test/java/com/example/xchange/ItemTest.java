@@ -2,37 +2,30 @@ package com.example.xchange;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class ItemTest {
-    @BeforeEach
-    void resetLastItemId() throws Exception {
-        // Use reflection to reset the private static lastItemId field before each test
-        Field lastItemIdField = Item.class.getDeclaredField("lastItemId");
-        lastItemIdField.setAccessible(true);
-        lastItemIdField.set(null, 0L);
-    }
 
     @Test
     public void testConstructorAndGetters() {
         // Arrange
+        String xchanger = "User1";
         String name = "Laptop";
         String description = "A powerful gaming laptop.";
-        String category = "Electronics";
+        Category category = Category.TECHNOLOGY;
         String condition = "New";
         ArrayList<Image> images = new ArrayList<>();
         images.add(new Image("png_path/png2.png", "Front view"));
 
         // Act
-        Item item = new Item(name, description, category, condition, images);
+        Item item = new Item(xchanger, name, description, category, condition, images);
 
         // Assert
-        assertEquals(1L, item.getItemid(), "Item ID should be 1");
+        assertNull(item.getItemId(), "Item ID should be null before DB insertion");
         assertEquals(name, item.getItemName(), "Item name mismatch");
         assertEquals(description, item.getItemDescription(), "Item description mismatch");
         assertEquals(category, item.getItemCategory(), "Item category mismatch");
@@ -41,27 +34,14 @@ public class ItemTest {
     }
 
     @Test
-    void testItemIdAutoIncrement() {
-        // Arrange & Act
-        Item item1 = new Item("Item1", "Description1", "Category1", "Condition1", null);
-        Item item2 = new Item("Item2", "Description2", "Category2", "Condition2", null);
-        Item item3 = new Item("Item3", "Description3", "Category3", "Condition3", null);
-
-        // Assert
-        assertEquals(1L, item1.getItemid(), "First item ID should be 1");
-        assertEquals(2L, item2.getItemid(), "Second item ID should be 2");
-        assertEquals(3L, item3.getItemid(), "Third item ID should be 3");
-    }
-
-    @Test
     void testSetters() {
         // Arrange
-        Item item = new Item("Old Name", "Old Description", "Old Category", "Old Condition", null);
+        Item item = new Item("Old xChanger", "Old Name", "Old Description", Category.fromDisplayName("Category"), "Old Condition", null);
 
         // Act
         String newName = "New Name";
         String newDescription = "New Description";
-        String newCategory = "New Category";
+        Category newCategory = Category.BOOKS;
         String newCondition = "Used Condition";
         ArrayList<Image> newImages = new ArrayList<>();
         newImages.add(new Image("png_path/png1.png", "Side view"));
@@ -83,7 +63,7 @@ public class ItemTest {
     @Test
     void testAddItemImage() {
         // Arrange
-        Item item = new Item("Item with Images", "Description", "Category", "Condition", null);
+        Item item = new Item("xChanger", "Item with Images", "Description", Category.FASHION, "Condition", null);
         Image image1 = new Image("png_path/png2.png", "Front view");
         Image image2 = new Image("png_path/png1.png", "Back view");
 
@@ -102,19 +82,20 @@ public class ItemTest {
     @Test
     void testEditItem() {
         // Arrange
+        String initialxChanger = "Mitsos";
         String initialName = "Initial Name";
         String initialDescription = "Initial Description";
-        String initialCategory = "Initial Category";
+        Category initialCategory = Category.BOOKS;
         String initialCondition = "Initial Condition";
         ArrayList<Image> initialImages = new ArrayList<>();
         initialImages.add(new Image("png_path/png2.png", "Front view"));
 
-        Item item = new Item(initialName, initialDescription, initialCategory, initialCondition, initialImages);
+        Item item = new Item(initialxChanger, initialName, initialDescription, initialCategory, initialCondition, initialImages);
 
         // New values
         String newName = "Updated Name";
         String newDescription = "Updated Description";
-        String newCategory = "Updated Category";
+        Category newCategory = Category.FURNITURE;
         String newCondition = "Updated Condition";
         ArrayList<Image> newImages = new ArrayList<>();
         newImages.add(new Image("png_path/png1.png", "Side view"));
@@ -134,7 +115,7 @@ public class ItemTest {
     @Test
     void testAddImagesFromFilePaths() {
         // Arrange
-        Item item = new Item("Item", "Description", "Category", "Condition", null);
+        Item item = new Item("xChanger", "Item", "Description", Category.SPORTS, "Condition", null);
         ArrayList<String> filePaths = new ArrayList<>();
         filePaths.add("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png1.png");
         filePaths.add("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png2.png");
@@ -148,6 +129,5 @@ public class ItemTest {
         assertEquals("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png1.png", images.get(0).getFilePath(), "First image file path mismatch");
         assertEquals("C:\\Users\\swkra\\Documents\\Android\\app\\src\\test\\java\\com\\example\\xchange\\png_path\\png2.png", images.get(1).getFilePath(), "Second image file path mismatch");
         assertEquals(2, images.size(), "Item should have 2 images");
-
     }
 }
