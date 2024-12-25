@@ -46,6 +46,9 @@
 
         <!-- Upload Activity for uploading items -->
         <activity android:name=".Upload.UploadActivity" />
+
+        <!-- ItemDetailActivity for displaying item details -->
+        <activity android:name=".ItemDetail.ItemDetailActivity" />
     </application>
 
 </manifest>

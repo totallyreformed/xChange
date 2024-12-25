@@ -3,18 +3,18 @@ package com.example.xchange.MainActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.xchange.ItemDetail.ItemDetailActivity;
 import com.example.xchange.Upload.UploadActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.xchange.Item;
 import com.example.xchange.ItemsAdapter;
 import com.example.xchange.Profile.ProfileActivity;
 import com.example.xchange.R;
@@ -69,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
+
+        // Set the OnItemClickListener
+        itemsAdapter.setOnItemClickListener(itemId -> {
+            Intent detailIntent = new Intent(MainActivity.this, ItemDetailActivity.class);
+            detailIntent.putExtra("ITEM_ID", itemId); // Pass the itemId
+            startActivity(detailIntent);
+        });
 
         assert user != null;
         usernameTextView.setText("Welcome "+user.getUsername().toUpperCase()+" !");

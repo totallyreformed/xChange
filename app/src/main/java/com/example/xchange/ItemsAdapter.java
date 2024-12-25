@@ -13,9 +13,19 @@ import java.util.List;
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
     private List<Item> items; // Use a custom Item class to represent the data
+    private OnItemClickListener listener;
 
     public ItemsAdapter(List<Item> items) {
         this.items = items;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Long itemId);
+    }
+
+    // Add a setter method for the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     public void setItems(List<Item> newItems) {
@@ -46,7 +56,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         return items == null ? 0 : items.size();
     }
 
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView itemUsernameTextView;
         TextView itemNameTextView;
         TextView itemDescriptionTextView;
@@ -61,6 +71,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             itemDescriptionTextView = itemView.findViewById(R.id.itemDescriptionTextView);
             itemCategoryTextView = itemView.findViewById(R.id.itemCategoryTextView);
             itemConditionTextView = itemView.findViewById(R.id.itemConditionTextView);
+
+            // Set the click listener for the entire item view
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(items.get(position).getItemId()); // Pass itemId
+                }
+            });
         }
     }
 }

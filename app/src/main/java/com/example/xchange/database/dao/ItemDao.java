@@ -51,8 +51,8 @@ public interface ItemDao {
     List<Item> searchItemsByNameAndCategory(String query, Category category);
 
     // Retrieve an item by ID
-    @Query("SELECT * FROM items WHERE itemId = :itemId")
-    Item getItemById(long itemId);
+    @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")
+    LiveData<Item> getItemById(long itemId);
 
     // Update an existing item
     @Update
