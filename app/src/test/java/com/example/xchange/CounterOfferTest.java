@@ -15,14 +15,15 @@ public class CounterOfferTest {
     private Item requestedItem;
     private Request request;
     private Counteroffer counteroffer;
+    private Category category = Category.fromDisplayName("Fashion");
 
     @BeforeEach
     public void setUp() {
         requester = new xChanger("Requester", "requester@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
         requestee = new xChanger("Requestee", "requestee@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
         ArrayList<Image> images = new ArrayList<>();
-        offeredItem = new Item("Offered Item", "Description", "Category", "Condition", images);
-        requestedItem = new Item("Requested Item", "Description", "Category", "Condition", images);
+        offeredItem = new Item(requester.toString(), "Offered Item", "Description", category, "Condition", images);
+        requestedItem = new Item(requester.toString(), "Requested Item", "Description", category, "Condition", images);
 
         // Initialize a Request object
         request = new Request(requester, requestee, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
@@ -46,14 +47,14 @@ public class CounterOfferTest {
 
     @Test
     public void testSetOfferedItem() {
-        Item newOfferedItem = new Item("New Offered Item", "New Description", "Category", "Condition", new ArrayList<>());
+        Item newOfferedItem = new Item(requester.toString(), "New Offered Item", "New Description", category, "Condition", new ArrayList<>());
         counteroffer.setOfferedItem(newOfferedItem);
         assertEquals(newOfferedItem, counteroffer.getOfferedItem());
     }
 
     @Test
     public void testSetRequestedItem() {
-        Item newRequestedItem = new Item("New Requested Item", "New Description", "Category", "Condition", new ArrayList<>());
+        Item newRequestedItem = new Item(requester.toString(), "New Requested Item", "New Description", category, "Condition", new ArrayList<>());
         counteroffer.setRequestedItem(newRequestedItem);
         assertEquals(newRequestedItem, counteroffer.getRequestedItem());
     }
@@ -115,8 +116,8 @@ public class CounterOfferTest {
 
     @Test
     public void testUpdateBothItems() {
-        Item newOfferedItem = new Item("Updated Offered Item", "Description", "Category", "Condition", new ArrayList<>());
-        Item newRequestedItem = new Item("Updated Requested Item", "Description", "Category", "Condition", new ArrayList<>());
+        Item newOfferedItem = new Item(requester.toString(), "Updated Offered Item", "Description", category, "Condition", new ArrayList<>());
+        Item newRequestedItem = new Item(requester.toString(),"Updated Requested Item", "Description", category, "Condition", new ArrayList<>());
 
         counteroffer.setOfferedItem(newOfferedItem);
         counteroffer.setRequestedItem(newRequestedItem);

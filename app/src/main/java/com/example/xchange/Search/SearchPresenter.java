@@ -3,6 +3,7 @@ package com.example.xchange.Search;
 
 import android.content.Context;
 
+import com.example.xchange.Category;
 import com.example.xchange.Item;
 import com.example.xchange.database.UserRepository;
 
@@ -29,21 +30,9 @@ public class SearchPresenter {
      * @param query    The search query (item name).
      * @param category The category to filter by (can be null or empty for no filtering).
      */
-    public void performSearch(String query, String category) {
-        if (category != null && !category.isEmpty()) {
-            // Perform search with both query and category filter
-            userRepository.searchItemsByNameAndCategory(query, category, new UserRepository.UserItemsCallback() {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    view.onSearchResultsLoaded(items);
-                }
 
-                @Override
-                public void onFailure(String message) {
-                    view.onSearchFailed(message);
-                }
-            });
-        } else {
+    public void performSearch(String query, Category category) {
+        if (category == null) {
             // Perform search by name only
             userRepository.searchItemsByName(query, new UserRepository.UserItemsCallback() {
                 @Override
@@ -56,6 +45,20 @@ public class SearchPresenter {
                     view.onSearchFailed(message);
                 }
             });
+        } else {
+            // Perform search with category filter
+            userRepository.searchItemsByNameAndCategory(query, category, new UserRepository.UserItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    view.onSearchResultsLoaded(items);
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    view.onSearchFailed(message);
+                }
+            });
         }
     }
+
 }

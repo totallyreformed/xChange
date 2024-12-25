@@ -16,9 +16,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.xchange.Category;
 import com.example.xchange.Item;
 import com.example.xchange.ItemsAdapter;
 import com.example.xchange.MainActivity.MainActivity;
+import com.example.xchange.Profile.ProfileActivity;
 import com.example.xchange.R;
 import com.example.xchange.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,7 +33,7 @@ public class SearchActivity extends AppCompatActivity {
     private SearchViewModel viewModel;
     private EditText searchEditText;
     private Spinner categorySpinner;
-    private Button searchButton;
+    private Button searchButton, clearButton;
     private RecyclerView searchResultsRecyclerView;
     private ItemsAdapter itemsAdapter;
     private User user; // Assuming you have a User class
@@ -45,6 +47,7 @@ public class SearchActivity extends AppCompatActivity {
         searchEditText = findViewById(R.id.searchEditText);
         categorySpinner = findViewById(R.id.categorySpinner);
         searchButton = findViewById(R.id.searchButton);
+        clearButton = findViewById(R.id.clearButton);
         searchResultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
 
         // Retrieve the User object from the Intent
@@ -60,9 +63,9 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
 
-        // Set up Spinner for category filter
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.categories_array, android.R.layout.simple_spinner_item);
+        // Set up Spinner for category filter using the enum
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(adapter);
 
@@ -95,18 +98,29 @@ public class SearchActivity extends AppCompatActivity {
         // Set up search button click listener
         searchButton.setOnClickListener(v -> {
             String query = searchEditText.getText().toString().trim();
-            String category = categorySpinner.getSelectedItem().toString();
+            String selectedCategoryName = categorySpinner.getSelectedItem().toString();
+            Category selectedCategory = Category.fromDisplayName(selectedCategoryName);
 
-            if (query.isEmpty() && category.equals("All")) {
+            if (query.isEmpty() && selectedCategory == Category.ALL) {
                 Toast.makeText(this, "Please enter a search query or select a category.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (category.equals("All")) {
-                category = ""; // No category filter
-            }
+            // Pass null if Category.ALL is selected, else pass the selected Category
+            Category categoryFilter = (selectedCategory == Category.ALL) ? null : selectedCategory;
 
-            viewModel.searchItems(query, category);
+            viewModel.searchItems(query, categoryFilter);
+        });
+
+        // Set up clear button click listener
+        clearButton.setOnClickListener(v -> {
+            // Clear search input
+            searchEditText.setText("");
+            // Reset category spinner to "All"
+            categorySpinner.setSelection(0);
+            // Clear search results
+            itemsAdapter.setItems(new ArrayList<>());
+            Toast.makeText(this, "Search cleared.", Toast.LENGTH_SHORT).show();
         });
 
         // Initialize BottomNavigationView
@@ -123,7 +137,6 @@ public class SearchActivity extends AppCompatActivity {
                 Intent browseIntent = new Intent(SearchActivity.this, MainActivity.class);
                 browseIntent.putExtra("USER", user); // Pass the current User object
                 startActivity(browseIntent);
-                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
 
             } else if (itemId == R.id.menu_search) {
@@ -132,10 +145,9 @@ public class SearchActivity extends AppCompatActivity {
 
             } else if (itemId == R.id.menu_profile) {
                 // Navigate to ProfileActivity
-                Intent profileIntent = new Intent(SearchActivity.this, com.example.xchange.Profile.ProfileActivity.class);
+                Intent profileIntent = new Intent(SearchActivity.this, ProfileActivity.class);
                 profileIntent.putExtra("USER", user); // Pass the current User object
                 startActivity(profileIntent);
-                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
             } else {
                 return false;

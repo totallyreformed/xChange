@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.example.xchange.Category;
 import com.example.xchange.Item;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public interface ItemDao {
      * @return A list of items in the specified category.
      */
     @Query("SELECT * FROM items WHERE item_category = :category")
-    List<Item> filterItemsByCategory(String category);
+    List<Item> filterItemsByCategory(Category category);
 
     /**
      * Search for items by name and filter by category simultaneously.
@@ -47,7 +48,7 @@ public interface ItemDao {
      * @return A list of items matching both criteria.
      */
     @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%' AND item_category = :category")
-    List<Item> searchItemsByNameAndCategory(String query, String category);
+    List<Item> searchItemsByNameAndCategory(String query, Category category);
 
     // Retrieve an item by ID
     @Query("SELECT * FROM items WHERE itemId = :itemId")

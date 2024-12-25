@@ -2,8 +2,13 @@ package com.example.xchange;
 
 import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.dao.ItemDao;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import java.util.ArrayList;
+import android.content.Context;
+import android.util.Log;
+
 
 public class xChanger extends User {
     private float averageRating;
@@ -16,6 +21,9 @@ public class xChanger extends User {
     private ArrayList<xChange> finalized;
     private int succeedDeals;
     private int failedDeals;
+
+    // Add an ExecutorService to manage threads
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public xChanger(String username, String email, SimpleCalendar join_date, String password, String location) {
         super(username, email, join_date, password, location, "xChanger");
@@ -71,10 +79,18 @@ public class xChanger extends User {
         return this.items.stream().filter(i -> i.equals(item)).findFirst().orElse(null);
     }
 
-    public void UploadItem(String item_name, String item_description, String item_category, String item_condition, ArrayList<Image> item_images) {
-        Item item = new Item(this.getUsername(),item_name, item_description, item_category, item_condition, item_images);
+    public void UploadItem(String item_name, String item_description, Category item_category, String item_condition, ArrayList<Image> item_images) {
+        Item item = new Item(this.getUsername(), item_name, item_description, item_category, item_condition, item_images);
         this.getItems().add(item);
-        new Thread(() -> AppDatabase.getItemDao().insertItem(item)).start();
+        Log.d("xChanger", "Uploading item: " + item.getItemName() + " with category: " + item.getItemCategory().getDisplayName());
+        new Thread(() -> {
+            try {
+                AppDatabase.getItemDao().insertItem(item);
+                Log.d("xChanger", "Item uploaded successfully: " + item.getItemName());
+            } catch (Exception e) {
+                Log.e("xChanger", "Failed to upload item: " + item.getItemName(), e);
+            }
+        }).start();
     }
 
     public void RequestItem(xChanger xchanger2, Item offered_item, Item requested_item) {

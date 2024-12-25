@@ -118,7 +118,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Intent searchIntent = new Intent(ProfileActivity.this, SearchActivity.class);
                 searchIntent.putExtra("USER", user); // Pass the current User object
                 startActivity(searchIntent);
-                overridePendingTransition(0, 0); // Optional: Remove transition animation
                 return true;
 
             } else if (itemId == R.id.menu_profile) {

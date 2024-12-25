@@ -37,7 +37,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         holder.itemUsernameTextView.setText(item.getxChanger());
         holder.itemNameTextView.setText(item.getItemName());
         holder.itemDescriptionTextView.setText(item.getItemDescription());
-        holder.itemCategoryTextView.setText(item.getItemCategory());
+        holder.itemCategoryTextView.setText(item.getItemCategory().getDisplayName());
         holder.itemConditionTextView.setText(item.getItemCondition());
     }
 

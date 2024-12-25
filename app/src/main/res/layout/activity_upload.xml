@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/uploadScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="ExtraText"
+    android:fillViewport="true"
+    android:background="@color/cardview_light_background"> <!-- Match MainActivity background -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/uploadConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Title TextView -->
+        <TextView
+            android:id="@+id/uploadTitleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Upload Item"
+            android:textSize="18sp"
+            android:layout_margin="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Item Name -->
+        <EditText
+            android:id="@+id/uploadItemNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Item Name"
+            android:textSize="16sp"
+            android:inputType="textPersonName"
+            app:layout_constraintTop_toBottomOf="@id/uploadTitleTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Category Spinner -->
+        <Spinner
+            android:id="@+id/uploadCategorySpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/uploadItemNameEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <!-- Condition Spinner -->
+        <Spinner
+            android:id="@+id/uploadConditionSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/uploadCategorySpinner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <!-- Item Description -->
+        <EditText
+            android:id="@+id/uploadItemDescriptionEditText"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:hint="Item Description"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            app:layout_constraintTop_toBottomOf="@id/uploadConditionSpinner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <!-- Image Upload -->
+        <ImageView
+            android:id="@+id/uploadItemImageView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/image_placeholder"
+            android:scaleType="centerCrop"
+            android:contentDescription="Upload Image"
+            app:layout_constraintTop_toBottomOf="@id/uploadItemDescriptionEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Finalize Upload Button -->
+        <Button
+            android:id="@+id/finalizeUploadButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Finalize Upload"
+            android:backgroundTint="@color/cardview_dark_background"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            app:layout_constraintTop_toBottomOf="@id/uploadItemImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp" />
+
+        <!-- Cancel Upload Button -->
+        <Button
+            android:id="@+id/cancelUploadButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel Upload"
+            android:backgroundTint="@color/cardview_shadow_start_color"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            app:layout_constraintTop_toBottomOf="@id/finalizeUploadButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
