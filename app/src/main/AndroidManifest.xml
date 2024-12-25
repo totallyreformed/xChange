@@ -3,13 +3,9 @@
     package="com.example.xchange">
 
     <!-- Permission to read external storage -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
-    <!-- Optional: Permission to write to external storage -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" /> <!-- Deprecated in API 29+ -->
 
     <application
         android:allowBackup="true"

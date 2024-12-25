@@ -8,6 +8,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import android.provider.MediaStore;
 import android.widget.*;
 import androidx.annotation.Nullable;
@@ -29,7 +32,7 @@ import java.util.ArrayList;
 public class UploadActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int STORAGE_PERMISSION_CODE = 100;
+    private static final int MANAGE_ALL_FILES_ACCESS_PERMISSION_REQUEST_CODE = 2296;
 
     private EditText itemNameEditText;
     private Spinner categorySpinner;
@@ -86,13 +89,16 @@ public class UploadActivity extends AppCompatActivity {
 
         // Set up ImageView Click Listener to select image
         itemImageView.setOnClickListener(v -> {
-            // Check for storage permission
-            if (ContextCompat.checkSelfPermission(UploadActivity.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(UploadActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+            // Check for MANAGE_EXTERNAL_STORAGE permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 and above
+                if (!Environment.isExternalStorageManager()) {
+                    requestManageExternalStoragePermission();
+                } else {
+                    openImagePicker();
+                }
             } else {
-                openImagePicker();
+                // For Android versions below 11, handle accordingly if needed
+                Toast.makeText(this, "Storage access is not supported on your device.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -113,12 +119,28 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     /**
+     * Requests the MANAGE_EXTERNAL_STORAGE permission by directing the user to system settings.
+     */
+    private void requestManageExternalStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 and above
+            try {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, MANAGE_ALL_FILES_ACCESS_PERMISSION_REQUEST_CODE);
+            } catch (Exception e) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivityForResult(intent, MANAGE_ALL_FILES_ACCESS_PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
+    /**
      * Opens the image picker intent.
      */
     private void openImagePicker() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Item Image"), PICK_IMAGE_REQUEST);
     }
 
@@ -126,28 +148,33 @@ public class UploadActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openImagePicker();
-            } else {
-                Snackbar.make(findViewById(R.id.uploadConstraintLayout),
-                        "Permission denied to access storage", Snackbar.LENGTH_LONG).show();
-            }
-        }
+        // This block can be used for handling older permissions if needed
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Handle MANAGE_EXTERNAL_STORAGE permission result
+        if (requestCode == MANAGE_ALL_FILES_ACCESS_PERMISSION_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 and above
+                if (Environment.isExternalStorageManager()) {
+                    // Permission granted, proceed with image upload
+                    openImagePicker();
+                } else {
+                    // Permission denied, inform the user
+                    Snackbar.make(findViewById(R.id.uploadConstraintLayout),
+                            "Permission denied to manage all files", Snackbar.LENGTH_LONG).show();
+                }
+            }
+        }
+
         // Handle Image Picker Result
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
             imageUri = data.getData();
             try {
-                // Display selected image in ImageView
+                // Display selected image in ImageView without using Glide
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 itemImageView.setImageBitmap(bitmap);
             } catch (IOException e) {
@@ -189,10 +216,7 @@ public class UploadActivity extends AppCompatActivity {
             return;
         }
 
-        if (imageUri == null) {
-            Toast.makeText(this, "Please upload an image of the item", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        // Image upload is optional; no need to validate imageUri
 
         // Create Item object
         Item newItem = new Item(
@@ -201,13 +225,16 @@ public class UploadActivity extends AppCompatActivity {
                 itemDescription,
                 selectedCategory,
                 selectedCondition,
-                null // We'll handle image uploading separately
+                null // Image URI will be handled separately
         );
 
-        // Optionally, handle image uploading here (e.g., upload to server or save locally)
-        // For simplicity, we'll store the image URI as a string in the Item
-        newItem.setItemImages(new ArrayList<>()); // Initialize list
-        newItem.addItemImage(new Image(imageUri.toString(), "Item Image"));
+        // Initialize image list
+        newItem.setItemImages(new ArrayList<>());
+
+        // If imageUri is available, add it to the item's image list
+        if (imageUri != null) {
+            newItem.addItemImage(new Image(imageUri.toString(), "Item Image"));
+        }
 
         // Upload Item via ViewModel
         viewModel.uploadItem(newItem, this::onUploadSuccess, this::onUploadFailure);
