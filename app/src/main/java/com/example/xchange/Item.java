@@ -1,5 +1,8 @@
 package com.example.xchange;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -12,7 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 @Entity(tableName = "items")
-public class Item {
+public class Item implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private Long itemId;
 
@@ -35,8 +38,7 @@ public class Item {
     private String xchanger;
 
     // Default constructor for Room
-    public Item() {
-    }
+    public Item() {}
 
     // Constructor for creating objects
     public Item(String xchanger, String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImages) {
@@ -48,8 +50,7 @@ public class Item {
         this.itemImages = itemImages;
     }
 
-    // Getters and setters
-
+    // Getters and Setters
     public Long getItemId() {
         return itemId;
     }
@@ -58,16 +59,14 @@ public class Item {
         this.itemId = itemId;
     }
 
-    public String getxChanger() {
-        return xchanger;
-    }
-
     public String getXchanger() {
         return xchanger;
     }
+
     public void setXchanger(String xchanger) {
         this.xchanger = xchanger;
     }
+
     public String getItemName() {
         return itemName;
     }
@@ -108,7 +107,6 @@ public class Item {
         this.itemImages = itemImages;
     }
 
-    // Add a single image to the list
     public void addItemImage(Image image) {
         if (this.itemImages == null) {
             this.itemImages = new ArrayList<>();
@@ -116,12 +114,10 @@ public class Item {
         this.itemImages.add(image);
     }
 
-    // Add images from file paths
     public void addImagesFromFilePaths(ArrayList<String> filePaths) {
         if (this.itemImages == null) {
             this.itemImages = new ArrayList<>();
         }
-
         for (String filePath : filePaths) {
             try {
                 File imgFile = new File(filePath);
@@ -138,7 +134,6 @@ public class Item {
         }
     }
 
-    // Edit Item details including images
     public void editItem(String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImages) {
         this.setItemName(itemName);
         this.setItemDescription(itemDescription);
@@ -146,4 +141,52 @@ public class Item {
         this.setItemCondition(itemCondition);
         this.setItemImages(itemImages);
     }
+
+    // Parcelable Implementation
+    protected Item(Parcel in) {
+        if (in.readByte() == 0) {
+            itemId = null;
+        } else {
+            itemId = in.readLong();
+        }
+        itemName = in.readString();
+        itemDescription = in.readString();
+        itemCategory = (Category) in.readSerializable(); // Assuming Category is Serializable
+        itemCondition = in.readString();
+        itemImages = in.createTypedArrayList(Image.CREATOR); // Assuming Image is Parcelable
+        xchanger = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (itemId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(itemId);
+        }
+        dest.writeString(itemName);
+        dest.writeString(itemDescription);
+        dest.writeSerializable(itemCategory); // Assuming Category is Serializable
+        dest.writeString(itemCondition);
+        dest.writeTypedList(itemImages); // Assuming Image is Parcelable
+        dest.writeString(xchanger);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 }

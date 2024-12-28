@@ -1,4 +1,3 @@
-// File: ProfileActivity.java
 package com.example.xchange.Profile;
 
 import android.content.Intent;
@@ -7,16 +6,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.xchange.ItemsAdapter;
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
-//import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,9 +25,9 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile); // Ensure this layout file exists
+        setContentView(R.layout.activity_profile);
 
-        // Add this after the BottomNavigationView setup in onCreate
+        // Add Logout Button functionality
         Button logoutButton = findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(v -> {
             Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
@@ -48,10 +42,6 @@ public class ProfileActivity extends AppCompatActivity {
         userTypeTextView = findViewById(R.id.profileUserTypeTextView);
         locationTextView = findViewById(R.id.profileLocationTextView);
         statsTextView = findViewById(R.id.profileStatsTextView);
-        RecyclerView userItemsRecyclerView = findViewById(R.id.userItemsRecyclerView);
-        userItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ItemsAdapter userItemsAdapter = new ItemsAdapter(new ArrayList<>());
-        userItemsRecyclerView.setAdapter(userItemsAdapter);
 
         // Retrieve the User object from the Intent
         Intent intent = getIntent();
@@ -59,7 +49,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (user == null) {
             Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
-            // Optionally, redirect to LoginActivity if user data is missing
             Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
             startActivity(loginIntent);
             finish();
@@ -75,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
             if (userData != null) {
                 usernameTextView.setText("Username: " + userData.getUsername());
                 emailTextView.setText("Email: " + userData.getEmail());
-                userTypeTextView.setText("User Type: " + userData.getUser_type()); // Adjusted method name
+                userTypeTextView.setText("User Type: " + userData.getUser_type());
                 locationTextView.setText("Location: " + userData.getLocation());
             }
         });
@@ -86,58 +75,48 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        // Observe LiveData for user items
-        viewModel.getUserItems().observe(this, items -> {
-            if (items != null && !items.isEmpty()) {
-                userItemsAdapter.setItems(items);
-            } else {
-                // Optionally handle empty state
-                Toast.makeText(this, "No items uploaded.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
         viewModel.getError().observe(this, errorMessage -> {
             if (errorMessage != null) {
                 Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
 
+        // Navigate to AllItemsActivity
+        Button viewAllItemsButton = findViewById(R.id.viewAllItemsButton);
+        viewAllItemsButton.setOnClickListener(v -> {
+            Intent allItemsIntent = new Intent(ProfileActivity.this, AllItemsActivity.class);
+            allItemsIntent.putExtra("USER", user); // Pass the current User object
+            allItemsIntent.putParcelableArrayListExtra("ITEMS", new ArrayList<>(viewModel.getUserItems().getValue())); // Pass the items
+            startActivity(allItemsIntent);
+        });
+
         // Request Profile data
-        viewModel.loadProfileData();
         viewModel.loadProfileData();
         viewModel.loadUserItems();
 
         // Initialize BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-
-        // Set the selected item to Profile to highlight it in the navigation bar
         bottomNavigationView.setSelectedItemId(R.id.menu_profile);
 
-        // Set up OnItemSelectedListener for navigation
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_browse) {
-                // Navigate to MainActivity (Browse section)
                 Intent browseIntent = new Intent(ProfileActivity.this, MainActivity.class);
-                browseIntent.putExtra("USER", user); // Pass the current User object
+                browseIntent.putExtra("USER", user);
                 startActivity(browseIntent);
                 return true;
 
             } else if (itemId == R.id.menu_search) {
-                // Navigate to SearchActivity (Assuming you have a SearchActivity)
                 Intent searchIntent = new Intent(ProfileActivity.this, SearchActivity.class);
-                searchIntent.putExtra("USER", user); // Pass the current User object
+                searchIntent.putExtra("USER", user);
                 startActivity(searchIntent);
                 return true;
 
             } else if (itemId == R.id.menu_profile) {
-                // Currently in ProfileActivity, no action needed
                 return true;
             } else {
                 return false;
             }
         });
     }
-
-
 }

@@ -84,13 +84,19 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp" />
 
-            <!-- RecyclerView for User Items -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/userItemsRecyclerView"
-                android:layout_width="match_parent"
+            <!-- View All Items Button -->
+            <Button
+                android:id="@+id/viewAllItemsButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp" />
-
+                android:text="@string/view_all_items"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/primary"
+                android:textColor="@color/white"
+                android:elevation="2dp" />
         </LinearLayout>
     </ScrollView>
 
@@ -105,7 +111,8 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:backgroundTint="@color/primary"
+        android:backgroundTint="@color/error_color"
+        android:elevation="4dp"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -119,6 +126,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_navigation_menu"
-        app:labelVisibilityMode="labeled" />
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

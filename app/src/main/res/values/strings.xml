@@ -62,6 +62,8 @@
     <string name="items">Items</string>
     <string name="username">Username</string>
     <string name="back_to_main">back to main</string>
-    <string name="logout">Log Out</string> <!-- Add this line -->
+    <string name="logout">Log Out</string>
+    <string name="back_to_profile">Back to Profile</string>
+    <string name="view_all_items">View All Items</string> <!-- Add this line -->
     <!-- Add other string resources here -->
 </resources>
