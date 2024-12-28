@@ -37,10 +37,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Intent intent = getIntent();
         User user = intent.getParcelableExtra("USER");
-
-        // Initialize FAB
         uploadFab = findViewById(R.id.uploadFab);
 
         // Set click listener for upload fab
@@ -61,25 +60,25 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Views
         usernameTextView = findViewById(R.id.usernameTextView);
         itemsRecyclerView = findViewById(R.id.itemsRecyclerView);
+        itemsRecyclerView.setNestedScrollingEnabled(true);
 
         // Set up RecyclerView with Adapter
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         itemsAdapter = new ItemsAdapter(new ArrayList<>()); // Initialize with an empty list
-        itemsRecyclerView.setAdapter(itemsAdapter);
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
-        // Set the OnItemClickListener
         itemsAdapter.setOnItemClickListener(itemId -> {
             Intent detailIntent = new Intent(MainActivity.this, ItemDetailActivity.class);
-            detailIntent.putExtra("ITEM_ID", itemId); // Pass the itemId
+            detailIntent.putExtra("ITEM_ID", itemId);
             startActivity(detailIntent);
         });
 
         assert user != null;
         usernameTextView.setText("Welcome "+user.getUsername().toUpperCase()+" !");
 
+        itemsRecyclerView.setAdapter(itemsAdapter);
         viewModel.getItemsList().observe(this, items -> {
             if (items != null && !items.isEmpty()) {
                 itemsAdapter.setItems(items);

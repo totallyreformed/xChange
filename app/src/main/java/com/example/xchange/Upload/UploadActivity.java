@@ -24,6 +24,7 @@ import com.example.xchange.Image;
 import com.example.xchange.Item;
 import com.example.xchange.R;
 import com.example.xchange.User;
+import com.example.xchange.xChanger;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
@@ -62,10 +63,6 @@ public class UploadActivity extends AppCompatActivity {
         finalizeUploadButton = findViewById(R.id.finalizeUploadButton);
         cancelUploadButton = findViewById(R.id.cancelUploadButton);
 
-        // Initialize ViewModel
-        viewModel = new ViewModelProvider(this, new UploadViewModelFactory(getApplication())).get(UploadViewModel.class);
-
-        // Retrieve User from Intent
         Intent intent = getIntent();
         currentUser = intent.getParcelableExtra("USER");
         if (currentUser == null) {
@@ -73,6 +70,8 @@ public class UploadActivity extends AppCompatActivity {
             finish();
             return;
         }
+        xChanger xChanger=new xChanger(currentUser.getUsername(),currentUser.getEmail(),currentUser.getJoin_Date(),currentUser.getPassword(),currentUser.getLocation());
+        viewModel = new ViewModelProvider(this, new UploadViewModelFactory(getApplication(), xChanger)).get(UploadViewModel.class);
 
         // Set up Category Spinner
         ArrayAdapter<Category> categoryAdapter = new ArrayAdapter<>(this,
@@ -227,17 +226,7 @@ public class UploadActivity extends AppCompatActivity {
                 selectedCondition,
                 null // Image URI will be handled separately
         );
-
-        // Initialize image list
-        newItem.setItemImages(new ArrayList<>());
-
-        // If imageUri is available, add it to the item's image list
-        if (imageUri != null) {
-            newItem.addItemImage(new Image(imageUri.toString(), "Item Image"));
-        }
-
-        // Upload Item via ViewModel
-        viewModel.uploadItem(newItem, this::onUploadSuccess, this::onUploadFailure);
+        viewModel.uploadItem(itemName,itemDescription,selectedCategory,selectedCondition,null, this::onUploadSuccess, this::onUploadFailure);
     }
 
     /**
