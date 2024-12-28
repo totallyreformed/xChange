@@ -3,6 +3,7 @@ package com.example.xchange.Profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,15 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile); // Ensure this layout file exists
+
+        // Add this after the BottomNavigationView setup in onCreate
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> {
+            Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
+            loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+            startActivity(loginIntent);
+            finish(); // Close the current activity
+        });
 
         // Initialize UI elements
         usernameTextView = findViewById(R.id.profileUsernameTextView);
@@ -128,4 +138,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

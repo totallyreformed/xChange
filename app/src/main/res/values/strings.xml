@@ -60,6 +60,8 @@
     <string name="profile">Profile</string>
     <string name="browse">Browse</string>
     <string name="items">Items</string>
-    <string name="username">Username</string> <!-- Add this line -->
+    <string name="username">Username</string>
+    <string name="back_to_main">back to main</string>
+    <string name="logout">Log Out</string> <!-- Add this line -->
     <!-- Add other string resources here -->
 </resources>

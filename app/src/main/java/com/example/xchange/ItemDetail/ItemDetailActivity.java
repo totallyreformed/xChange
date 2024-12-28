@@ -1,10 +1,12 @@
 // File: ItemDetailActivity.java
 package com.example.xchange.ItemDetail;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.Item;
+import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 
 import java.io.IOException;
@@ -27,6 +30,9 @@ public class ItemDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail); // Ensure this layout file exists
+        Button backButton = findViewById(R.id.backToMainButton);
+
+        backButton.setOnClickListener(v -> finish());
 
         // Initialize Views
         itemNameTextView = findViewById(R.id.detailItemNameTextView);
