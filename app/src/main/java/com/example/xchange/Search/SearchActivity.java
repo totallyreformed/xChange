@@ -75,7 +75,7 @@ public class SearchActivity extends AppCompatActivity {
         searchResultsRecyclerView.setAdapter(itemsAdapter);
 
         // Initialize ViewModel with Factory
-        SearchViewModelFactory factory = new SearchViewModelFactory(getApplication());
+        SearchViewModelFactory factory = new SearchViewModelFactory(getApplication(), user);
         viewModel = new ViewModelProvider(this, factory).get(SearchViewModel.class);
 
         // Observe LiveData for search results
