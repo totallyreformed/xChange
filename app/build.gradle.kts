@@ -66,6 +66,7 @@ dependencies {
     // Android Instrumentation Testing Dependencies
     androidTestImplementation(libs.ext.junit) // Android-specific JUnit 4
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.archCoreTesting)
     implementation(libs.threetenabp)// Espresso for UI testing
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)

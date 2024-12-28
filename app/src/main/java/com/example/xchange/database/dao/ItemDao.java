@@ -17,7 +17,7 @@ public interface ItemDao {
 
     // Insert a new item
     @Insert
-    void insertItem(Item item);
+    long insertItem(Item item);
 
     @Query("SELECT * FROM items")
     LiveData<List<Item>> getAllItems();

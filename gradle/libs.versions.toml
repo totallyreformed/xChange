@@ -33,8 +33,10 @@ core = "1.6.1"
 navigationFragment = "2.8.2"
 navigationUi = "2.8.2"
 lifecycleViewmodelAndroid = "2.8.7"
+arch = "2.2.0"
 
 [libraries]
+archCoreTesting = { module = "androidx.arch.core:core-testing", version.ref = "arch" }
 android-junit5 = { module = "de.mannodermaus.gradle.plugins:android-junit5", version.ref = "androidJunit5" }
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 espresso-core-v3xx = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
