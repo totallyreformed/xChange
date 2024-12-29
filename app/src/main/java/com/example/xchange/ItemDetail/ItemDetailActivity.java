@@ -1,7 +1,9 @@
 package com.example.xchange.ItemDetail;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -86,6 +88,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, User user) {
         itemNameTextView.setText(item.getItemName());
         itemDescriptionTextView.setText(item.getItemDescription());
@@ -93,18 +96,37 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemConditionTextView.setText("Condition: " + item.getItemCondition());
         itemXchangerTextView.setText("Posted by: " + item.getXchanger());
 
-        // Load the first image using Glide
-        if (item.getFirstImage() != null && item.getFirstImage().getFilePath() != null) {
-            Glide.with(this)
-                    .load(item.getFirstImage().getFilePath())
-                    .placeholder(R.drawable.image_placeholder)
-                    .error(R.drawable.image_placeholder)
-                    .into(itemImageView);
+        // Έλεγχος για εικόνες
+        if (item.getFirstImage() != null) {
+            String filePath = item.getFirstImage().getFilePath();
+            if (filePath != null) {
+                Log.d("TEST", "Image file path: " + filePath);
+                try {
+                    // Έλεγχος αν είναι resource ID
+                    int resourceId = Integer.parseInt(filePath);
+                    Glide.with(this)
+                            .load(resourceId)
+                            .placeholder(R.drawable.image_placeholder)
+                            .error(R.drawable.image_placeholder)
+                            .into(itemImageView);
+                } catch (NumberFormatException e) {
+                    // Αν δεν είναι resource ID, υποθέστε ότι είναι κανονική διαδρομή
+                    Glide.with(this)
+                            .load(filePath)
+                            .placeholder(R.drawable.image_placeholder)
+                            .error(R.drawable.image_placeholder)
+                            .into(itemImageView);
+                }
+            } else {
+                Log.e("ItemDetailActivity", "File path is null");
+                itemImageView.setImageResource(R.drawable.image_placeholder);
+            }
         } else {
+            Log.e("ItemDetailActivity", "First image is null");
             itemImageView.setImageResource(R.drawable.image_placeholder);
         }
 
-        // Show or hide buttons based on user ownership
+        // Εμφάνιση ή απόκρυψη κουμπιών βάσει ιδιοκτησίας
         Button deleteButton = findViewById(R.id.deleteItemButton);
         Button editButton = findViewById(R.id.editItemButton);
 
@@ -116,4 +138,5 @@ public class ItemDetailActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
         }
     }
+
 }

@@ -13,6 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.xchange.Category;
 import com.example.xchange.Image;
 import com.example.xchange.Item;
+import com.example.xchange.R;
 import com.example.xchange.User;
 
 import com.example.xchange.database.dao.ItemDao;
@@ -36,7 +37,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v2.db")
+                                    AppDatabase.class, "xchange_database_v3.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
@@ -64,12 +65,19 @@ public abstract class AppDatabase extends RoomDatabase {
 
 
                swkratis.UploadItem("iphone11","Iphone 11 bought back in 2022, it works perfectly", Category.TECHNOLOGY,"Like new",null);
-               Image airforce=new Image("res/drawable/testimage.jpg","test");
-                ArrayList<Image> images=new ArrayList<>();
+
+                Image airforce = new Image(String.valueOf(R.drawable.testimage), "test");
+                ArrayList<Image> images = new ArrayList<>();
                 images.add(airforce);
-               swkratis.UploadItem("Airforce1","White nike's airforce 1, bought 2024",Category.FASHION,"Used",images);
-               Item item =new Item("testXChanger","TV Lg500","Brand new TV out of the box",Category.HOME,"Brand New",null);
-               dao_item.insertItem(item);
+
+                swkratis.UploadItem(
+                        "Airforce1",
+                        "White nike's airforce 1, bought 2024",
+                        Category.FASHION,
+                        "Used",
+                        images
+                );
+
 
 
             });
