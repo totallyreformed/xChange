@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         // BottomNavigationView setup
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,8 +15,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.xchange.EditItem.EditItemActivity;
 import com.example.xchange.Item;
-import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.User;
 
@@ -35,7 +34,8 @@ public class ItemDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_item_detail);
 
         Button backButton = findViewById(R.id.backToMainButton);
-        Button deleteButton = findViewById(R.id.deleteItemButton); // Νέο κουμπί διαγραφής
+        Button deleteButton = findViewById(R.id.deleteItemButton);
+        Button editButton = findViewById(R.id.editItemButton); // Νέο κουμπί επεξεργασίας
 
         backButton.setOnClickListener(v -> finish());
 
@@ -69,9 +69,16 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         // Ορισμός της λειτουργίας του κουμπιού διαγραφής
         deleteButton.setOnClickListener(v -> {
-            viewModel.deleteItemById(itemId); // Υλοποίησε αυτήν τη μέθοδο στο ViewModel
+            viewModel.deleteItemById(itemId);
             Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
-            finish(); // Επιστροφή στην προηγούμενη δραστηριότητα
+            finish();
+        });
+
+        // Ορισμός της λειτουργίας του κουμπιού επεξεργασίας
+        editButton.setOnClickListener(v -> {
+            Intent editIntent = new Intent(ItemDetailActivity.this, EditItemActivity.class);
+            editIntent.putExtra("ITEM_ID", itemId);
+            startActivity(editIntent);
         });
     }
     private void displayItemDetails(Item item) {
@@ -83,10 +90,18 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         User user = intent.getParcelableExtra("USER");
-        assert user != null;
+        if (user == null) {
+            Toast.makeText(this, "User data not available", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         Button deleteButton = findViewById(R.id.deleteItemButton);
+        Button editButton = findViewById(R.id.editItemButton);
+
         if (user.getUsername().equals(item.getXchanger())) {
             deleteButton.setVisibility(View.VISIBLE); // Εμφάνιση του κουμπιού διαγραφής
+            editButton.setVisibility(View.VISIBLE);   // Εμφάνιση του κουμπιού επεξεργασίας
         }
 
         // Display the first image if available
@@ -101,8 +116,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                 itemImageView.setImageResource(R.drawable.image_placeholder);
             }
         } else {
-            // If no image is available, display a placeholder
             itemImageView.setImageResource(R.drawable.image_placeholder);
         }
     }
-}
+  }
+
