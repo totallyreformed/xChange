@@ -82,11 +82,9 @@ public class xChanger extends User {
     public void UploadItem(String item_name, String item_description, Category item_category, String item_condition, ArrayList<Image> item_images) {
         Item item = new Item(this.getUsername(), item_name, item_description, item_category, item_condition, item_images);
         this.getItems().add(item);
-        Log.d("xChanger", "Uploading item: " + item.getItemName() + " with category: " + item.getItemCategory().getDisplayName());
         new Thread(() -> {
             try {
                 AppDatabase.getItemDao().insertItem(item);
-                Log.d("xChanger", "Item uploaded successfully: " + item.getItemName());
             } catch (Exception e) {
                 Log.e("xChanger", "Failed to upload item: " + item.getItemName(), e);
             }

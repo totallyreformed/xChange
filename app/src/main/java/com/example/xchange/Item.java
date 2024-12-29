@@ -189,4 +189,11 @@ public class Item implements Parcelable {
             return new Item[size];
         }
     };
+    public Image getFirstImage() {
+        if (itemImages != null && !itemImages.isEmpty()) {
+            return itemImages.get(0);
+        }
+        return null;
+    }
+
 }
