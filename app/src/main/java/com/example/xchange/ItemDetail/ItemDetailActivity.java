@@ -104,20 +104,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             editButton.setVisibility(View.VISIBLE);   // Εμφάνιση του κουμπιού επεξεργασίας
         }
 
-        // Display the first image if available
-        if (item.getItemImages() != null && !item.getItemImages().isEmpty()) {
-            Uri imageUri = Uri.parse(item.getItemImages().get(0).getFilePath());
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                itemImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
-                itemImageView.setImageResource(R.drawable.image_placeholder);
-            }
-        } else {
-            itemImageView.setImageResource(R.drawable.image_placeholder);
-        }
     }
   }
 
