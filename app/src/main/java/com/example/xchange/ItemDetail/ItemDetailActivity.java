@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.xchange.Item;
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
+import com.example.xchange.User;
 
 import java.io.IOException;
 
@@ -29,8 +32,10 @@ public class ItemDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_detail); // Ensure this layout file exists
+        setContentView(R.layout.activity_item_detail);
+
         Button backButton = findViewById(R.id.backToMainButton);
+        Button deleteButton = findViewById(R.id.deleteItemButton); // Νέο κουμπί διαγραφής
 
         backButton.setOnClickListener(v -> finish());
 
@@ -42,7 +47,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemXchangerTextView = findViewById(R.id.detailItemXchangerTextView);
         itemImageView = findViewById(R.id.detailItemImageView);
 
-        // Retrieve itemId from Intent
         long itemId = getIntent().getLongExtra("ITEM_ID", -1);
         if (itemId == -1) {
             Toast.makeText(this, "Invalid Item ID", Toast.LENGTH_SHORT).show();
@@ -62,19 +66,28 @@ public class ItemDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
 
-    /**
-     * Populates the UI with the item's details.
-     *
-     * @param item The Item object fetched from the database.
-     */
+        // Ορισμός της λειτουργίας του κουμπιού διαγραφής
+        deleteButton.setOnClickListener(v -> {
+            viewModel.deleteItemById(itemId); // Υλοποίησε αυτήν τη μέθοδο στο ViewModel
+            Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
+            finish(); // Επιστροφή στην προηγούμενη δραστηριότητα
+        });
+    }
     private void displayItemDetails(Item item) {
         itemNameTextView.setText(item.getItemName());
         itemDescriptionTextView.setText(item.getItemDescription());
         itemCategoryTextView.setText("Category: " + item.getItemCategory().getDisplayName());
         itemConditionTextView.setText("Condition: " + item.getItemCondition());
         itemXchangerTextView.setText("Posted by: " + item.getXchanger());
+
+        Intent intent = getIntent();
+        User user = intent.getParcelableExtra("USER");
+        assert user != null;
+        Button deleteButton = findViewById(R.id.deleteItemButton);
+        if (user.getUsername().equals(item.getXchanger())) {
+            deleteButton.setVisibility(View.VISIBLE); // Εμφάνιση του κουμπιού διαγραφής
+        }
 
         // Display the first image if available
         if (item.getItemImages() != null && !item.getItemImages().isEmpty()) {
@@ -85,11 +98,11 @@ public class ItemDetailActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
-                itemImageView.setImageResource(R.drawable.image_placeholder); // Ensure this drawable exists
+                itemImageView.setImageResource(R.drawable.image_placeholder);
             }
         } else {
             // If no image is available, display a placeholder
-            itemImageView.setImageResource(R.drawable.image_placeholder); // Ensure this drawable exists
+            itemImageView.setImageResource(R.drawable.image_placeholder);
         }
     }
 }

@@ -39,19 +39,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        User user = intent.getParcelableExtra("USER");
         uploadFab = findViewById(R.id.uploadFab);
 
-        // Set click listener for upload fab
+        User currentUser = intent.getParcelableExtra("USER");
         uploadFab.setOnClickListener(v -> {
-            // Retrieve current user from intent or session
-            User currentUser = intent.getParcelableExtra("USER");
             if (currentUser == null) {
                 Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Navigate to UploadActivity, passing the current user
             Intent uploadIntent = new Intent(MainActivity.this, UploadActivity.class);
             uploadIntent.putExtra("USER", currentUser);
             startActivity(uploadIntent);
@@ -72,11 +67,12 @@ public class MainActivity extends AppCompatActivity {
         itemsAdapter.setOnItemClickListener(itemId -> {
             Intent detailIntent = new Intent(MainActivity.this, ItemDetailActivity.class);
             detailIntent.putExtra("ITEM_ID", itemId);
+            detailIntent.putExtra("USER",currentUser);
             startActivity(detailIntent);
         });
 
-        assert user != null;
-        usernameTextView.setText("Welcome "+user.getUsername().toUpperCase()+" !");
+        assert currentUser != null;
+        usernameTextView.setText("Welcome "+currentUser.getUsername().toUpperCase()+" !");
 
         itemsRecyclerView.setAdapter(itemsAdapter);
         viewModel.getItemsList().observe(this, items -> {
@@ -98,13 +94,13 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.menu_search) {
                 // Navigate to SearchActivity
                 Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
-                searchIntent.putExtra("USER", user); // Pass the current User object
+                searchIntent.putExtra("USER", currentUser); // Pass the current User object
                 startActivity(searchIntent);
                 return true;
             } else if (itemId == R.id.menu_profile) {
                 // Navigate to ProfileActivity
                 Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
-                profileIntent.putExtra("USER", user); // Pass the current User object
+                profileIntent.putExtra("USER", currentUser); // Pass the current User object
                 startActivity(profileIntent);
                 return true;
             } else {
