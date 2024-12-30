@@ -6,9 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.xchange.Image;
 import com.example.xchange.Item;
 import com.example.xchange.database.AppDatabase;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,10 +32,10 @@ public class EditItemViewModel extends AndroidViewModel {
         return item;
     }
 
-    public void updateItem(String name, String description, String condition, String category) {
+    public void updateItem(String name, String description, String condition, String category, ArrayList<Image> images) {
         Item currentItem = item.getValue();
         if (currentItem != null) {
-            presenter.updateItem(currentItem, name, description, condition, category);
+            presenter.updateItem(currentItem, name, description, condition, category,images);
         }
     }
 

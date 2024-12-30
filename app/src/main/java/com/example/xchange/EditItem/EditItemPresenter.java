@@ -3,9 +3,11 @@ package com.example.xchange.EditItem;
 import android.util.Log;
 
 import com.example.xchange.Category;
+import com.example.xchange.Image;
 import com.example.xchange.Item;
 import com.example.xchange.database.dao.ItemDao;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
@@ -22,12 +24,7 @@ public class EditItemPresenter {
         this.executor = executor;
     }
 
-    public void updateItem(Item item, String name, String description, String condition, String category) {
-        if (executor == null || ((ExecutorService) executor).isShutdown()) {
-            Log.e("EditItemPresenter", "Executor is invalid or shut down");
-            return;
-        }
-
+    public void updateItem(Item item, String name, String description, String condition, String category, ArrayList<Image> images) {
         executor.execute(() -> {
             try {
                 Category itemCategory = Category.fromDisplayName(category);
@@ -35,8 +32,8 @@ public class EditItemPresenter {
                 item.setItemDescription(description);
                 item.setItemCondition(condition);
                 item.setItemCategory(itemCategory);
-
-                itemDao.updateItem(item); // Ενημερώστε το αντικείμενο στη βάση δεδομένων
+                item.setItemImages(images); // Assuming `setItemImages` exists in your `Item` class
+                itemDao.updateItem(item);
             } catch (IllegalArgumentException e) {
                 Log.e("EditItemPresenter", "Invalid category: " + category, e);
             } catch (Exception e) {
@@ -44,4 +41,5 @@ public class EditItemPresenter {
             }
         });
     }
+
 }
