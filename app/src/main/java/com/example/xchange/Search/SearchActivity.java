@@ -71,7 +71,7 @@ public class SearchActivity extends AppCompatActivity {
 
         // Set up RecyclerView with Adapter
         searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        itemsAdapter = new ItemsAdapter(new ArrayList<>());
+        itemsAdapter = new ItemsAdapter(new ArrayList<>(),user);
         searchResultsRecyclerView.setAdapter(itemsAdapter);
 
         // Initialize ViewModel with Factory

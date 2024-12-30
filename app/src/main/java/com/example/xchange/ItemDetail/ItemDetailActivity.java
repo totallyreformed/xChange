@@ -52,8 +52,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             return;
         }
 
-        // Get User object from Intent
         User user = getIntent().getParcelableExtra("USER");
+        Toast.makeText(this, user.getUsername(), Toast.LENGTH_SHORT).show();
         if (user == null) {
             Toast.makeText(this, "User data not available", Toast.LENGTH_SHORT).show();
             finish();
@@ -96,13 +96,11 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemConditionTextView.setText("Condition: " + item.getItemCondition());
         itemXchangerTextView.setText("Posted by: " + item.getXchanger());
 
-        // Έλεγχος για εικόνες
+
         if (item.getFirstImage() != null) {
             String filePath = item.getFirstImage().getFilePath();
             if (filePath != null) {
-                Log.d("TEST", "Image file path: " + filePath);
                 try {
-                    // Έλεγχος αν είναι resource ID
                     int resourceId = Integer.parseInt(filePath);
                     Glide.with(this)
                             .load(resourceId)
@@ -110,7 +108,6 @@ public class ItemDetailActivity extends AppCompatActivity {
                             .error(R.drawable.image_placeholder)
                             .into(itemImageView);
                 } catch (NumberFormatException e) {
-                    // Αν δεν είναι resource ID, υποθέστε ότι είναι κανονική διαδρομή
                     Glide.with(this)
                             .load(filePath)
                             .placeholder(R.drawable.image_placeholder)
@@ -118,19 +115,16 @@ public class ItemDetailActivity extends AppCompatActivity {
                             .into(itemImageView);
                 }
             } else {
-                Log.e("ItemDetailActivity", "File path is null");
                 itemImageView.setImageResource(R.drawable.image_placeholder);
             }
         } else {
-            Log.e("ItemDetailActivity", "First image is null");
             itemImageView.setImageResource(R.drawable.image_placeholder);
         }
 
-        // Εμφάνιση ή απόκρυψη κουμπιών βάσει ιδιοκτησίας
         Button deleteButton = findViewById(R.id.deleteItemButton);
         Button editButton = findViewById(R.id.editItemButton);
 
-        if (user.getUsername().equals(item.getXchanger())) {
+        if (user.getUsername().trim().equals(item.getXchanger().trim())) {
             deleteButton.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
         } else {
@@ -138,5 +132,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
         }
     }
+
 
 }

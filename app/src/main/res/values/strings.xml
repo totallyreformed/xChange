@@ -72,4 +72,5 @@
     <string name="edit_item_name">Edit Item;s Name</string>
     <string name="upload_photo">Upload Photo</string> <!-- Add this line -->
     <string name="edit_item">Edit Item</string>
+    <string name="back">Back</string>
 </resources>

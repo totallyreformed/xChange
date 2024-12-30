@@ -59,15 +59,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up RecyclerView with Adapter
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        itemsAdapter = new ItemsAdapter(new ArrayList<>()); // Initialize with an empty list
-
-        // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
+        itemsAdapter = new ItemsAdapter(new ArrayList<>(), currentUser); // Περνάμε τον currentUser στον Adapter
         itemsAdapter.setOnItemClickListener(itemId -> {
             Intent detailIntent = new Intent(MainActivity.this, ItemDetailActivity.class);
             detailIntent.putExtra("ITEM_ID", itemId);
-            detailIntent.putExtra("USER",currentUser);
+            detailIntent.putExtra("USER", currentUser); // Χρήση του currentUser
             startActivity(detailIntent);
         });
 

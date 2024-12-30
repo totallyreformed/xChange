@@ -24,19 +24,17 @@ public class AllItemsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_items);
-
         RecyclerView allItemsRecyclerView = findViewById(R.id.allItemsRecyclerView);
         Button backButton = findViewById(R.id.backToProfileButton);
 
-        // Set up RecyclerView
-        allItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ItemsAdapter itemsAdapter = new ItemsAdapter(new ArrayList<>()); // Create adapter with empty list
-        allItemsRecyclerView.setAdapter(itemsAdapter);
-
-        // Retrieve items and user from intent
         Intent intent = getIntent();
         User user = intent.getParcelableExtra("USER");
         ArrayList<Item> items = intent.getParcelableArrayListExtra("ITEMS");
+
+        // Set up RecyclerView
+        allItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ItemsAdapter itemsAdapter = new ItemsAdapter(new ArrayList<>(),user); // Create adapter with empty list
+        allItemsRecyclerView.setAdapter(itemsAdapter);
 
         if (items == null || items.isEmpty()) {
             Toast.makeText(this, "No items available", Toast.LENGTH_SHORT).show();

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.xchange.Category;
 import com.example.xchange.Image;
 import com.example.xchange.Item;
@@ -116,10 +118,6 @@ public class UploadActivity extends AppCompatActivity {
                     .show();
         });
     }
-
-    /**
-     * Requests the MANAGE_EXTERNAL_STORAGE permission by directing the user to system settings.
-     */
     private void requestManageExternalStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 and above
             try {
@@ -133,10 +131,6 @@ public class UploadActivity extends AppCompatActivity {
             }
         }
     }
-
-    /**
-     * Opens the image picker intent.
-     */
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -147,52 +141,53 @@ public class UploadActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // This block can be used for handling older permissions if needed
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Handle MANAGE_EXTERNAL_STORAGE permission result
-        if (requestCode == MANAGE_ALL_FILES_ACCESS_PERMISSION_REQUEST_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 and above
-                if (Environment.isExternalStorageManager()) {
-                    // Permission granted, proceed with image upload
-                    openImagePicker();
-                } else {
-                    // Permission denied, inform the user
-                    Snackbar.make(findViewById(R.id.uploadConstraintLayout),
-                            "Permission denied to manage all files", Snackbar.LENGTH_LONG).show();
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri selectedImageUri = data.getData();
+            String filePath = getRealPathFromURI(selectedImageUri); // Μετατροπή του Uri σε πραγματική διαδρομή
+            if (filePath != null) {
+                try {
+                    imageUri = selectedImageUri; // Αποθήκευση Uri για μελλοντική χρήση
+                    Glide.with(this)
+                            .load(selectedImageUri)
+                            .placeholder(R.drawable.image_placeholder)
+                            .error(R.drawable.image_placeholder)
+                            .into(itemImageView); // Εμφάνιση εικόνας
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
                 }
-            }
-        }
-
-        // Handle Image Picker Result
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK
-                && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            try {
-                // Display selected image in ImageView without using Glide
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                itemImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Unable to retrieve file path", Toast.LENGTH_SHORT).show();
             }
         }
     }
+    private String getRealPathFromURI(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String filePath = cursor.getString(columnIndex);
+            cursor.close();
+            return filePath;
+        }
+        return null;
+    }
 
-    /**
-     * Validates input fields and uploads the item.
-     */
+
+
     private void finalizeUpload() {
         String itemName = itemNameEditText.getText().toString().trim();
         Category selectedCategory = (Category) categorySpinner.getSelectedItem();
         String selectedCondition = conditionSpinner.getSelectedItem().toString();
         String itemDescription = itemDescriptionEditText.getText().toString().trim();
 
-        // Validate required fields
         if (itemName.isEmpty()) {
             itemNameEditText.setError("Item name is required");
             itemNameEditText.requestFocus();
@@ -209,29 +204,18 @@ public class UploadActivity extends AppCompatActivity {
             return;
         }
 
-        if (itemDescription.isEmpty()) {
-            itemDescriptionEditText.setError("Item description is required");
-            itemDescriptionEditText.requestFocus();
-            return;
+        ArrayList<Image> images = new ArrayList<>();
+        if (imageUri != null) {
+            String filePath = getRealPathFromURI(imageUri); // Χρήση πραγματικής διαδρομής
+            if (filePath != null) {
+                images.add(new Image(filePath, "Uploaded item image"));
+            }
         }
-
-        // Image upload is optional; no need to validate imageUri
-
-        // Create Item object
-        Item newItem = new Item(
-                currentUser.getUsername(),
-                itemName,
-                itemDescription,
-                selectedCategory,
-                selectedCondition,
-                null // Image URI will be handled separately
-        );
-        viewModel.uploadItem(itemName,itemDescription,selectedCategory,selectedCondition,null, this::onUploadSuccess, this::onUploadFailure);
+        viewModel.uploadItem(itemName, itemDescription, selectedCategory, selectedCondition, images, this::onUploadSuccess, this::onUploadFailure);
     }
 
-    /**
-     * Callback for successful upload.
-     */
+
+
     private void onUploadSuccess() {
         runOnUiThread(() -> {
             Toast.makeText(UploadActivity.this, "Item uploaded successfully", Toast.LENGTH_SHORT).show();
@@ -239,11 +223,6 @@ public class UploadActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Callback for failed upload.
-     *
-     * @param errorMessage The error message to display.
-     */
     private void onUploadFailure(String errorMessage) {
         runOnUiThread(() -> {
             Toast.makeText(UploadActivity.this, "Upload failed: " + errorMessage, Toast.LENGTH_SHORT).show();
