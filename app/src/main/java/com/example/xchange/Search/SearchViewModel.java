@@ -30,55 +30,37 @@ public class SearchViewModel extends AndroidViewModel implements SearchPresenter
         currentUser = user.getUsername();
     }
 
-    /**
-     * Expose LiveData for search results.
-     *
-     * @return LiveData containing a list of items.
-     */
     public LiveData<List<Item>> getSearchResults() {
         return searchResults;
     }
 
-    /**
-     * Expose LiveData for error messages.
-     *
-     * @return LiveData containing error messages.
-     */
     public LiveData<String> getError() {
         return error;
     }
 
-    /**
-     * Initiate a search operation.
-     *
-     * @param query    The search query (item name).
-     * @param category The category to filter by (can be null or empty for no filtering).
-     */
 
     public void searchItems(String query, Category category) {
         if (category == null) {
-            // Perform search without category filter
             presenter.performSearch(query, null);
         } else {
-            // Perform search with category filter
-            presenter.performSearch(query, category);
+            presenter.performSearch(null, category);
         }
     }
 
     @Override
     public void onSearchResultsLoaded(List<Item> items) {
+        Log.d("SearchViewModel", "onSearchResultsLoaded called with items: " + items.size());
         List<Item> filteredItems = new ArrayList<>();
         for (Item item : items) {
-            Log.d("SearchViewModel", "Item Xchanger: " + item.getXchanger() + ", CurrentUser: " + currentUser);
+            Log.d("SearchViewModel", "Checking item: " + item.getItemId() + ", Xchanger: " + item.getXchanger());
             if (!Objects.equals(item.getXchanger(), currentUser)) {
-                Log.d("SearchViewModel", "Adding item: " + item.getItemId());
                 filteredItems.add(item);
-            } else {
-                Log.d("SearchViewModel", "Excluding item: " + item.getItemId());
             }
         }
-        searchResults.postValue(filteredItems); // Δημοσίευση των φιλτραρισμένων αποτελεσμάτων
+        Log.d("SearchViewModel", "Filtered items: " + filteredItems.size());
+        searchResults.postValue(filteredItems);
     }
+
 
     @Override
     public void onSearchFailed(String message) {

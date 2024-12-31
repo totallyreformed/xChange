@@ -53,7 +53,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
 
         User user = getIntent().getParcelableExtra("USER");
-        Toast.makeText(this, user.getUsername(), Toast.LENGTH_SHORT).show();
         if (user == null) {
             Toast.makeText(this, "User data not available", Toast.LENGTH_SHORT).show();
             finish();

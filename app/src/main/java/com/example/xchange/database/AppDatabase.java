@@ -56,16 +56,17 @@ public abstract class AppDatabase extends RoomDatabase {
                 UserDao dao = INSTANCE.userDao();
                 ItemDao dao_item= INSTANCE.itemDao();
 
-                // Add default users
+                //Admin
                 dao.insertUser(new User("admin", "admin@example.com", null, "IamtheAdmin", "HQ", "admin"));
+
+                //xChangers
                 xChanger testXchanger=new xChanger("testXChanger", "xchanger@example.com", null, "password123", "NY");
                 dao.insertUser(testXchanger);
                 xChanger swkratis=new xChanger("swkratis","swkratis@example.com",null,"swk","Piraeus");
                 dao.insertUser(swkratis);
 
-
-               swkratis.UploadItem("iphone11","Iphone 11 bought back in 2022, it works perfectly", Category.TECHNOLOGY,"Like new",null);
-
+                //items
+                swkratis.UploadItem("iphone11","Iphone 11 bought back in 2022, it works perfectly", Category.TECHNOLOGY,"Like new",null);
                 Image airforce = new Image(String.valueOf(R.drawable.testimage), "test");
                 ArrayList<Image> images = new ArrayList<>();
                 images.add(airforce);
@@ -77,9 +78,6 @@ public abstract class AppDatabase extends RoomDatabase {
                         "Used",
                         images
                 );
-
-
-
             });
         }
     };

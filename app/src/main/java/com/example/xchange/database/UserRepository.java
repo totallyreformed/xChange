@@ -1,6 +1,7 @@
 package com.example.xchange.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -14,7 +15,6 @@ import com.example.xchange.database.dao.UserDao;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 public class UserRepository {
     private final UserDao userDao;
@@ -58,7 +58,6 @@ public class UserRepository {
                 callback.onFailure("Invalid xChanger credentials");
             }
         });
-
     }
 
     public void loginAsAdmin(String username, String password, LoginCallback callback) {
@@ -87,6 +86,7 @@ public class UserRepository {
             }
         });
     }
+
     public LiveData<User> getUserByUsername(String username) {
         return userDao.findByUsername(username);
     }
@@ -114,12 +114,6 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Search for items by name (case-insensitive and partial matches).
-     *
-     * @param query    The search query.
-     * @param callback The callback to handle the results.
-     */
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -131,12 +125,6 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Filter items by category.
-     *
-     * @param category The category to filter by.
-     * @param callback The callback to handle the results.
-     */
     public void filterItemsByCategory(Category category, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -148,21 +136,35 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Search for items by name and filter by category simultaneously.
-     *
-     * @param query    The search query.
-     * @param category The category to filter by.
-     * @param callback The callback to handle the results.
-     */
     public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
-        executor.execute(() -> {
+        new Thread(() -> {
             try {
                 List<Item> items = itemDao.searchItemsByNameAndCategory(query, category);
-                callback.onSuccess(items);
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                    callback.onSuccess(items);
+                });
+
             } catch (Exception e) {
-                callback.onFailure("Error searching items by name and category.");
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onFailure("Error searching items"));
             }
-        });
+        }).start();
+    }
+
+
+
+    // Προσθήκη μεθόδου για τερματισμό του Executor
+    public void shutdownExecutor() {
+        Log.d("UserRepository", "Shutting down executor");
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                Log.e("UserRepository", "Executor did not terminate in the specified time.");
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            Log.e("UserRepository", "Shutdown interrupted", e);
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

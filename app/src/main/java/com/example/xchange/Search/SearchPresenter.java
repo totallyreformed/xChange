@@ -2,6 +2,7 @@
 package com.example.xchange.Search;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.xchange.Category;
 import com.example.xchange.Item;
@@ -23,13 +24,6 @@ public class SearchPresenter {
         this.userRepository = new UserRepository(context);
         this.view = view;
     }
-
-    /**
-     * Perform a search based on the provided query and category.
-     *
-     * @param query    The search query (item name).
-     * @param category The category to filter by (can be null or empty for no filtering).
-     */
 
     public void performSearch(String query, Category category) {
         if (category == null) {

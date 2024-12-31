@@ -3,6 +3,7 @@ package com.example.xchange.Search;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -50,26 +51,21 @@ public class SearchActivity extends AppCompatActivity {
         clearButton = findViewById(R.id.clearButton);
         searchResultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
 
-        // Retrieve the User object from the Intent
         Intent intent = getIntent();
         user = intent.getParcelableExtra("USER");
 
         if (user == null) {
             Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
-            // Optionally, redirect to LoginActivity if user data is missing
             Intent loginIntent = new Intent(SearchActivity.this, com.example.xchange.Login.LoginActivity.class);
             startActivity(loginIntent);
             finish();
             return;
         }
 
-        // Set up Spinner for category filter using the enum
-        ArrayAdapter<Category> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, Category.values());
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(adapter);
 
-        // Set up RecyclerView with Adapter
         searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         itemsAdapter = new ItemsAdapter(new ArrayList<>(),user);
         searchResultsRecyclerView.setAdapter(itemsAdapter);
@@ -105,10 +101,7 @@ public class SearchActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please enter a search query or select a category.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Pass null if Category.ALL is selected, else pass the selected Category
             Category categoryFilter = (selectedCategory == Category.ALL) ? null : selectedCategory;
-
             viewModel.searchItems(query, categoryFilter);
         });
 
@@ -116,7 +109,6 @@ public class SearchActivity extends AppCompatActivity {
         clearButton.setOnClickListener(v -> {
             // Clear search input
             searchEditText.setText("");
-            // Reset category spinner to "All"
             categorySpinner.setSelection(0);
             // Clear search results
             itemsAdapter.setItems(new ArrayList<>());

@@ -148,7 +148,7 @@ public class EditItemActivity extends AppCompatActivity {
 
     // Method for categories
     private List<String> getCategories() {
-        return Arrays.asList("Electronics", "Clothing", "Books", "Home Appliances", "Others");
+        return Arrays.asList("Technology", "Books", "Home Appliances", "Sports", "Fashion","Toys");
     }
 
     // Method for conditions
