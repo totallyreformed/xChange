@@ -97,6 +97,71 @@
                 android:backgroundTint="@color/primary"
                 android:textColor="@color/white"
                 android:elevation="2dp" />
+
+            <!-- Requests Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="16dp">
+
+                <!-- Requests Sent -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_marginEnd="16dp">
+
+                    <TextView
+                        android:id="@+id/requestsSentCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 Requests"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/secondary_text"
+                        android:gravity="center" />
+                    <Button
+                        android:id="@+id/requestsSentButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Requests Sent"
+                        android:textSize="16sp"
+                        android:backgroundTint="@color/primary"
+                        android:textColor="@color/white"
+                        android:elevation="2dp" />
+
+                </LinearLayout>
+
+                <!-- Requests Received -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_marginStart="16dp">
+                    <TextView
+                        android:id="@+id/requestsReceivedCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 Requests"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/secondary_text"
+                        android:gravity="center" />
+                    <Button
+                        android:id="@+id/requestsReceivedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Requests Received"
+                        android:textSize="16sp"
+                        android:backgroundTint="@color/primary"
+                        android:textColor="@color/white"
+                        android:elevation="2dp" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
