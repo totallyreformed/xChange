@@ -154,15 +154,12 @@ public class UserRepository {
 
     // Προσθήκη μεθόδου για τερματισμό του Executor
     public void shutdownExecutor() {
-        Log.d("UserRepository", "Shutting down executor");
         executor.shutdown();
         try {
             if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
-                Log.e("UserRepository", "Executor did not terminate in the specified time.");
                 executor.shutdownNow();
             }
         } catch (InterruptedException e) {
-            Log.e("UserRepository", "Shutdown interrupted", e);
             executor.shutdownNow();
             Thread.currentThread().interrupt();
         }

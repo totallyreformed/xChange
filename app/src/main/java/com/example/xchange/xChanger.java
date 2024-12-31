@@ -1,12 +1,8 @@
 package com.example.xchange;
 
 import com.example.xchange.database.AppDatabase;
-import com.example.xchange.database.dao.ItemDao;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import java.util.ArrayList;
-import android.content.Context;
 import android.util.Log;
 
 
@@ -21,9 +17,6 @@ public class xChanger extends User {
     private ArrayList<xChange> finalized;
     private int succeedDeals;
     private int failedDeals;
-
-    // Add an ExecutorService to manage threads
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public xChanger(String username, String email, SimpleCalendar join_date, String password, String location) {
         super(username, email, join_date, password, location, "xChanger");
@@ -92,7 +85,7 @@ public class xChanger extends User {
     }
 
     public void RequestItem(xChanger xchanger2, Item offered_item, Item requested_item) {
-        Request request = new Request(this, xchanger2, offered_item, requested_item, new SimpleCalendar(2024, 12, 3));
+        Request request = new Request(this, xchanger2, offered_item, requested_item, null);
     }
 
     public void plusOneSucceedDeal() {
@@ -152,5 +145,8 @@ public class xChanger extends User {
         return this.reports;
     }
     public ArrayList<Rating> getRatings(){return this.ratings;}
+    public void setItems(ArrayList<Item> items){
+        this.items=items;
+    }
 
 }

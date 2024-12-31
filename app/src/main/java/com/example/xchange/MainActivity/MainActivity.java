@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private ItemsAdapter itemsAdapter;
     private FloatingActionButton uploadFab;
 
-    @SuppressLint({"MissingInflatedId", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,18 +58,21 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up RecyclerView with Adapter
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
-        itemsAdapter = new ItemsAdapter(new ArrayList<>(), currentUser); // Περνάμε τον currentUser στον Adapter
+        // Use the custom factory to instantiate the ViewModel
+        MainActivityViewModelFactory factory = new MainActivityViewModelFactory(getApplication());
+        viewModel = new ViewModelProvider(this, factory).get(MainActivityViewModel.class);
+
+        itemsAdapter = new ItemsAdapter(new ArrayList<>(), currentUser);
         itemsAdapter.setOnItemClickListener(itemId -> {
             Intent detailIntent = new Intent(MainActivity.this, ItemDetailActivity.class);
             detailIntent.putExtra("ITEM_ID", itemId);
-            detailIntent.putExtra("USER", currentUser); // Χρήση του currentUser
+            detailIntent.putExtra("USER", currentUser);
             startActivity(detailIntent);
         });
 
         assert currentUser != null;
-        usernameTextView.setText("Welcome "+currentUser.getUsername().toUpperCase()+" !");
+        usernameTextView.setText("Welcome " + currentUser.getUsername().toUpperCase() + " !");
 
         itemsRecyclerView.setAdapter(itemsAdapter);
         viewModel.getItemsList().observe(this, items -> {
@@ -91,13 +93,13 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.menu_search) {
                 // Navigate to SearchActivity
                 Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
-                searchIntent.putExtra("USER", currentUser); // Pass the current User object
+                searchIntent.putExtra("USER", currentUser);
                 startActivity(searchIntent);
                 return true;
             } else if (itemId == R.id.menu_profile) {
                 // Navigate to ProfileActivity
                 Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
-                profileIntent.putExtra("USER", currentUser); // Pass the current User object
+                profileIntent.putExtra("USER", currentUser);
                 startActivity(profileIntent);
                 return true;
             } else {
@@ -106,3 +108,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+

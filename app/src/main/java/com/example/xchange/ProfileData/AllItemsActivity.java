@@ -1,8 +1,7 @@
-package com.example.xchange.Profile;
+package com.example.xchange.ProfileData;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 

@@ -195,5 +195,8 @@ public class Item implements Parcelable {
         }
         return null;
     }
-
+    @Override
+    public String toString() {
+        return itemName; // Επιστρέφουμε το όνομα του αντικειμένου
+    }
 }

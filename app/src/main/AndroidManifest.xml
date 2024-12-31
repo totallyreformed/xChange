@@ -12,10 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
         <activity
+            android:name=".request.RequestActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditItem.EditItemActivity"
             android:exported="false" />
         <activity
-            android:name=".Profile.AllItemsActivity"
+            android:name=".ProfileData.AllItemsActivity"
             android:exported="false" /> <!-- LoginActivity setup as the Launcher Activity -->
         <activity
             android:name=".Login.LoginActivity"

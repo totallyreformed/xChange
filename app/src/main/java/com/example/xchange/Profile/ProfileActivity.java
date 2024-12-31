@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.MainActivity.MainActivity;
+import com.example.xchange.ProfileData.AllItemsActivity;
 import com.example.xchange.R;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
