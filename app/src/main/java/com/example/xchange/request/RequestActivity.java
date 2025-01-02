@@ -65,11 +65,27 @@ public class RequestActivity extends AppCompatActivity {
         requesterNameTextView.setText("Requester: " + user.getUsername());
 
         if (requestedItem.getFirstImage() != null) {
-            Glide.with(this)
-                    .load(requestedItem.getFirstImage().getFilePath())
-                    .placeholder(R.drawable.image_placeholder)
-                    .error(R.drawable.image_placeholder)
-                    .into(requestedItemImageView);
+            String filePath = requestedItem.getFirstImage().getFilePath();
+            if (filePath != null) {
+                try {
+                    int resourceId = Integer.parseInt(filePath);
+                    Glide.with(this)
+                            .load(resourceId)
+                            .placeholder(R.drawable.image_placeholder)
+                            .error(R.drawable.image_placeholder)
+                            .into(requestedItemImageView);
+                } catch (NumberFormatException e) {
+                    Glide.with(this)
+                            .load(filePath)
+                            .placeholder(R.drawable.image_placeholder)
+                            .error(R.drawable.image_placeholder)
+                            .into(requestedItemImageView);
+                }
+            } else {
+                requestedItemImageView.setImageResource(R.drawable.image_placeholder);
+            }
+        } else {
+            requestedItemImageView.setImageResource(R.drawable.image_placeholder);
         }
 
         // Initialize ViewModel
@@ -101,4 +117,3 @@ public class RequestActivity extends AppCompatActivity {
         finish();
     }
 }
-
