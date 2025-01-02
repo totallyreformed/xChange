@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
         <activity
-            android:name=".ProfileData.Requests"
+            android:name=".ProfileData.RequestsActivity"
             android:exported="false" />
         <activity
             android:name=".request.RequestActivity"
