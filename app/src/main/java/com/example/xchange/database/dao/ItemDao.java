@@ -36,6 +36,9 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")
     LiveData<Item> getItemById(long itemId);
 
+    @Query("SELECT COUNT(*) from items")
+    LiveData<Integer> getItemCount();
+
     // Update an existing item
     @Update
     void updateItem(Item item);

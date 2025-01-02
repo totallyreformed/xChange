@@ -3,6 +3,7 @@ package com.example.xchange.MainActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,8 @@ import com.example.xchange.Profile.ProfileActivity;
 import com.example.xchange.R;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
+import com.example.xchange.MainActivity.AdminHomeFragment;
+import com.example.xchange.MainActivity.XChangerHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -27,10 +30,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private MainActivityViewModel viewModel;
-    private TextView usernameTextView;
-    private RecyclerView itemsRecyclerView;
     private ItemsAdapter itemsAdapter;
     private FloatingActionButton uploadFab;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,31 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         uploadFab = findViewById(R.id.uploadFab);
 
-        User currentUser = intent.getParcelableExtra("USER");
+        currentUser = intent.getParcelableExtra("USER");
+
+        if (currentUser != null) {
+            String userType = currentUser.getUser_type();
+            Log.d("MainActivity", "Logged in userType: " + userType); // Added for debugging
+
+            if ("admin".equalsIgnoreCase(userType)) {
+                // Load AdminHomeFragment into the fragment container
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new AdminHomeFragment())
+                        .commit();
+            } else if ("xChanger".equalsIgnoreCase(userType)) {
+                // Load XChangerHomeFragment into the fragment container
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new XChangerHomeFragment())
+                        .commit();
+            } else {
+                Toast.makeText(this, "Unknown user type", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        } else {
+            Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
         uploadFab.setOnClickListener(v -> {
             if (currentUser == null) {
                 Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
@@ -51,13 +77,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(uploadIntent);
         });
 
-        // Initialize Views
-        usernameTextView = findViewById(R.id.usernameTextView);
-        itemsRecyclerView = findViewById(R.id.itemsRecyclerView);
-        itemsRecyclerView.setNestedScrollingEnabled(true);
 
-        // Set up RecyclerView with Adapter
-        itemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Use the custom factory to instantiate the ViewModel
         MainActivityViewModelFactory factory = new MainActivityViewModelFactory(getApplication());
@@ -72,9 +92,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         assert currentUser != null;
-        usernameTextView.setText("Welcome " + currentUser.getUsername().toUpperCase() + " !");
 
-        itemsRecyclerView.setAdapter(itemsAdapter);
         viewModel.getItemsList().observe(this, items -> {
             if (items != null && !items.isEmpty()) {
                 itemsAdapter.setItems(items);
@@ -107,5 +125,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-}
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+}

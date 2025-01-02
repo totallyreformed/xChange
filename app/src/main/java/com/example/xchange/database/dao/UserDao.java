@@ -7,6 +7,7 @@ import androidx.room.Query;
 
 import com.example.xchange.Item;
 import com.example.xchange.User;
+import com.example.xchange.xChange;
 
 import java.util.List;
 
@@ -27,16 +28,26 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE user_type = 'admin'")
     List<User> getAllAdmins();
 
-    @Query("SELECT * FROM users WHERE username = :username AND password = :password")
-    User loginxChanger(String username, String password);
-
-    // Login for admin using username and password
-    @Query("SELECT * FROM users WHERE username = :username AND password = :password AND user_type = 'IamtheAdmin'")
-    User loginadmin(String username, String password);
+    // Add a universal login query
+    @Query("SELECT * FROM users WHERE username = :username AND password = :password LIMIT 1")
+    User loginUser(String username, String password);
 
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     LiveData<User> findByUsername(String username);
 
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     User findByUsername_initial(String username);
+
+    @Query("SELECT COUNT(*) FROM requests")
+    int getTotalRequests();
+
+    @Query("SELECT COUNT(*) FROM requests WHERE active = 0")
+    int getTotalExchanges();
+
+    @Query("SELECT COUNT(*) FROM items")
+    int getTotalItems();
+
+    // Modify the getTotalCategories query to use the correct column name 'itemCategory'
+    @Query("SELECT COUNT(DISTINCT item_category) FROM items")
+    int getTotalCategories();
 }

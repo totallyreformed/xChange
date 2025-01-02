@@ -19,13 +19,17 @@ public class LoginViewModel extends ViewModel implements LoginPresenter.LoginVie
         this.presenter = new LoginPresenter(context);
     }
 
-    public void loginAsXChanger(String username, String password) {
-        presenter.loginAsXChanger(username, password, this);
+    public void loginUser(String username, String password) {
+        presenter.loginUser(username, password, this);
     }
 
-    public void loginAsAdmin(String username, String password) {
-        presenter.loginAsAdmin(username, password, this);
-    }
+//    public void loginAsXChanger(String username, String password) {
+//        presenter.loginAsXChanger(username, password, this);
+//    }
+//
+//    public void loginAsAdmin(String username, String password) {
+//        presenter.loginAsAdmin(username, password, this);
+//    }
 
     public LiveData<User> getLoginSuccess() {
         return loginSuccess;

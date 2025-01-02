@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.example.xchange.R;
 import com.example.xchange.Register.RegisterActivity;
@@ -52,21 +54,29 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-
         viewModel.getLoginFailure().observe(this, message ->
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-
         );
 
         loginButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
 
+//            if (username.isEmpty() || password.isEmpty()) {
+//                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+//            } else {
+//                String selectedRole = roleSpinner.getSelectedItem().toString();
+//                if (selectedRole.equals("Admin")) {
+//                    viewModel.loginAsAdmin(username, password);
+//                } else {
+//                    viewModel.loginAsXChanger(username, password);
+//                }
+//            }
+
             if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             } else {
-                viewModel.loginAsXChanger(username, password); // You can replace with loginAsAdmin if needed
+                viewModel.loginUser(username, password);
             }
         });
         signUpTextView.setOnClickListener(v -> {

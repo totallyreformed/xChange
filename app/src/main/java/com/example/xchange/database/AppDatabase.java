@@ -40,7 +40,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v4.db")
+                                    AppDatabase.class, "xchange_database_v6.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
@@ -61,7 +61,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 RequestDao requestDao = INSTANCE.requestDao();
 
                 // Admin user
-                userDao.insertUser(new User("admin", "admin@example.com", null, "IamtheAdmin", "HQ", "admin"));
+                userDao.insertUser(new User("admin", "admin@example.com", null, "admin", "HQ", "admin"));
 
                 // xChangers
                 xChanger testXchanger = new xChanger("testXChanger", "xchanger@example.com", null, "password123", "NY");

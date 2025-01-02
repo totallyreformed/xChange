@@ -2,10 +2,8 @@ package com.example.xchange.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import com.example.xchange.Request;
 
@@ -37,4 +35,17 @@ public interface RequestDao {
     // Delete all requests
     @Query("DELETE FROM requests")
     void deleteAllRequests();
+
+    @Query("SELECT * FROM requests")
+    List<Request> getAllReceivedRequests();
+
+    @Query("SELECT * FROM requests")
+    List<Request> getAllSentRequests();
+
+    @Query("SELECT COUNT(*) FROM requests")
+    LiveData<Integer> getRequestsSentCount();
+
+    @Query("SELECT COUNT(*) FROM requests")
+    LiveData<Integer> getRequestsReceivedCount();
+
 }

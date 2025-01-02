@@ -20,8 +20,8 @@ public class LoginPresenter {
     }
 
 
-    public void loginAsXChanger(String username, String password, LoginView view) {
-        userRepository.loginAsXChanger(username, password, new UserRepository.LoginCallback() {
+    public void loginUser(String username, String password, LoginView view) {
+        userRepository.loginUser(username, password, new UserRepository.LoginCallback() {
             @Override
             public void onSuccess(User user) {
                 view.onLoginSuccess(user);
@@ -34,19 +34,33 @@ public class LoginPresenter {
         });
     }
 
-    public void loginAsAdmin(String username, String password, LoginView view) {
-        userRepository.loginAsAdmin(username, password, new UserRepository.LoginCallback() {
-            @Override
-            public void onSuccess(User user) {
-                view.onLoginSuccess(user);
-            }
-
-            @Override
-            public void onFailure(String message) {
-                view.onLoginFailure(message);
-            }
-        });
-    }
+//    public void loginAsXChanger(String username, String password, LoginView view) {
+//        userRepository.loginAsXChanger(username, password, new UserRepository.LoginCallback() {
+//            @Override
+//            public void onSuccess(User user) {
+//                view.onLoginSuccess(user);
+//            }
+//
+//            @Override
+//            public void onFailure(String message) {
+//                view.onLoginFailure(message);
+//            }
+//        });
+//    }
+//
+//    public void loginAsAdmin(String username, String password, LoginView view) {
+//        userRepository.loginAsAdmin(username, password, new UserRepository.LoginCallback() {
+//            @Override
+//            public void onSuccess(User user) {
+//                view.onLoginSuccess(user);
+//            }
+//
+//            @Override
+//            public void onFailure(String message) {
+//                view.onLoginFailure(message);
+//            }
+//        });
+//    }
 
     public LiveData<User> getUserByUsername(String username) {
         return userRepository.getUserByUsername(username);
