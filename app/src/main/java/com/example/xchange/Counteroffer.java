@@ -6,7 +6,7 @@ public class Counteroffer {
     private Item requested_item;
     private final xChanger counterofferer;
     private final xChanger counterofferee;
-    private final Long counteroffer_id;
+    private final Long counteroffer_id; // Derived from the request's Room-generated ID
     private String message;
     private Boolean active;
 
@@ -17,13 +17,16 @@ public class Counteroffer {
         if (item == null) {
             throw new IllegalArgumentException("Offered item cannot be null.");
         }
+        if (request.getRequestId() == null) {
+            throw new IllegalStateException("Request ID cannot be null. Ensure the Request is saved in the database.");
+        }
 
         this.counterofferer = request.getRequester();
         this.counterofferee = request.getRequestee();
         this.request = request;
         this.offered_item = item;
         this.requested_item = request.getRequestedItem();
-        this.counteroffer_id = request.getRequestID();
+        this.counteroffer_id = request.getRequestId(); // Use the Room-managed ID
         this.message = message;
         this.active = true;
 

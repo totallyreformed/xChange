@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.Item;
 import com.example.xchange.User;
+import com.example.xchange.xChanger;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class RequestViewModel extends ViewModel {
         presenter.loadUserItems(username);
     }
 
-    public void sendRequest(User requester, User requestee, Item offeredItem, Item requestedItem) {
+    public void sendRequest(xChanger requester, xChanger requestee, Item offeredItem, Item requestedItem) {
         presenter.createRequest(requester, requestee, offeredItem, requestedItem);
     }
 

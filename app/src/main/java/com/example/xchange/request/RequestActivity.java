@@ -27,6 +27,10 @@ public class RequestActivity extends AppCompatActivity {
     private User user, itemOwner;
     private Spinner userItemsSpinner;
 
+    // Δηλώνουμε Requester και Requestee ως πεδία της κλάσης
+    private xChanger Requester;
+    private xChanger Requestee;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +49,9 @@ public class RequestActivity extends AppCompatActivity {
         user = getIntent().getParcelableExtra("USER");
         itemOwner = getIntent().getParcelableExtra("ITEM_OWNER");
 
-        xChanger Requester=new xChanger(user.getUsername(),user.getEmail(),user.getJoin_Date(),user.getPassword(),user.getLocation());
-        xChanger Requestee=new xChanger(itemOwner.getUsername(),itemOwner.getEmail(),itemOwner.getJoin_Date(),itemOwner.getPassword(),itemOwner.getLocation());
-
+        // Δημιουργούμε τα αντικείμενα Requester και Requestee
+        Requester = new xChanger(user.getUsername(), user.getEmail(), user.getJoin_Date(), user.getPassword(), user.getLocation());
+        Requestee = new xChanger(itemOwner.getUsername(), itemOwner.getEmail(), itemOwner.getJoin_Date(), itemOwner.getPassword(), itemOwner.getLocation());
 
         if (requestedItem == null || user == null || itemOwner == null) {
             Toast.makeText(this, "Error loading request details.", Toast.LENGTH_SHORT).show();
@@ -80,6 +84,9 @@ public class RequestActivity extends AppCompatActivity {
                 Toast.makeText(this, "No items found for the requester.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Set button click listener
+        sendRequestButton.setOnClickListener(v -> handleSendRequest());
     }
 
     private void handleSendRequest() {
@@ -89,9 +96,9 @@ public class RequestActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select an item to offer.", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        viewModel.sendRequest(user, itemOwner, offeredItem, requestedItem);
+        viewModel.sendRequest(Requester, Requestee, offeredItem, requestedItem);
         Toast.makeText(this, "Request sent successfully!", Toast.LENGTH_SHORT).show();
         finish();
     }
 }
+

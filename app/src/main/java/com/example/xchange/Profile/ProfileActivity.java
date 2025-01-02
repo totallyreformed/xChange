@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView;
+    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView,requestsSentCountTextView,requestsReceivedCountTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,8 @@ public class ProfileActivity extends AppCompatActivity {
         userTypeTextView = findViewById(R.id.profileUserTypeTextView);
         locationTextView = findViewById(R.id.profileLocationTextView);
         statsTextView = findViewById(R.id.profileStatsTextView);
+        requestsSentCountTextView = findViewById(R.id.requestsSentCountTextView);
+        requestsReceivedCountTextView = findViewById(R.id.requestsReceivedCountTextView);
 
         // Retrieve the User object from the Intent
         Intent intent = getIntent();
@@ -81,6 +83,14 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        viewModel.getSentRequestsCount().observe(this, count -> {
+            requestsSentCountTextView.setText(count + " Requests Sent");
+        });
+
+        viewModel.getReceivedRequestsCount().observe(this, count -> {
+            requestsReceivedCountTextView.setText(count + " Requests Received");
+        });
+
         // Navigate to AllItemsActivity
         Button viewAllItemsButton = findViewById(R.id.viewAllItemsButton);
         viewAllItemsButton.setOnClickListener(v -> {
@@ -93,6 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
         // Request Profile data
         viewModel.loadProfileData();
         viewModel.loadUserItems();
+        viewModel.loadRequestsCount();
 
         // Initialize BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);

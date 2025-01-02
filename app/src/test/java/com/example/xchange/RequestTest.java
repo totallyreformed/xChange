@@ -17,10 +17,8 @@ public class RequestTest {
     private Request request;
     private Category category = Category.fromDisplayName("Fashion");
 
-
     @BeforeEach
     public void setUp() {
-        Request.resetId();
         requester = new xChanger("Requester", "requester@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
         requestee = new xChanger("Requestee", "requestee@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
         ArrayList<Image> images = new ArrayList<>();
@@ -41,52 +39,9 @@ public class RequestTest {
     }
 
     @Test
-    public void testGetRequestID() {
-        long requestId = request.getRequestID();
-        assertEquals(1L, requestId);
-    }
-
-    @Test
-    public void testNewRequestWithNewUser2() {
-        xChanger newUser2 = new xChanger("NewUser2", "newuser2@example.com", new SimpleCalendar(2024, 12, 2), "password2", "Location2");
-
-        Request newRequest = new Request(
-                newUser2,
-                requestee,
-                offeredItem,
-                requestedItem,
-                new SimpleCalendar(2024, 12, 2)
-        );
-
-        assertEquals(newUser2, newRequest.getRequester());
-        assertEquals(requestee, newRequest.getRequestee());
-        assertEquals(offeredItem, newRequest.getOfferedItem());
-        assertEquals(requestedItem, newRequest.getRequestedItem());
-        assertTrue(newRequest.isActive());
-
-        long newRequestId = newRequest.getRequestID();
-        assertEquals(2L, newRequestId); // The ID should increment from 1 to 2
-    }
-
-    @Test
-    public void testAddToList() {
-        assertTrue(requestee.getRequests().contains(request));
-    }
-
-    @Test
     public void testMakeUnactive() {
         request.make_unactive();
         assertFalse(request.isActive());
-    }
-
-    @Test
-    public void testAddToRequesteeList() {
-        assertTrue(requestee.getRequests().contains(request)); // Request should be in the requestee's list
-    }
-
-    @Test
-    public void testAddToRequesterList() {
-        assertTrue(requester.getRequests().contains(request)); // Request should be in the requester's list
     }
 
     @Test

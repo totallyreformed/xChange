@@ -16,7 +16,7 @@ public class xChange {
             throw new IllegalArgumentException("Request and date_finalized cannot be null.");
         }
         this.request = request;
-        this.finalized_id = request.getRequestID();
+        this.finalized_id = request.getRequestId();
         this.date_finalized = date_finalized;
         this.deal_status = null;
         this.offerer = request.getRequester();
@@ -31,7 +31,7 @@ public class xChange {
         }
         this.counteroffer = counteroffer;
         this.request = request;
-        this.finalized_id = request.getRequestID();
+        this.finalized_id = request.getRequestId();
         this.date_finalized = date_finalized;
         this.deal_status = null;
         this.offerer = counteroffer.getCounterofferer();

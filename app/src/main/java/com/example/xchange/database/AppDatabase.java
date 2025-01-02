@@ -7,23 +7,25 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.xchange.Category;
 import com.example.xchange.Image;
 import com.example.xchange.Item;
+import com.example.xchange.Request;
 import com.example.xchange.R;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 
 import com.example.xchange.database.dao.ItemDao;
+import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
 import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class,Item.class}, version = 2, exportSchema = false)
+@Database(entities = {User.class, Item.class, Request.class}, version = 2, exportSchema = false)
 @TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -31,13 +33,14 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract UserDao userDao();
     public abstract ItemDao itemDao();
+    public abstract RequestDao requestDao();
 
     public static AppDatabase getInstance(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v3.db")
+                                    AppDatabase.class, "xchange_database_v4.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
@@ -53,20 +56,21 @@ public abstract class AppDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             Executors.newSingleThreadExecutor().execute(() -> {
-                UserDao dao = INSTANCE.userDao();
-                ItemDao dao_item= INSTANCE.itemDao();
+                UserDao userDao = INSTANCE.userDao();
+                ItemDao itemDao = INSTANCE.itemDao();
+                RequestDao requestDao = INSTANCE.requestDao();
 
-                //Admin
-                dao.insertUser(new User("admin", "admin@example.com", null, "IamtheAdmin", "HQ", "admin"));
+                // Admin user
+                userDao.insertUser(new User("admin", "admin@example.com", null, "IamtheAdmin", "HQ", "admin"));
 
-                //xChangers
-                xChanger testXchanger=new xChanger("testXChanger", "xchanger@example.com", null, "password123", "NY");
-                dao.insertUser(testXchanger);
-                xChanger swkratis=new xChanger("swkratis","swkratis@example.com",null,"swk","Piraeus");
-                dao.insertUser(swkratis);
+                // xChangers
+                xChanger testXchanger = new xChanger("testXChanger", "xchanger@example.com", null, "password123", "NY");
+                userDao.insertUser(testXchanger);
+                xChanger swkratis = new xChanger("swkratis", "swkratis@example.com", null, "swk", "Piraeus");
+                userDao.insertUser(swkratis);
 
-                //items
-                swkratis.UploadItem("iphone11","Iphone 11 bought back in 2022, it works perfectly", Category.TECHNOLOGY,"Like new",null);
+                // Items
+                swkratis.UploadItem("iphone11", "Iphone 11 bought back in 2022, it works perfectly", Category.TECHNOLOGY, "Like new", null);
                 Image airforce = new Image(String.valueOf(R.drawable.testimage), "test");
                 ArrayList<Image> images = new ArrayList<>();
                 images.add(airforce);
@@ -78,13 +82,29 @@ public abstract class AppDatabase extends RoomDatabase {
                         "Used",
                         images
                 );
+
+                // Requests (Optional prepopulation)
+                Request request = new Request(
+                        testXchanger,
+                        swkratis,
+                        new Item(), // Replace with a valid Item
+                        new Item(), // Replace with a valid Item
+                        new SimpleCalendar(2024, 12, 1)
+                );
+                requestDao.insertRequest(request);
             });
         }
     };
+
     public static ItemDao getItemDao() {
         return INSTANCE.itemDao();
     }
+
     public static UserDao getUserDao() {
         return INSTANCE.userDao();
+    }
+
+    public static RequestDao getRequestDao() {
+        return INSTANCE.requestDao();
     }
 }

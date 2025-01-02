@@ -16,6 +16,12 @@ public class ProfilePresenter {
         void onProfileDataFailed(String message);
         void onUserItemsLoaded(List<Item> items);
         void onUserItemsFailed(String message);
+
+        void onSentRequestsCountLoaded(int count);
+
+        void onReceivedRequestsCountLoaded(int count);
+
+        void onRequestsCountFailed(String message);
     }
 
     private final UserRepository userRepository;
@@ -57,4 +63,33 @@ public class ProfilePresenter {
             }
         });
     }
+    public void loadRequestsCount() {
+        // Requests Sent
+        userRepository.getSentRequestsCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
+            @Override
+            public void onSuccess(int count) {
+                view.onSentRequestsCountLoaded(count);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onRequestsCountFailed(message);
+            }
+        });
+
+        // Requests Received
+        userRepository.getReceivedRequestsCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
+            @Override
+            public void onSuccess(int count) {
+                view.onReceivedRequestsCountLoaded(count);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onRequestsCountFailed(message);
+            }
+        });
+    }
+
+
 }
