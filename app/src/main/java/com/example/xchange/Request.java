@@ -89,6 +89,13 @@ public class Request implements Parcelable {
     public void make_unactive(){
         this.active=false;
     }
+    public String getStatus(){
+        if (this.active){
+            return "Active";
+        }else{
+            return "Inactive";
+        }
+    }
 
 
     public Item getRequestedItem() {

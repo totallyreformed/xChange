@@ -1,6 +1,9 @@
 package com.example.xchange;
 
-public class Counteroffer {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Counteroffer implements Parcelable {
     private final Request request;
     private Item offered_item;
     private Item requested_item;
@@ -10,6 +13,7 @@ public class Counteroffer {
     private String message;
     private Boolean active;
 
+    // Constructor
     public Counteroffer(Request request, String message, Item item) {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null.");
@@ -96,5 +100,51 @@ public class Counteroffer {
 
     public void make_unactive() {
         this.active = false;
+    }
+
+    // Parcelable Implementation
+    protected Counteroffer(Parcel in) {
+        request = in.readParcelable(Request.class.getClassLoader());
+        offered_item = in.readParcelable(Item.class.getClassLoader());
+        requested_item = in.readParcelable(Item.class.getClassLoader());
+        counterofferer = in.readParcelable(xChanger.class.getClassLoader());
+        counterofferee = in.readParcelable(xChanger.class.getClassLoader());
+        counteroffer_id = in.readByte() == 0 ? null : in.readLong();
+        message = in.readString();
+        active = in.readByte() != 0;
+    }
+
+    public static final Creator<Counteroffer> CREATOR = new Creator<Counteroffer>() {
+        @Override
+        public Counteroffer createFromParcel(Parcel in) {
+            return new Counteroffer(in);
+        }
+
+        @Override
+        public Counteroffer[] newArray(int size) {
+            return new Counteroffer[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(request, flags);
+        dest.writeParcelable(offered_item, flags);
+        dest.writeParcelable(requested_item, flags);
+        dest.writeParcelable(counterofferer, flags);
+        dest.writeParcelable(counterofferee, flags);
+        if (counteroffer_id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(counteroffer_id);
+        }
+        dest.writeString(message);
+        dest.writeByte((byte) (active ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

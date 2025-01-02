@@ -1,6 +1,9 @@
 package com.example.xchange;
 
-public class xChange {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class xChange implements Parcelable {
     private String deal_status;
     private Request request;
     private Counteroffer counteroffer;
@@ -11,6 +14,7 @@ public class xChange {
     private Item offered_item;
     private Item requested_item;
 
+    // Constructors
     public xChange(Request request, SimpleCalendar date_finalized) {
         if (request == null || date_finalized == null) {
             throw new IllegalArgumentException("Request and date_finalized cannot be null.");
@@ -84,6 +88,58 @@ public class xChange {
         return this.deal_status;
     }
 
+    // Parcelable Implementation
+    protected xChange(Parcel in) {
+        deal_status = in.readString();
+        request = in.readParcelable(Request.class.getClassLoader());
+        counteroffer = in.readParcelable(Counteroffer.class.getClassLoader());
+        if (in.readByte() == 0) {
+            finalized_id = null;
+        } else {
+            finalized_id = in.readLong();
+        }
+        date_finalized = in.readParcelable(SimpleCalendar.class.getClassLoader());
+        offerer = in.readParcelable(xChanger.class.getClassLoader());
+        offeree = in.readParcelable(xChanger.class.getClassLoader());
+        offered_item = in.readParcelable(Item.class.getClassLoader());
+        requested_item = in.readParcelable(Item.class.getClassLoader());
+    }
+
+    public static final Creator<xChange> CREATOR = new Creator<xChange>() {
+        @Override
+        public xChange createFromParcel(Parcel in) {
+            return new xChange(in);
+        }
+
+        @Override
+        public xChange[] newArray(int size) {
+            return new xChange[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(deal_status);
+        dest.writeParcelable(request, flags);
+        dest.writeParcelable(counteroffer, flags);
+        if (finalized_id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(finalized_id);
+        }
+        dest.writeParcelable(date_finalized, flags);
+        dest.writeParcelable(offerer, flags);
+        dest.writeParcelable(offeree, flags);
+        dest.writeParcelable(offered_item, flags);
+        dest.writeParcelable(requested_item, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     // Methods to accept or reject the offer
     public String acceptOffer(float ratingValue) {
         this.setDealStatus("Accepted");
@@ -108,7 +164,7 @@ public class xChange {
 
         // Add rating to offeree
         Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
-        this.getOfferee().addRating(rating); // Using addRating for dynamic average rating updates
+        this.getOfferee().addRating(rating);
 
         return this.getOfferee().getEmail();
     }
@@ -132,6 +188,6 @@ public class xChange {
 
         // Add rating to offeree
         Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
-        this.getOfferee().addRating(rating); // Using addRating for dynamic average rating updates
+        this.getOfferee().addRating(rating);
     }
 }

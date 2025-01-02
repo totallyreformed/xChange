@@ -2,6 +2,7 @@ package com.example.xchange.Profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,8 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.ProfileData.AllItemsActivity;
-import com.example.xchange.ProfileData.Requests;
+import com.example.xchange.ProfileData.RequestsActivity;
 import com.example.xchange.R;
+import com.example.xchange.Request;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -101,22 +103,46 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(allItemsIntent);
         });
 
+
+        ArrayList<Request> sentRequests = new ArrayList<>();
+        ArrayList<Request> receivedRequests = new ArrayList<>();
+        viewModel.loadRequests();
+
+        viewModel.getRequestsSent().observe(this, sent -> {
+            if (sent != null) {
+                sentRequests.clear();
+                sentRequests.addAll(sent);
+            }
+        });
+
+        viewModel.getRequestsReceived().observe(this, received -> {
+            if (received != null) {
+                receivedRequests.clear();
+                receivedRequests.addAll(received);
+
+            }
+        });
+
         Button requestsSent = findViewById(R.id.requestsSentButton);
         Button requestsReceived = findViewById(R.id.requestsReceivedButton);
 
         requestsSent.setOnClickListener(v -> {
-            Intent showRequestsSent = new Intent(ProfileActivity.this, Requests.class);
+            Intent showRequestsSent = new Intent(ProfileActivity.this, RequestsActivity.class);
             showRequestsSent.putExtra("REQUEST_TYPE", "SENT");
             showRequestsSent.putExtra("USER", user);
+            showRequestsSent.putParcelableArrayListExtra("REQUESTS", sentRequests); // Use consistent key
             startActivity(showRequestsSent);
         });
 
         requestsReceived.setOnClickListener(v -> {
-            Intent showRequestsReceived = new Intent(ProfileActivity.this, Requests.class);
+            Intent showRequestsReceived = new Intent(ProfileActivity.this, RequestsActivity.class);
             showRequestsReceived.putExtra("REQUEST_TYPE", "RECEIVED");
+            showRequestsReceived.putParcelableArrayListExtra("REQUESTS", receivedRequests); // Use consistent key
             showRequestsReceived.putExtra("USER", user);
             startActivity(showRequestsReceived);
         });
+
+
 
         // Request Profile data
         viewModel.loadProfileData();

@@ -13,6 +13,7 @@ import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.UserDao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +56,14 @@ public class UserRepository {
     }
     public interface UserRequestsCallback {
         void onSuccess(int count);
+        void onFailure(String message);
+    }
+    public interface UserRequestsReceivedCallback {
+        void onSuccess(List<Request> requests);
+        void onFailure(String message);
+    }
+    public interface UserRequestsSentCallback {
+        void onSuccess(List<Request> requests);
         void onFailure(String message);
     }
 
@@ -199,7 +208,6 @@ public class UserRepository {
                 }
                 callback.onSuccess(count);
             } catch (Exception e) {
-                Log.e("UserRepository", "Error fetching sent requests count", e);
                 callback.onFailure("Failed to fetch sent requests count: " + e.getMessage());
             }
         });
@@ -222,5 +230,39 @@ public class UserRepository {
             }
         });
     }
+    public void getRequestsReceived(String username, UserRequestsReceivedCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
+                List<Request> receivedRequests = new ArrayList<>();
+                for (Request req : requests) {
+                    if (Objects.equals(req.getRequestee().getUsername(), username)) {
+                        receivedRequests.add(req);
+                    }
+                }
+                callback.onSuccess(receivedRequests);
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch received requests: " + e.getMessage());
+            }
+        });
+    }
+    public void getSentRequests(String username, UserRequestsSentCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
+                List<Request> sentRequests = new ArrayList<>();
+                for (Request req : requests) {
+                    if (Objects.equals(req.getRequester().getUsername(), username)) {
+                        sentRequests.add(req);
+                    }
+                }
+                callback.onSuccess(sentRequests);
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch sent requests: " + e.getMessage());
+            }
+        });
+    }
+
+
 
 }

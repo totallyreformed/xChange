@@ -1,11 +1,11 @@
-// ProfilePresenter.java
 package com.example.xchange.Profile;
 
 import android.content.Context;
 
 import com.example.xchange.Item;
-import com.example.xchange.database.UserRepository;
+import com.example.xchange.Request;
 import com.example.xchange.User;
+import com.example.xchange.database.UserRepository;
 
 import java.util.List;
 
@@ -16,13 +16,13 @@ public class ProfilePresenter {
         void onProfileDataFailed(String message);
         void onUserItemsLoaded(List<Item> items);
         void onUserItemsFailed(String message);
-
         void onSentRequestsCountLoaded(int count);
-
         void onReceivedRequestsCountLoaded(int count);
-
         void onRequestsCountFailed(String message);
+        void onReceivedRequestsLoaded(List<Request> requests);
+        void onSentRequestsLoaded(List<Request> requests);
     }
+
 
     private final UserRepository userRepository;
     private final ProfileView view;
@@ -35,7 +35,6 @@ public class ProfilePresenter {
     }
 
     public void loadProfileData() {
-        // Fetch user statistics from repository
         userRepository.getUserStatistics(user.getUsername(), new UserRepository.UserStatisticsCallback() {
             @Override
             public void onSuccess(String stats) {
@@ -50,7 +49,6 @@ public class ProfilePresenter {
     }
 
     public void loadUserItems() {
-        // Fetch user items from repository
         userRepository.getItemsByUsername(user.getUsername(), new UserRepository.UserItemsCallback() {
             @Override
             public void onSuccess(List<Item> items) {
@@ -63,8 +61,8 @@ public class ProfilePresenter {
             }
         });
     }
+
     public void loadRequestsCount() {
-        // Requests Sent
         userRepository.getSentRequestsCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
             @Override
             public void onSuccess(int count) {
@@ -77,7 +75,6 @@ public class ProfilePresenter {
             }
         });
 
-        // Requests Received
         userRepository.getReceivedRequestsCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
             @Override
             public void onSuccess(int count) {
@@ -90,6 +87,32 @@ public class ProfilePresenter {
             }
         });
     }
+    public void loadReceivedRequests() {
+        userRepository.getRequestsReceived(user.getUsername(), new UserRepository.UserRequestsReceivedCallback() {
+            @Override
+            public void onSuccess(List<Request> requests) {
+                view.onReceivedRequestsLoaded(requests);
+            }
 
+            @Override
+            public void onFailure(String message) {
+                view.onRequestsCountFailed(message);
+            }
+        });
+    }
+
+    public void loadSentRequests() {
+        userRepository.getSentRequests(user.getUsername(), new UserRepository.UserRequestsSentCallback() {
+            @Override
+            public void onSuccess(List<Request> requests) {
+                view.onSentRequestsLoaded(requests);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onRequestsCountFailed(message);
+            }
+        });
+    }
 
 }

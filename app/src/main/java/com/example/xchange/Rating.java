@@ -1,6 +1,9 @@
 package com.example.xchange;
 
-public class Rating {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Rating implements Parcelable {
     private float rating;
     private final xChanger rater;
     private final xChanger ratee;
@@ -14,6 +17,41 @@ public class Rating {
         this.ratee = ratee;
         this.request = request;
         this.xChange = xChange;
+    }
+
+    // Parcelable Constructor
+    protected Rating(Parcel in) {
+        rating = in.readFloat();
+        rater = in.readParcelable(xChanger.class.getClassLoader());
+        ratee = in.readParcelable(xChanger.class.getClassLoader());
+        request = in.readParcelable(Request.class.getClassLoader());
+        xChange = in.readParcelable(xChange.class.getClassLoader());
+    }
+
+    public static final Creator<Rating> CREATOR = new Creator<Rating>() {
+        @Override
+        public Rating createFromParcel(Parcel in) {
+            return new Rating(in);
+        }
+
+        @Override
+        public Rating[] newArray(int size) {
+            return new Rating[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(rating);
+        dest.writeParcelable(rater, flags);
+        dest.writeParcelable(ratee, flags);
+        dest.writeParcelable(request, flags);
+        dest.writeParcelable(xChange, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     // Getter for rating
