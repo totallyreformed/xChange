@@ -10,12 +10,6 @@ import com.example.xchange.Category;
 
 public class CategoryConverter {
 
-    /**
-     * Converts a Category enum to its corresponding String representation.
-     *
-     * @param category The Category enum.
-     * @return The String name of the category, or null if category is null.
-     */
     @TypeConverter
     public static String fromCategory(Category category) {
         String categoryName = (category == null) ? null : category.name();
@@ -23,12 +17,6 @@ public class CategoryConverter {
         return categoryName;
     }
 
-    /**
-     * Converts a String back to its corresponding Category enum.
-     *
-     * @param categoryString The String representation of the category.
-     * @return The Category enum, or Category.ALL if the string is null or doesn't match any enum.
-     */
     @TypeConverter
     public static Category toCategory(String categoryString) {
         if (categoryString == null) {

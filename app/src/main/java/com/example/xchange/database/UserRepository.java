@@ -1,20 +1,22 @@
 package com.example.xchange.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.example.xchange.Category;
 import com.example.xchange.Item;
+import com.example.xchange.Request;
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.UserDao;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 public class UserRepository {
     private final UserDao userDao;
@@ -47,6 +49,15 @@ public class UserRepository {
         void onSuccess(List<Item> items);
         void onFailure(String message);
     }
+    public interface SaveRequestCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
+    public interface UserRequestsCallback {
+        void onSuccess(int count);
+        void onFailure(String message);
+    }
+
 
     // Login as xChanger
     public void loginAsXChanger(String username, String password, LoginCallback callback) {
@@ -58,7 +69,6 @@ public class UserRepository {
                 callback.onFailure("Invalid xChanger credentials");
             }
         });
-
     }
 
     public void loginAsAdmin(String username, String password, LoginCallback callback) {
@@ -87,6 +97,7 @@ public class UserRepository {
             }
         });
     }
+
     public LiveData<User> getUserByUsername(String username) {
         return userDao.findByUsername(username);
     }
@@ -114,12 +125,6 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Search for items by name (case-insensitive and partial matches).
-     *
-     * @param query    The search query.
-     * @param callback The callback to handle the results.
-     */
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -131,12 +136,6 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Filter items by category.
-     *
-     * @param category The category to filter by.
-     * @param callback The callback to handle the results.
-     */
     public void filterItemsByCategory(Category category, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -148,21 +147,80 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Search for items by name and filter by category simultaneously.
-     *
-     * @param query    The search query.
-     * @param category The category to filter by.
-     * @param callback The callback to handle the results.
-     */
     public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
-        executor.execute(() -> {
+        new Thread(() -> {
             try {
                 List<Item> items = itemDao.searchItemsByNameAndCategory(query, category);
-                callback.onSuccess(items);
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                    callback.onSuccess(items);
+                });
+
             } catch (Exception e) {
-                callback.onFailure("Error searching items by name and category.");
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onFailure("Error searching items"));
+            }
+        }).start();
+    }
+    public void saveRequest(Request request, SaveRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                long requestId = AppDatabase.getRequestDao().insertRequest(request);
+                if (requestId > 0) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Failed to insert request.");
+                }
+            } catch (Exception e) {
+                callback.onFailure("Error saving request: " + e.getMessage());
             }
         });
     }
+
+
+    public void shutdownExecutor() {
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+    public void getSentRequestsCount(String username, UserRequestsCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
+                int count=0;
+                for(Request req:requests){
+                    if(Objects.equals(req.getRequester().getUsername(), username)){
+                        count++;
+                    }
+                }
+                callback.onSuccess(count);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching sent requests count", e);
+                callback.onFailure("Failed to fetch sent requests count: " + e.getMessage());
+            }
+        });
+
+    }
+
+    public void getReceivedRequestsCount(String username, UserRequestsCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
+                int count=0;
+                for(Request req:requests){
+                    if(Objects.equals(req.getRequestee().getUsername(), username)){
+                        count++;
+                    }
+                }
+                callback.onSuccess(count);
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch received requests count: " + e.getMessage());
+            }
+        });
+    }
+
 }

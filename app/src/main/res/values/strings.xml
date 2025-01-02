@@ -60,6 +60,17 @@
     <string name="profile">Profile</string>
     <string name="browse">Browse</string>
     <string name="items">Items</string>
-    <string name="username">Username</string> <!-- Add this line -->
-    <!-- Add other string resources here -->
+    <string name="username">Username</string>
+    <string name="back_to_main">back to main</string>
+    <string name="logout">Log Out</string>
+    <string name="back_to_profile">Back to Profile</string>
+    <string name="view_all_items">View All Items</string>
+    <string name="delete_item">Delete Item\n</string>
+    <string name="edit_item_condition">Edit Item Condition\n</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="edit_item_description">Edit Item\'s Description</string>
+    <string name="edit_item_name">Edit Item;s Name</string>
+    <string name="upload_photo">Upload Photo</string> <!-- Add this line -->
+    <string name="edit_item">Edit Item</string>
+    <string name="back">Back</string>
 </resources>

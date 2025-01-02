@@ -3,9 +3,11 @@ agp = "8.7.1"
 androidJunit5 = "1.8.2.1"
 androidxJunit = "1.x.x"
 cardview = "1.0.0"
+compiler = "4.15.1"
 espressoCoreVersion = "3.x.x"
 firebaseBom = "33.5.1"
 firebaseBomVersion = "33.6.0"
+glide = "4.15.1"
 googleFirebaseBom = "26.1.1"
 googleServices = "4.4.2"
 gson = "2.10.1"
@@ -33,15 +35,19 @@ core = "1.6.1"
 navigationFragment = "2.8.2"
 navigationUi = "2.8.2"
 lifecycleViewmodelAndroid = "2.8.7"
+arch = "2.2.0"
 
 [libraries]
+archCoreTesting = { module = "androidx.arch.core:core-testing", version.ref = "arch" }
 android-junit5 = { module = "de.mannodermaus.gradle.plugins:android-junit5", version.ref = "androidJunit5" }
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 espresso-core-v3xx = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-bom-v2611 = { module = "com.google.firebase:firebase-bom", version.ref = "googleFirebaseBom" }
 firebase-bom-v3360 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-database = { module = "com.google.firebase:firebase-database" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }

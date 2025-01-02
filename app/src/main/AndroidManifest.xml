@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.xchange">
-
     <!-- Permission to read external storage -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
@@ -13,39 +11,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
-
-        <!-- LoginActivity setup as the Launcher Activity -->
+        <activity
+            android:name=".ProfileData.Requests"
+            android:exported="false" />
+        <activity
+            android:name=".request.RequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditItem.EditItemActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileData.AllItemsActivity"
+            android:exported="false" /> <!-- LoginActivity setup as the Launcher Activity -->
         <activity
             android:name=".Login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- RegisterActivity for user registration -->
+        </activity> <!-- RegisterActivity for user registration -->
         <activity
             android:name=".Register.RegisterActivity"
-            android:exported="false" />
-
-        <!-- MainActivity as a regular activity -->
+            android:exported="false" /> <!-- MainActivity as a regular activity -->
         <activity
             android:name=".MainActivity.MainActivity"
-            android:exported="true" />
-
-        <!-- ProfileActivity for user profile -->
+            android:exported="true" /> <!-- ProfileActivity for user profile -->
         <activity
             android:name=".Profile.ProfileActivity"
-            android:exported="true" />
-
-        <!-- SearchActivity for searching items -->
+            android:exported="true" /> <!-- SearchActivity for searching items -->
         <activity
             android:name=".Search.SearchActivity"
-            android:exported="true" />
-
-        <!-- Upload Activity for uploading items -->
-        <activity android:name=".Upload.UploadActivity" />
+            android:exported="true" /> <!-- Upload Activity for uploading items -->
+        <activity android:name=".Upload.UploadActivity" /> <!-- ItemDetailActivity for displaying item details -->
+        <activity android:name=".ItemDetail.ItemDetailActivity" />
     </application>
 
 </manifest>

@@ -20,6 +20,8 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     private final MutableLiveData<String> userStatistics = new MutableLiveData<>();
     private final MutableLiveData<List<Item>> userItems = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
+    private final MutableLiveData<Integer> sentRequestsCount = new MutableLiveData<>();
+    private final MutableLiveData<Integer> receivedRequestsCount = new MutableLiveData<>();
 
     public ProfileViewModel(@NonNull Application application, User user) {
         super(application);
@@ -69,6 +71,32 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
 
     @Override
     public void onUserItemsFailed(String message) {
+        error.postValue(message);
+    }
+    public LiveData<Integer> getSentRequestsCount() {
+        return sentRequestsCount;
+    }
+
+    public LiveData<Integer> getReceivedRequestsCount() {
+        return receivedRequestsCount;
+    }
+
+    public void loadRequestsCount() {
+        presenter.loadRequestsCount();
+    }
+
+    @Override
+    public void onSentRequestsCountLoaded(int count) {
+        sentRequestsCount.postValue(count);
+    }
+
+    @Override
+    public void onReceivedRequestsCountLoaded(int count) {
+        receivedRequestsCount.postValue(count);
+    }
+
+    @Override
+    public void onRequestsCountFailed(String message) {
         error.postValue(message);
     }
 }

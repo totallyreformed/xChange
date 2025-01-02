@@ -1,75 +1,186 @@
 package com.example.xchange;
 
-public class Request {
-    private final xChanger requester;
-    private final xChanger requestee;
-    private static Long previous_request_id = 1L; // Static field to track the last used ID
-    private final Long requested_id;
-    private Item offered_item;
-    private Item requested_item;
-    private SimpleCalendar date_initiated;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.xchange.database.CalendarConverter;
+import com.example.xchange.database.ItemConverter;
+import com.example.xchange.database.XChangerConverter;
+
+@Entity(tableName = "requests")
+public class Request implements Parcelable {
+
+    @PrimaryKey(autoGenerate = true)
+    private Long requestId;
+
+    @ColumnInfo(name = "requester")
+    @TypeConverters(XChangerConverter.class)
+    private xChanger requester;
+
+    @ColumnInfo(name = "requestee")
+    @TypeConverters(XChangerConverter.class)
+    private xChanger requestee;
+
+    @ColumnInfo(name = "offered_item")
+    @TypeConverters(ItemConverter.class)
+    private Item offeredItem;
+
+    @ColumnInfo(name = "requested_item")
+    @TypeConverters(ItemConverter.class)
+    private Item requestedItem;
+
+    @ColumnInfo(name = "date_initiated")
+    @TypeConverters(CalendarConverter.class)
+    private SimpleCalendar dateInitiated;
+
+    @ColumnInfo(name = "active")
     private boolean active;
 
-    Request(xChanger requester, xChanger requestee, Item offered_item, Item requested_item, SimpleCalendar date_initiated) {
-        if (requester == null) {
-            throw new IllegalArgumentException("Requester cannot be null.");
-        }
-        if (requestee == null) {
-            throw new IllegalArgumentException("Requestee cannot be null.");
-        }
-        if (date_initiated.getYear() > 2024 || (date_initiated.getYear() == 2024 &&
-                (date_initiated.getMonth() > 12 || (date_initiated.getMonth() == 12 && date_initiated.getDay() > 3)))) {
-            throw new IllegalArgumentException("Date cannot be in the future.");
-        }
+    // Default constructor for Room
+    public Request() {}
+
+    // Constructor for creating objects
+    public Request(xChanger requester, xChanger requestee, Item offeredItem, Item requestedItem, SimpleCalendar dateInitiated) {
         this.requester = requester;
         this.requestee = requestee;
-        this.requested_id = previous_request_id;
-        previous_request_id++;
-        this.offered_item = offered_item;
-        this.requested_item = requested_item;
-        this.date_initiated = date_initiated;
+        this.offeredItem = offeredItem;
+        this.requestedItem = requestedItem;
+        this.dateInitiated = dateInitiated;
         this.active = true;
-        add_to_list();
     }
 
-    public long getRequestID() {
-        return this.requested_id;
+    // Getters and Setters
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
     }
 
     public xChanger getRequester() {
         return requester;
     }
 
+    public void setRequester(xChanger requester) {
+        this.requester = requester;
+    }
+
     public xChanger getRequestee() {
         return requestee;
     }
 
-    public Item getOfferedItem() {
-        return offered_item;
+    public void setRequestee(xChanger requestee) {
+        this.requestee = requestee;
     }
 
+    public Item getOfferedItem() {
+        return offeredItem;
+    }
+
+    public void setOfferedItem(Item offeredItem) {
+        this.offeredItem = offeredItem;
+    }
+    public void make_unactive(){
+        this.active=false;
+    }
+
+
     public Item getRequestedItem() {
-        return requested_item;
+        return requestedItem;
+    }
+
+    public void setRequestedItem(Item requestedItem) {
+        this.requestedItem = requestedItem;
     }
 
     public SimpleCalendar getDateInitiated() {
-        return date_initiated;
+        return dateInitiated;
     }
 
-    public void add_to_list() {
-        this.getRequestee().getRequests().add(this);
-        this.getRequester().getRequests().add(this);
+    public void setDateInitiated(SimpleCalendar dateInitiated) {
+        this.dateInitiated = dateInitiated;
     }
 
     public boolean isActive() {
-        return this.active;
+        return active;
     }
 
-    public void make_unactive() {
-        this.active = false;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public static void resetId() {
-        previous_request_id = 1L;
+    protected Request(Parcel in) {
+        if (in.readByte() == 0) {
+            requestId = null;
+        } else {
+            requestId = in.readLong();
+        }
+        requester = in.readParcelable(xChanger.class.getClassLoader());
+        requestee = in.readParcelable(xChanger.class.getClassLoader());
+        offeredItem = in.readParcelable(Item.class.getClassLoader());
+        requestedItem = in.readParcelable(Item.class.getClassLoader());
+
+        // Manually read the SimpleCalendar from a String
+        String calendarString = in.readString();
+        if (calendarString != null) {
+            dateInitiated = CalendarConverter.toSimpleCalendar(calendarString);
+        } else {
+            dateInitiated = null;
+        }
+
+        active = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (requestId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(requestId);
+        }
+        dest.writeParcelable(requester, flags);
+        dest.writeParcelable(requestee, flags);
+        dest.writeParcelable(offeredItem, flags);
+        dest.writeParcelable(requestedItem, flags);
+
+        // Manually write the SimpleCalendar as a String
+        if (dateInitiated == null) {
+            dest.writeString(null);
+        } else {
+            dest.writeString(dateInitiated.toString());
+        }
+
+        dest.writeByte((byte) (active ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Request> CREATOR = new Creator<Request>() {
+        @Override
+        public Request createFromParcel(Parcel in) {
+            return new Request(in);
+        }
+
+        @Override
+        public Request[] newArray(int size) {
+            return new Request[size];
+        }
+    };
+
+    @Override
+    public String toString() {
+        return "Request ID: " + requestId+" "+
+                "Requester: " + requester.getUsername()+" "+
+                "Requestee: " + requestee.getUsername()+" ";
     }
 }

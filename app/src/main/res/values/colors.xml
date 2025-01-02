@@ -7,5 +7,14 @@
     <color name="gray">#9E9E9E</color>
     <color name="purple_500">#6200EE</color>
     <color name="cardview_light_background">#FFFFFF</color>
+    <color name="light_background">#F9F9F9</color>
+    <color name="primary">#6200EA</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="background_color">#FAFAFA</color>
+    <color name="error_color">#B00020</color> <!-- Material Design default error color -->
+
+
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.xchange;
+package com.example.xchange.database.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,7 +12,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
-import com.example.xchange.database.dao.UserDao;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +55,7 @@ public class UserDaoTest {
         User user = new User("uniqueUser", "unique@example.com", null, "password123", "TestLocation", "xChanger");
         userDao.insertUser(user);
 
-        User foundUser = userDao.findByUsername("uniqueUser");
+        User foundUser = userDao.findByUsername("uniqueUser").getValue();
         assertNotNull(foundUser);
         assertEquals("unique@example.com", foundUser.getEmail());
     }

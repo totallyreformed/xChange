@@ -1,26 +1,47 @@
 package com.example.xchange;
 
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.xchange.ItemDetail.ItemDetailActivity;
+import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.dao.UserDao;
+
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
-    private List<Item> items; // Use a custom Item class to represent the data
+    private List<Item> items;
+    private User currentUser; // Προσθήκη του currentUser
+    private OnItemClickListener listener;
 
-    public ItemsAdapter(List<Item> items) {
+    public ItemsAdapter(List<Item> items, User currentUser) {
         this.items = items;
+        this.currentUser = currentUser; // Αποθήκευση του currentUser
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Long itemId);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     public void setItems(List<Item> newItems) {
         this.items = newItems;
-        notifyDataSetChanged(); // Notify RecyclerView to refresh
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -34,11 +55,20 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         Item item = items.get(position);
-        holder.itemUsernameTextView.setText(item.getxChanger());
+
+        // Ρύθμιση δεδομένων στα TextView
         holder.itemNameTextView.setText(item.getItemName());
         holder.itemDescriptionTextView.setText(item.getItemDescription());
-        holder.itemCategoryTextView.setText(item.getItemCategory().getDisplayName());
-        holder.itemConditionTextView.setText(item.getItemCondition());
+        holder.itemCategoryTextView.setText("Category: " + item.getItemCategory().getDisplayName());
+        holder.itemConditionTextView.setText("Condition: " + item.getItemCondition());
+        holder.itemUsernameTextView.setText("Posted by: " + item.getXchanger());
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), ItemDetailActivity.class);
+            intent.putExtra("ITEM_ID", item.getItemId());
+            intent.putExtra("USER", currentUser); // Χρήση του currentUser
+            holder.itemView.getContext().startActivity(intent);
+        });
     }
 
     @Override
@@ -46,21 +76,21 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         return items == null ? 0 : items.size();
     }
 
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView itemUsernameTextView;
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView itemNameTextView;
         TextView itemDescriptionTextView;
         TextView itemCategoryTextView;
         TextView itemConditionTextView;
+        TextView itemUsernameTextView;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            itemUsernameTextView = itemView.findViewById(R.id.itemUsernameTextView);
             itemNameTextView = itemView.findViewById(R.id.itemNameTextView);
             itemDescriptionTextView = itemView.findViewById(R.id.itemDescriptionTextView);
             itemCategoryTextView = itemView.findViewById(R.id.itemCategoryTextView);
             itemConditionTextView = itemView.findViewById(R.id.itemConditionTextView);
+            itemUsernameTextView = itemView.findViewById(R.id.itemUsernameTextView);
         }
     }
 }
+
