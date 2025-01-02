@@ -23,6 +23,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE user_type = 'xChanger'")
     List<User> getAllXChangers();
+    //test
 
     @Query("SELECT * FROM users WHERE user_type = 'admin'")
     List<User> getAllAdmins();

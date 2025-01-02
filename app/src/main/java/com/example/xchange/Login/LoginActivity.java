@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.example.xchange.R;
 import com.example.xchange.Register.RegisterActivity;
@@ -31,6 +33,18 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize ViewModel with Factory
         LoginViewModelFactory factory = new LoginViewModelFactory(this);
         viewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+
+        Spinner roleSpinner = findViewById(R.id.roleSpinner);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.login_roles, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        roleSpinner.setAdapter(adapter);
 
         // Initialize UI elements
         usernameEditText = findViewById(R.id.username);
@@ -66,7 +80,12 @@ public class LoginActivity extends AppCompatActivity {
             if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             } else {
-                viewModel.loginAsXChanger(username, password); // You can replace with loginAsAdmin if needed
+                String selectedRole = roleSpinner.getSelectedItem().toString();
+                if (selectedRole.equals("Admin")) {
+                    viewModel.loginAsAdmin(username, password);
+                } else {
+                    viewModel.loginAsXChanger(username, password);
+                }
             }
         });
         signUpTextView.setOnClickListener(v -> {
