@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.ProfileData.AllItemsActivity;
+import com.example.xchange.ProfileData.Requests;
 import com.example.xchange.R;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
@@ -98,6 +99,23 @@ public class ProfileActivity extends AppCompatActivity {
             allItemsIntent.putExtra("USER", user); // Pass the current User object
             allItemsIntent.putParcelableArrayListExtra("ITEMS", new ArrayList<>(viewModel.getUserItems().getValue())); // Pass the items
             startActivity(allItemsIntent);
+        });
+
+        Button requestsSent = findViewById(R.id.requestsSentButton);
+        Button requestsReceived = findViewById(R.id.requestsReceivedButton);
+
+        requestsSent.setOnClickListener(v -> {
+            Intent showRequestsSent = new Intent(ProfileActivity.this, Requests.class);
+            showRequestsSent.putExtra("REQUEST_TYPE", "SENT");
+            showRequestsSent.putExtra("USER", user);
+            startActivity(showRequestsSent);
+        });
+
+        requestsReceived.setOnClickListener(v -> {
+            Intent showRequestsReceived = new Intent(ProfileActivity.this, Requests.class);
+            showRequestsReceived.putExtra("REQUEST_TYPE", "RECEIVED");
+            showRequestsReceived.putExtra("USER", user);
+            startActivity(showRequestsReceived);
         });
 
         // Request Profile data
