@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity.AdminHomeFragment">
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:id="@+id/adminScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/adminContentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Welcome Text -->
+            <TextView
+                android:id="@+id/adminWelcomeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome Admin!"
+                android:textSize="18sp"
+                android:layout_margin="16dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+            <!-- Items Section -->
+            <TextView
+                android:id="@+id/adminItemsHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Items"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/adminItemsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/adminTotalItemsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Items: 0"
+                    android:textSize="16sp"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginEnd="16dp" />
+
+                <Button
+                    android:id="@+id/adminViewItemsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Items"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/white"
+                    android:elevation="2dp" />
+            </LinearLayout>
+
+            <!-- Requests Sent Section -->
+            <TextView
+                android:id="@+id/adminRequestsSentHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Requests Sent"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/adminRequestsSentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/adminRequestsSentCountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 Requests Sent"
+                    android:textSize="16sp"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginEnd="16dp" />
+
+                <Button
+                    android:id="@+id/adminViewRequestsSentButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Sent Requests"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/white"
+                    android:elevation="2dp" />
+            </LinearLayout>
+
+            <!-- Requests Received Section -->
+            <TextView
+                android:id="@+id/adminRequestsReceivedHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Requests Received"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/adminRequestsReceivedLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/adminRequestsReceivedCountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 Requests Received"
+                    android:textSize="16sp"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginEnd="16dp" />
+
+                <Button
+                    android:id="@+id/adminViewRequestsReceivedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Received Requests"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/white"
+                    android:elevation="2dp" />
+            </LinearLayout>
+
+
+            <!-- Additional Global Statistics Sections -->
+            <!-- Repeat similar blocks for other statistics as needed -->
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- BottomNavigationView -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/bottom_navigation_menu"
+        app:labelVisibilityMode="labeled" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

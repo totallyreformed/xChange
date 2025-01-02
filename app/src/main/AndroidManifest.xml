@@ -46,6 +46,11 @@
             android:exported="true" /> <!-- Upload Activity for uploading items -->
         <activity android:name=".Upload.UploadActivity" /> <!-- ItemDetailActivity for displaying item details -->
         <activity android:name=".ItemDetail.ItemDetailActivity" />
+
+        <!-- Declare the Admin Activities -->
+        <activity android:name=".Admin.AdminItemsActivity" />
+        <activity android:name=".Admin.AdminReceivedRequestsActivity" />
+        <activity android:name=".Admin.AdminSentRequestsActivity" />
     </application>
 
 </manifest>

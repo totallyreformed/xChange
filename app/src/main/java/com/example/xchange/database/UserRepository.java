@@ -11,6 +11,7 @@ import com.example.xchange.Request;
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.dao.ItemDao;
+import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
 
 import java.util.List;
@@ -21,12 +22,14 @@ import java.util.concurrent.Executors;
 public class UserRepository {
     private final UserDao userDao;
     private final ItemDao itemDao;
+    private final RequestDao requestDao;
     private final ExecutorService executor;
 
     public UserRepository(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
         userDao = db.userDao();
         itemDao = db.itemDao();
+        requestDao = db.requestDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -58,29 +61,44 @@ public class UserRepository {
         void onFailure(String message);
     }
 
+    public interface RequestItemsCallback {
+        void onSuccess(List<Request> requests);
+        void onFailure(String message);
+    }
+
+    public void loginUser(String username, String password, LoginCallback callback) {
+        executor.execute(() -> {
+            User user = userDao.loginUser(username, password);
+            if (user != null) {
+                callback.onSuccess(user);
+            } else {
+                callback.onFailure("Invalid credentials");
+            }
+        });
+    }
 
     // Login as xChanger
-    public void loginAsXChanger(String username, String password, LoginCallback callback) {
-        executor.execute(() -> {
-            User user = userDao.loginxChanger(username, password);
-            if (user != null) {
-                callback.onSuccess(user);
-            } else {
-                callback.onFailure("Invalid xChanger credentials");
-            }
-        });
-    }
-
-    public void loginAsAdmin(String username, String password, LoginCallback callback) {
-        executor.execute(() -> {
-            User user = userDao.loginadmin(username, password);
-            if (user != null) {
-                callback.onSuccess(user);
-            } else {
-                callback.onFailure("Invalid admin credentials");
-            }
-        });
-    }
+//    public void loginAsXChanger(String username, String password, LoginCallback callback) {
+//        executor.execute(() -> {
+//            User user = userDao.loginxChanger(username, password);
+//            if (user != null) {
+//                callback.onSuccess(user);
+//            } else {
+//                callback.onFailure("Invalid xChanger credentials");
+//            }
+//        });
+//    }
+//
+//    public void loginAsAdmin(String username, String password, LoginCallback callback) {
+//        executor.execute(() -> {
+//            User user = userDao.loginadmin(username, password);
+//            if (user != null) {
+//                callback.onSuccess(user);
+//            } else {
+//                callback.onFailure("Invalid admin credentials");
+//            }
+//        });
+//    }
 
     public void registerUser(User newUser, RegisterCallback callback) {
         executor.execute(() -> {
@@ -123,6 +141,26 @@ public class UserRepository {
                 callback.onFailure("Failed to retrieve user items.");
             }
         });
+    }
+
+    // Get All Items (For Admin)
+    public LiveData<List<Item>> getAllItems() {
+        return itemDao.getAllItems();
+    }
+
+    // Get Total Item Count (For Admin)
+    public LiveData<Integer> getItemCount() {
+        return itemDao.getItemCount();
+    }
+
+    // Get Total Requests sent count (For Admin)
+    public LiveData<Integer> getSentRequestsCount() {
+        return requestDao.getRequestsSentCount();
+    }
+
+    // Get Total Request Received Count (For Admin)
+    public LiveData<Integer> getReceivedRequestsCount() {
+        return requestDao.getRequestsReceivedCount();
     }
 
     public void searchItemsByName(String query, UserItemsCallback callback) {
@@ -206,6 +244,20 @@ public class UserRepository {
 
     }
 
+    // Get Sent Requests (For Admin)
+    public void getSentRequests(RequestItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Assuming you have a way to identify Admin's username or use a global query
+                // For simplicity, fetch all sent requests
+                List<Request> requests = requestDao.getAllSentRequests(); // Implement this in RequestDao
+                callback.onSuccess(requests);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve sent requests.");
+            }
+        });
+    }
+
     public void getReceivedRequestsCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
             try {
@@ -219,6 +271,68 @@ public class UserRepository {
                 callback.onSuccess(count);
             } catch (Exception e) {
                 callback.onFailure("Failed to fetch received requests count: " + e.getMessage());
+            }
+        });
+    }
+
+    // Get Received Requests (For Admin)
+    public void getReceivedRequests(RequestItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Assuming you have a way to identify Admin's username or use a global query
+                // For simplicity, fetch all received requests
+                List<Request> requests = requestDao.getAllReceivedRequests(); // Implement this in RequestDao
+                callback.onSuccess(requests);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve received requests.");
+            }
+        });
+    }
+
+    public void getTotalRequests(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalRequests = userDao.getTotalRequests();
+                String stats = "Total Requests: " + totalRequests;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total requests");
+            }
+        });
+    }
+
+    public void getTotalExchanges(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalExchanges = userDao.getTotalExchanges();
+                String stats = "Total Exchanges: " + totalExchanges;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total exchanges");
+            }
+        });
+    }
+
+    public void getTotalItems(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalItems = userDao.getTotalItems();
+                String stats = "Total Items: " + totalItems;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total items");
+            }
+        });
+    }
+
+    public void getTotalCategories(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalCategories = userDao.getTotalCategories();
+                String stats = "Total Categories: " + totalCategories;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total categories");
             }
         });
     }

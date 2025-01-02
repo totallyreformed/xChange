@@ -28,10 +28,6 @@ public class MainActivityPresenter {
         // Fetch items from database (returns LiveData)
         return AppDatabase.getItemDao().getAllItems();
     }
-
-    private List<Item> fetchItemsFromDatabase() {
-        // Replace this with your database query logic
-        return AppDatabase.getItemDao().getAllItems().getValue();
-    }
 }
+
 
