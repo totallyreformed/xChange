@@ -3,6 +3,7 @@ package com.example.xchange.ProfileData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,19 +46,13 @@ public class RequestsActivity extends AppCompatActivity {
         User currentUser = intent.getParcelableExtra("USER");
         String requestType = intent.getStringExtra("REQUEST_TYPE");
         ArrayList<Request> requestsFromIntent = intent.getParcelableArrayListExtra("REQUESTS");
-        if (requestsFromIntent == null) {
-            Log.d("TEST", "requestsFromIntent is null");
-        } else {
-            Log.d("TEST", "requestsFromIntent size: " + requestsFromIntent.size());
-        }
-
 
         if (currentUser == null || requestType == null) {
             Toast.makeText(this, "Invalid user or request type", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        // Initialize adapter and RecyclerView
+
         adapter = new RequestsAdapter(requestList, currentUser);
         recyclerView.setAdapter(adapter);
 

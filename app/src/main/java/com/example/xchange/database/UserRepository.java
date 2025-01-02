@@ -256,9 +256,7 @@ public class UserRepository {
     public void getSentRequests(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
-                // Assuming you have a way to identify Admin's username or use a global query
-                // For simplicity, fetch all sent requests
-                List<Request> requests = requestDao.getAllSentRequests(); // Implement this in RequestDao
+                List<Request> requests = requestDao.getAllSentRequests();
                 callback.onSuccess(requests);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve sent requests.");

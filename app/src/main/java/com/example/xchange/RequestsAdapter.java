@@ -63,7 +63,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
             super(itemView);
             requesterTextView = itemView.findViewById(R.id.requesterTextView);
             requesteeTextView = itemView.findViewById(R.id.requesteeTextView);
-            requestStatusTextView = itemView.findViewById(R.id.requestStatusTextView);
+            requestStatusTextView = itemView.findViewById(R.id.statusTextView);
             requestedItemTextView = itemView.findViewById(R.id.requestedItemTextView);
             offeredItemTextView = itemView.findViewById(R.id.offeredItemTextView);
         }

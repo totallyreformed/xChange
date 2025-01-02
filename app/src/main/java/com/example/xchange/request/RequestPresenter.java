@@ -50,16 +50,12 @@ public class RequestPresenter {
             @Override
             public void onSuccess() {
                 mainThreadHandler.post(() -> {
-                    // Notify success (e.g., update UI or log message)
-                    Log.d("RequestPresenter", "Request created successfully.");
                 });
             }
 
             @Override
             public void onFailure(String message) {
                 mainThreadHandler.post(() -> {
-                    // Notify failure (e.g., update UI or log error)
-                    Log.e("RequestPresenter", "Failed to create request: " + message);
                 });
             }
         });

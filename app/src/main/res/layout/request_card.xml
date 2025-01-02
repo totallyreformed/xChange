@@ -49,6 +49,20 @@
             android:text="Status: Pending"
             android:textSize="14sp"
             android:layout_marginTop="4dp" />
+        <TextView
+            android:id="@+id/requestedItemTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Requestee: JaneSmith"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+        <TextView
+            android:id="@+id/offeredItemTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Requestee: JaneSmith"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 
