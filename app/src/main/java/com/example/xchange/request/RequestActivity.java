@@ -29,7 +29,6 @@ public class RequestActivity extends AppCompatActivity {
     private User user, itemOwner;
     private Spinner userItemsSpinner;
 
-    // Δηλώνουμε Requester και Requestee ως πεδία της κλάσης
     private xChanger Requester;
     private xChanger Requestee;
 
@@ -116,6 +115,6 @@ public class RequestActivity extends AppCompatActivity {
         }
         viewModel.sendRequest(Requester, Requestee, offeredItem, requestedItem);
         Toast.makeText(this, "Request sent successfully!", Toast.LENGTH_SHORT).show();
-        finish();
+        finish(); // Finish the current activity
     }
 }

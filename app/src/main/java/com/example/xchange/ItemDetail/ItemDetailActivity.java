@@ -17,10 +17,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.xchange.EditItem.EditItemActivity;
 import com.example.xchange.Item;
+import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.request.RequestActivity;
 import com.example.xchange.User;
-import com.example.xchange.xChanger;
 
 public class ItemDetailActivity extends AppCompatActivity {
 
@@ -191,16 +191,16 @@ public class ItemDetailActivity extends AppCompatActivity {
         // Handle request button click
             requestButton.setOnClickListener(v -> {
                 LiveData<User> ownerLiveData = viewModel.getUserByUsername(item.getXchanger());
-
                 ownerLiveData.observe(ItemDetailActivity.this, owner -> {
                     if (owner != null) {
                         Intent intent = new Intent(ItemDetailActivity.this, RequestActivity.class);
                         intent.putExtra("REQUESTED_ITEM", item);
                         intent.putExtra("USER", user);
                         intent.putExtra("ITEM_OWNER", owner);
-                        startActivity(intent);
-                        ownerLiveData.removeObservers(ItemDetailActivity.this);
+                        startActivity(intent);;
 
+                        Intent intent1=new Intent(this, MainActivity.class);
+                        startActivity(intent1);
                     } else {
                         Toast.makeText(ItemDetailActivity.this, "Owner not found!", Toast.LENGTH_SHORT).show();
                     }
