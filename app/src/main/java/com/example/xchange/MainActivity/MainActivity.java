@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentUser != null) {
             String userType = currentUser.getUser_type();
-            Log.d("MainActivity", "Logged in userType: " + userType); // Added for debugging
-
             if ("admin".equalsIgnoreCase(userType)) {
                 // Load AdminHomeFragment into the fragment container
                 getSupportFragmentManager().beginTransaction()
@@ -63,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         } else {
-            Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
             finish();
         }
 
