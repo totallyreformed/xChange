@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,7 +14,6 @@
         android:layout_marginTop="20dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,7 +26,6 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detailItemImageView" />
 
@@ -40,7 +37,6 @@
         android:textColor="@color/secondary_text"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detailItemNameTextView" />
 
@@ -52,7 +48,6 @@
         android:textColor="@color/secondary_text"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detailItemDescriptionTextView" />
 
@@ -64,7 +59,6 @@
         android:textColor="@color/secondary_text"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detailItemCategoryTextView" />
 
@@ -76,20 +70,47 @@
         android:textColor="@color/secondary_text"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detailItemConditionTextView" />
+
+    <!-- Request Status -->
+    <TextView
+        android:id="@+id/requestStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:text="This item is already requested."
+        app:layout_constraintTop_toBottomOf="@id/detailItemXchangerTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Buttons -->
+    <Button
+        android:id="@+id/requestItemButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:text="Request"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/requestStatusTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/editItemButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:padding="12dp"
         android:backgroundTint="@color/primary"
         android:textColor="@color/white"
-        android:text="@string/edit_item"
-        app:layout_constraintTop_toBottomOf="@id/detailItemXchangerTextView"
+        android:text="Edit Item"
+        app:layout_constraintTop_toBottomOf="@id/requestItemButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -101,7 +122,7 @@
         android:padding="12dp"
         android:backgroundTint="@color/secondary_text"
         android:textColor="@color/white"
-        android:text="@string/delete_item"
+        android:text="Delete Item"
         app:layout_constraintTop_toBottomOf="@id/editItemButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -113,24 +134,10 @@
         android:layout_marginTop="16dp"
         android:padding="12dp"
         android:backgroundTint="@color/primary"
-        android:text="@string/back_to_main"
+        android:text="Back to Main"
         android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/deleteItemButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-    <Button
-        android:id="@+id/requestItemButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:padding="12dp"
-        android:backgroundTint="@color/primary"
-        android:textColor="@color/white"
-        android:text="Request"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/detailItemXchangerTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

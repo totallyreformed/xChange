@@ -65,17 +65,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this, new ItemDetailViewModelFactory(getApplication())).get(ItemDetailViewModel.class);
 
-        // Observe LiveData for the Item
-        viewModel.getItemById(itemId).observe(this, item -> {
-            if (item != null) {
-                displayItemDetails(item, user);
-            } else {
-                Toast.makeText(this, "Item not found", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
-
-        // Delete button functionality
         deleteButton.setOnClickListener(v -> {
             viewModel.deleteItemById(itemId);
             Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
@@ -88,10 +77,51 @@ public class ItemDetailActivity extends AppCompatActivity {
             editIntent.putExtra("ITEM_ID", itemId);
             startActivity(editIntent);
         });
+
+
+        viewModel.getItemById(itemId).observe(this, item -> {
+            if (item == null) {
+                Log.e("ItemDetail", "Item is null for ID: " + itemId);
+                Toast.makeText(this, "Item not found", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+
+            viewModel.fetchItemAndRequests(itemId, user.getUsername(), result -> {
+                runOnUiThread(() -> {
+                    TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
+                    Button requestItemButton = findViewById(R.id.requestItemButton);
+
+                    if (user.getUsername().trim().equals(item.getXchanger().trim())) {
+                        // User owns the item
+                        requestStatusTextView.setVisibility(View.GONE);
+                        requestItemButton.setVisibility(View.GONE);
+                    } else if (result) {
+                        // Item already requested
+                        requestStatusTextView.setVisibility(View.VISIBLE);
+                        requestItemButton.setVisibility(View.GONE);
+                    } else {
+                        // Item not requested
+                        requestStatusTextView.setVisibility(View.GONE);
+                        requestItemButton.setVisibility(View.VISIBLE);
+                    }
+                });
+            });
+        });
+
+
+
+        viewModel.getItemById(itemId).observe(this, item -> {
+            if (item != null) {
+                displayItemDetails(item, user);
+            } else {
+                Toast.makeText(this, "Item not found", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
     }
-
-
-    @SuppressLint("SetTextI18n")
+        @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, User user) {
         itemNameTextView.setText(item.getItemName());
         itemDescriptionTextView.setText(item.getItemDescription());
@@ -136,6 +166,7 @@ public class ItemDetailActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             requestButton.setVisibility(View.VISIBLE);
         }
+
         // Handle request button click
         requestButton.setOnClickListener(v -> {
             LiveData<User> ownerLiveData = viewModel.getUserByUsername(item.getXchanger());

@@ -62,7 +62,6 @@ public class RequestsActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No requests found", Toast.LENGTH_SHORT).show();
         }
-
         loadRequests(requestType, currentUser);
     }
 

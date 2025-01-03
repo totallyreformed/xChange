@@ -13,6 +13,7 @@ import com.example.xchange.database.CategoryConverter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Entity(tableName = "items")
 public class Item implements Parcelable {
@@ -195,6 +196,19 @@ public class Item implements Parcelable {
         }
         return null;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return itemId == item.itemId; // Compare using unique ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(itemId); // Hash based on unique ID
+    }
+
     @Override
     public String toString() {
         return itemName; // Επιστρέφουμε το όνομα του αντικειμένου
