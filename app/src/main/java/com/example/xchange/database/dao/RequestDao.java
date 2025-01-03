@@ -2,6 +2,7 @@ package com.example.xchange.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -47,5 +48,7 @@ public interface RequestDao {
 
     @Query("SELECT COUNT(*) FROM requests")
     LiveData<Integer> getRequestsReceivedCount();
+    @Delete
+    void deleteRequest(Request request);
 
 }

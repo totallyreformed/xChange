@@ -84,15 +84,18 @@ public class ItemDetailViewModel extends AndroidViewModel {
             });
         });
     }
+    public void cancelRequest(long itemId, String username) {
+        if (itemId <= 0 || username == null || username.isEmpty()) {
+            Log.e("ItemDetailViewModel", "Invalid itemId or username for cancelRequest.");
+            return;
+        }
+        repository.cancelItemRequest(itemId, username);
+    }
+
 
     // Callback interface
     public interface FetchResultCallback {
         void onResult(boolean result);
     }
-
-
-
-
-
 }
 

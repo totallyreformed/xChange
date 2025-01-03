@@ -110,11 +110,12 @@ public class ItemDetailActivity extends AppCompatActivity {
                     }
                 });
             });
+
             viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), result -> {
                 runOnUiThread(() -> {
                     Button acceptButton = findViewById(R.id.acceptButton);
                     Button rejectButton = findViewById(R.id.rejectButton);
-                    if(result){
+                    if (result) {
                         acceptButton.setVisibility(View.VISIBLE);
                         rejectButton.setVisibility(View.VISIBLE);
                     }
@@ -131,7 +132,15 @@ public class ItemDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Button cancelRequestButton = findViewById(R.id.cancelRequestButton);
+        cancelRequestButton.setOnClickListener(v -> {
+            viewModel.cancelRequest(itemId, user.getUsername());
+            Toast.makeText(this, "Cancel request action initiated", Toast.LENGTH_SHORT).show();
+            Intent intent = getIntent();
+            finish(); // Finish the current activity
+            startActivity(intent);
 
+        });
     }
         @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, User user) {
@@ -180,25 +189,24 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
 
         // Handle request button click
-        requestButton.setOnClickListener(v -> {
-            LiveData<User> ownerLiveData = viewModel.getUserByUsername(item.getXchanger());
+            requestButton.setOnClickListener(v -> {
+                LiveData<User> ownerLiveData = viewModel.getUserByUsername(item.getXchanger());
 
-            ownerLiveData.observe(ItemDetailActivity.this, owner -> {
-                if (owner != null) {
-                    Intent intent = new Intent(ItemDetailActivity.this, RequestActivity.class);
-                    intent.putExtra("REQUESTED_ITEM", item);
-                    intent.putExtra("USER", user);
-                    intent.putExtra("ITEM_OWNER", owner);
-                    startActivity(intent);
+                ownerLiveData.observe(ItemDetailActivity.this, owner -> {
+                    if (owner != null) {
+                        Intent intent = new Intent(ItemDetailActivity.this, RequestActivity.class);
+                        intent.putExtra("REQUESTED_ITEM", item);
+                        intent.putExtra("USER", user);
+                        intent.putExtra("ITEM_OWNER", owner);
+                        startActivity(intent);
+                        ownerLiveData.removeObservers(ItemDetailActivity.this);
 
-                    // Σταματάμε την παρατήρηση για να αποφύγουμε περιττά callbacks
-                    ownerLiveData.removeObservers(ItemDetailActivity.this);
-                } else {
-                    Toast.makeText(ItemDetailActivity.this, "Owner not found!", Toast.LENGTH_SHORT).show();
-                }
+                    } else {
+                        Toast.makeText(ItemDetailActivity.this, "Owner not found!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             });
-        });
-
-    }
+        }
 
 }

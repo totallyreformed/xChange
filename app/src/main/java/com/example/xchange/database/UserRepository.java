@@ -1,6 +1,9 @@
 package com.example.xchange.database;
 
 import android.content.Context;
+import android.net.DnsResolver;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class UserRepository {
     private final UserDao userDao;
@@ -85,29 +89,6 @@ public class UserRepository {
             }
         });
     }
-
-    // Login as xChanger
-//    public void loginAsXChanger(String username, String password, LoginCallback callback) {
-//        executor.execute(() -> {
-//            User user = userDao.loginxChanger(username, password);
-//            if (user != null) {
-//                callback.onSuccess(user);
-//            } else {
-//                callback.onFailure("Invalid xChanger credentials");
-//            }
-//        });
-//    }
-//
-//    public void loginAsAdmin(String username, String password, LoginCallback callback) {
-//        executor.execute(() -> {
-//            User user = userDao.loginadmin(username, password);
-//            if (user != null) {
-//                callback.onSuccess(user);
-//            } else {
-//                callback.onFailure("Invalid admin credentials");
-//            }
-//        });
-//    }
 
     public void registerUser(User newUser, RegisterCallback callback) {
         executor.execute(() -> {
@@ -198,12 +179,12 @@ public class UserRepository {
         new Thread(() -> {
             try {
                 List<Item> items = itemDao.searchItemsByNameAndCategory(query, category);
-                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                new Handler(Looper.getMainLooper()).post(() -> {
                     callback.onSuccess(items);
                 });
 
             } catch (Exception e) {
-                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onFailure("Error searching items"));
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Error searching items"));
             }
         }).start();
     }
@@ -226,7 +207,7 @@ public class UserRepository {
     public void shutdownExecutor() {
         executor.shutdown();
         try {
-            if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
             }
         } catch (InterruptedException e) {
@@ -374,6 +355,45 @@ public class UserRepository {
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
             }
+        });
+    }
+
+    public void cancelItemRequest(long itemId, String username) {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+
+        mainHandler.post(() -> {
+            LiveData<Item> itemLiveData = itemDao.getItemById(itemId);
+
+            itemLiveData.observeForever(item -> {
+                if (item == null) {
+                    Log.w("UserRepository", "Item not found for itemId: " + itemId);
+                    return;
+                }
+
+                executor.execute(() -> {
+                    try {
+                        List<Request> requests = requestDao.getAllRequests();
+                        Request tobedeleted = null;
+
+                        for (Request req : requests) {
+                            if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
+                                    username.equals(req.getRequester().getUsername())) {
+                                tobedeleted = req;
+                                break;
+                            }
+                        }
+
+                        if (tobedeleted != null) {
+                            requestDao.deleteRequest(tobedeleted);
+                            Log.d("UserRepository", "Request successfully canceled: " + tobedeleted.toString());
+                        } else {
+                            Log.w("UserRepository", "No matching request found to cancel.");
+                        }
+                    } catch (Exception e) {
+                        Log.e("UserRepository", "Error canceling request: ", e);
+                    }
+                });
+            });
         });
     }
 

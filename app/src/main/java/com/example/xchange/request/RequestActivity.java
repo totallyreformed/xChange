@@ -1,5 +1,6 @@
 package com.example.xchange.request;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.xchange.Item;
+import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.User;
 import com.example.xchange.xChanger;
