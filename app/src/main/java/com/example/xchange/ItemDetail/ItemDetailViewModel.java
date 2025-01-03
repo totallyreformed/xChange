@@ -77,7 +77,6 @@ public class ItemDetailViewModel extends AndroidViewModel {
                     if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
                             username.equals(req.getRequestee().getUsername())) {
                         callback.onResult(true);
-
                         return;
                     }
                 }
