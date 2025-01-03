@@ -86,27 +86,33 @@ public class ItemDetailActivity extends AppCompatActivity {
                 finish();
                 return;
             }
+
             viewModel.checkRequestToDisplay(itemId, user.getUsername(), result -> {
                 runOnUiThread(() -> {
                     TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
                     Button requestItemButton = findViewById(R.id.requestItemButton);
+                    Button cancelRequestButton = findViewById(R.id.cancelRequestButton); // Νέο κουμπί
 
                     if (user.getUsername().trim().equals(item.getXchanger().trim())) {
                         // User owns the item
                         requestStatusTextView.setVisibility(View.GONE);
                         requestItemButton.setVisibility(View.GONE);
+                        cancelRequestButton.setVisibility(View.GONE);
                     } else if (result) {
                         // Item already requested
                         requestStatusTextView.setVisibility(View.VISIBLE);
                         requestItemButton.setVisibility(View.GONE);
+                        cancelRequestButton.setVisibility(View.VISIBLE); // Εμφάνιση του κουμπιού "Cancel Request"
                     } else {
                         // Item not requested
                         requestStatusTextView.setVisibility(View.GONE);
                         requestItemButton.setVisibility(View.VISIBLE);
+                        cancelRequestButton.setVisibility(View.GONE);
                     }
                 });
             });
         });
+
 
         viewModel.getItemById(itemId).observe(this, item -> {
             if (item == null) {
@@ -116,32 +122,31 @@ public class ItemDetailActivity extends AppCompatActivity {
                 return;
             }
 
-            viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), result -> {
+            viewModel.checkRequestToDisplay(itemId, user.getUsername(), result -> {
                 runOnUiThread(() -> {
+                    TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
                     Button requestItemButton = findViewById(R.id.requestItemButton);
-                    Button acceptButton = findViewById(R.id.acceptButton);
-                    Button rejectButton = findViewById(R.id.rejectButton);
-                    if (!item.getXchanger().equals(user.getUsername())) {
-                        // Ο χρήστης ΔΕΝ είναι ο κάτοχος
-                        acceptButton.setVisibility(View.GONE);
-                        rejectButton.setVisibility(View.GONE);
-                        requestItemButton.setVisibility(View.VISIBLE);
+                    Button cancelRequestButton = findViewById(R.id.cancelRequestButton);
+
+                    if (user.getUsername().trim().equals(item.getXchanger().trim())) {
+                        // Ο χρήστης είναι ο κάτοχος του αντικειμένου
+                        requestStatusTextView.setVisibility(View.GONE);
+                        requestItemButton.setVisibility(View.GONE);
+                        cancelRequestButton.setVisibility(View.GONE);
+                    } else if (result) {
+                        // Το αντικείμενο έχει ήδη ζητηθεί από τον χρήστη
+                        requestStatusTextView.setVisibility(View.VISIBLE);
+                        requestItemButton.setVisibility(View.GONE);
+                        cancelRequestButton.setVisibility(View.VISIBLE); // Εμφάνιση κουμπιού ακύρωσης
                     } else {
-                        // Ο χρήστης είναι ο κάτοχος
-                        if (result) {
-                            acceptButton.setVisibility(View.VISIBLE);
-                            rejectButton.setVisibility(View.VISIBLE);
-                            requestItemButton.setVisibility(View.GONE);
-                        } else {
-                            acceptButton.setVisibility(View.GONE);
-                            rejectButton.setVisibility(View.GONE);
-                            requestItemButton.setVisibility(View.GONE);
-                        }
+                        // Το αντικείμενο δεν έχει ζητηθεί
+                        requestStatusTextView.setVisibility(View.GONE);
+                        requestItemButton.setVisibility(View.VISIBLE); // Εμφάνιση κουμπιού "Request"
+                        cancelRequestButton.setVisibility(View.GONE);
                     }
                 });
             });
         });
-
 
 
         viewModel.getItemById(itemId).observe(this, item -> {

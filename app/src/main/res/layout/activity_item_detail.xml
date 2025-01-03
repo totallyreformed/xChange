@@ -114,6 +114,17 @@
             android:text="Request"
             android:visibility="gone" />
 
+        <!-- Cancel Request Button -->
+        <Button
+            android:id="@+id/cancelRequestButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/secondary_text"
+            android:textColor="@color/Red"
+            android:text="Cancel Request"
+            android:visibility="gone" />
+
         <!-- Accept Button -->
         <Button
             android:id="@+id/acceptButton"
