@@ -86,8 +86,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-
-            viewModel.fetchItemAndRequests(itemId, user.getUsername(), result -> {
+            viewModel.checkRequestToDisplay(itemId, user.getUsername(), result -> {
                 runOnUiThread(() -> {
                     TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
                     Button requestItemButton = findViewById(R.id.requestItemButton);
@@ -104,6 +103,40 @@ public class ItemDetailActivity extends AppCompatActivity {
                         // Item not requested
                         requestStatusTextView.setVisibility(View.GONE);
                         requestItemButton.setVisibility(View.VISIBLE);
+                    }
+                });
+            });
+        });
+
+        viewModel.getItemById(itemId).observe(this, item -> {
+            if (item == null) {
+                Log.e("ItemDetail", "Item is null for ID: " + itemId);
+                Toast.makeText(this, "Item not found", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+
+            viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), result -> {
+                runOnUiThread(() -> {
+                    Button requestItemButton = findViewById(R.id.requestItemButton);
+                    Button acceptButton = findViewById(R.id.acceptButton);
+                    Button rejectButton = findViewById(R.id.rejectButton);
+                    if (!item.getXchanger().equals(user.getUsername())) {
+                        // Ο χρήστης ΔΕΝ είναι ο κάτοχος
+                        acceptButton.setVisibility(View.GONE);
+                        rejectButton.setVisibility(View.GONE);
+                        requestItemButton.setVisibility(View.VISIBLE);
+                    } else {
+                        // Ο χρήστης είναι ο κάτοχος
+                        if (result) {
+                            acceptButton.setVisibility(View.VISIBLE);
+                            rejectButton.setVisibility(View.VISIBLE);
+                            requestItemButton.setVisibility(View.GONE);
+                        } else {
+                            acceptButton.setVisibility(View.GONE);
+                            rejectButton.setVisibility(View.GONE);
+                            requestItemButton.setVisibility(View.GONE);
+                        }
                     }
                 });
             });

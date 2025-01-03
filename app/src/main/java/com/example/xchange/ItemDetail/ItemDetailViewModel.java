@@ -44,12 +44,10 @@ public class ItemDetailViewModel extends AndroidViewModel {
         return this.repository.getUserByUsername(name);
     }
 
-    public void fetchItemAndRequests(long itemId, String username, FetchResultCallback callback) {
-        // Observe LiveData properly
+    public void checkRequestToDisplay(long itemId, String username, FetchResultCallback callback) {
         LiveData<Item> itemLiveData = getItemById(itemId);
         itemLiveData.observeForever(item -> {
             if (item == null) {
-                Log.e("Debug", "Item is null for ID: " + itemId);
                 callback.onResult(false);
                 return;
             }
@@ -59,6 +57,27 @@ public class ItemDetailViewModel extends AndroidViewModel {
                     if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
                             username.equals(req.getRequester().getUsername())) {
                         callback.onResult(true);
+                        return;
+                    }
+                }
+                callback.onResult(false);
+            });
+        });
+    }
+    public void checkToDisplayAcceptReject(long itemId, String username, FetchResultCallback callback) {
+        LiveData<Item> itemLiveData = getItemById(itemId);
+        itemLiveData.observeForever(item -> {
+            if (item == null) {
+                callback.onResult(false);
+                return;
+            }
+            executor.execute(() -> {
+                List<Request> requests = requestDao.getAllRequests();
+                for (Request req : requests) {
+                    if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
+                            username.equals(req.getRequestee().getUsername())) {
+                        callback.onResult(true);
+
                         return;
                     }
                 }

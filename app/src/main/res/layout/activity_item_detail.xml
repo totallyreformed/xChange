@@ -7,16 +7,18 @@
     android:padding="16dp"
     android:background="@color/light_background">
 
+    <!-- ImageView -->
     <ImageView
         android:id="@+id/detailItemImageView"
-        android:layout_width="370dp"
+        android:layout_width="0dp"
         android:layout_height="273dp"
         android:layout_marginTop="20dp"
         android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Item Name -->
     <TextView
         android:id="@+id/detailItemNameTextView"
         android:layout_width="0dp"
@@ -25,61 +27,65 @@
         android:textColor="@color/primary_text"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailItemImageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailItemImageView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Item Description -->
     <TextView
         android:id="@+id/detailItemDescriptionTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/secondary_text"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailItemNameTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailItemNameTextView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Item Category -->
     <TextView
         android:id="@+id/detailItemCategoryTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/secondary_text"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailItemDescriptionTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailItemDescriptionTextView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Item Condition -->
     <TextView
         android:id="@+id/detailItemConditionTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/secondary_text"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailItemCategoryTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailItemCategoryTextView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Item Xchanger -->
     <TextView
         android:id="@+id/detailItemXchangerTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/secondary_text"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailItemConditionTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailItemConditionTextView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Request Status -->
     <TextView
         android:id="@+id/requestStatusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark"
         android:layout_marginTop="8dp"
+        android:textColor="@android:color/holo_red_dark"
         android:visibility="gone"
         android:text="This item is already requested."
         app:layout_constraintTop_toBottomOf="@id/detailItemXchangerTextView"
@@ -87,57 +93,78 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Buttons -->
-    <Button
-        android:id="@+id/requestItemButton"
+    <LinearLayout
+        android:id="@+id/buttonContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:backgroundTint="@color/primary"
-        android:textColor="@color/white"
-        android:text="Request"
-        android:visibility="gone"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/requestStatusTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/editItemButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:backgroundTint="@color/primary"
-        android:textColor="@color/white"
-        android:text="Edit Item"
-        app:layout_constraintTop_toBottomOf="@id/requestItemButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Request Button -->
+        <Button
+            android:id="@+id/requestItemButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/white"
+            android:text="Request"
+            android:visibility="gone" />
 
-    <Button
-        android:id="@+id/deleteItemButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:backgroundTint="@color/secondary_text"
-        android:textColor="@color/white"
-        android:text="Delete Item"
-        app:layout_constraintTop_toBottomOf="@id/editItemButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Accept Button -->
+        <Button
+            android:id="@+id/acceptButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/Green"
+            android:textColor="@color/white"
+            android:text="Accept"
+            android:visibility="gone" />
 
-    <Button
-        android:id="@+id/backToMainButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:backgroundTint="@color/primary"
-        android:text="Back to Main"
-        android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/deleteItemButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Reject Button -->
+        <Button
+            android:id="@+id/rejectButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/black"
+            android:textColor="@color/white"
+            android:text="Reject"
+            android:visibility="gone" />
+
+        <!-- Edit Button -->
+        <Button
+            android:id="@+id/editItemButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/white"
+            android:text="Edit Item" />
+
+        <!-- Delete Button -->
+        <Button
+            android:id="@+id/deleteItemButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/Red"
+            android:textColor="@color/white"
+            android:text="Delete Item" />
+
+        <!-- Back to Main Button -->
+        <Button
+            android:id="@+id/backToMainButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/secondary_text"
+            android:textColor="@color/white"
+            android:text="Back to Main" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

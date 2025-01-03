@@ -39,7 +39,6 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
         Request request = requests.get(position);
 
-        // Debug log for binding
         holder.requesterTextView.setText("Requester: " + request.getRequester().getUsername());
         holder.requesteeTextView.setText("Requestee: " + request.getRequestee().getUsername());
         holder.requestStatusTextView.setText("Status: " + request.getStatus());

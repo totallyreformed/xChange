@@ -13,7 +13,9 @@
     <color name="secondary_text">#757575</color>
     <color name="background_light">#F5F5F5</color>
     <color name="background_color">#FAFAFA</color>
-    <color name="error_color">#B00020</color> <!-- Material Design default error color -->
+    <color name="error_color">#B00020</color>
+    <color name="Green">#4CAF50</color> <!-- Green -->
+    <color name="Red">#F44336</color> <!-- Red --><!-- Material Design default error color -->
 
 
 
