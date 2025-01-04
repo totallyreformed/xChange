@@ -36,11 +36,11 @@ public class Counteroffer extends AppCompatActivity {
         RequestedItem = findViewById(R.id.requestedItemTextView);
         OfferedItemSpinner = findViewById(R.id.offeredItemSpinner);
 
-        // Display request details
+        // Display request details with labels
         if (request != null) {
-            Requester.setText(request.getRequester().getUsername());
-            Requestee.setText(request.getRequestee().getUsername());
-            RequestedItem.setText(request.getRequestedItem().getItemName());
+            Requester.setText("Requester: " + request.getRequester().getUsername());
+            Requestee.setText("Requestee: " + request.getRequestee().getUsername());
+            RequestedItem.setText("Requested Item: " + request.getRequestedItem().getItemName());
         }
 
         // Populate the Spinner with items

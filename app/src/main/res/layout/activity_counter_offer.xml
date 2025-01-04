@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
+    android:padding="24dp"
     android:background="@android:color/white">
 
     <!-- Request ID -->
@@ -12,14 +12,16 @@
         android:id="@+id/requestIdTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
+        android:padding="8dp"
         android:text="REQUEST"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="20sp"
+    android:textStyle="bold"
+    android:gravity="center"
+    android:textColor="@color/primary"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Requester -->
     <TextView
@@ -27,12 +29,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Requester"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/requestIdTextView" />
+        android:textSize="18sp"
+    android:gravity="center"
+    android:padding="8dp"
+    android:textColor="@color/secondary_text"
+    android:layout_marginTop="12dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/requestIdTextView" />
 
     <!-- Requestee -->
     <TextView
@@ -40,12 +44,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Requestee"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/requesterTextView" />
+        android:textSize="18sp"
+    android:gravity="center"
+    android:padding="8dp"
+    android:textColor="@color/secondary_text"
+    android:layout_marginTop="12dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/requesterTextView" />
 
     <!-- Requested Item -->
     <TextView
@@ -53,20 +59,37 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Requested Item"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/requesteeTextView" />
+        android:textSize="18sp"
+    android:gravity="center"
+    android:padding="8dp"
+    android:textColor="@color/secondary_text"
+    android:layout_marginTop="12dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/requesteeTextView" />
+
+    <!-- Spinner Label -->
+    <TextView
+        android:id="@+id/spinnerLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Choose another item for xChange"
+        android:textSize="16sp"
+    android:textStyle="bold"
+    android:gravity="center"
+    android:textColor="@color/secondary_text"
+    android:layout_marginTop="16dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/requestedItemTextView" />
 
     <!-- Offered Items Spinner -->
     <Spinner
         android:id="@+id/offeredItemSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/requestedItemTextView" />
+        app:layout_constraintTop_toBottomOf="@id/spinnerLabel" />
 </androidx.constraintlayout.widget.ConstraintLayout>

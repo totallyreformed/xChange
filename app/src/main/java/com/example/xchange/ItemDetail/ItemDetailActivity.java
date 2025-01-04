@@ -34,6 +34,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private TextView itemNameTextView, itemDescriptionTextView, itemCategoryTextView, itemConditionTextView, itemXchangerTextView;
     private ImageView itemImageView;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,10 +97,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
                     Button requestItemButton = findViewById(R.id.requestItemButton);
-                    Button cancelRequestButton = findViewById(R.id.cancelRequestButton); // Νέο κουμπί
-
+                    Button cancelRequestButton = findViewById(R.id.cancelRequestButton);
                     if (user.getUsername().trim().equals(item.getXchanger().trim())) {
-                        // User owns the item
                         requestStatusTextView.setVisibility(View.GONE);
                         requestItemButton.setVisibility(View.GONE);
                         cancelRequestButton.setVisibility(View.GONE);
@@ -107,7 +106,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                         // Item already requested
                         requestStatusTextView.setVisibility(View.VISIBLE);
                         requestItemButton.setVisibility(View.GONE);
-                        cancelRequestButton.setVisibility(View.VISIBLE); // Εμφάνιση του κουμπιού "Cancel Request"
+                        cancelRequestButton.setVisibility(View.VISIBLE);
                     } else {
                         // Item not requested
                         requestStatusTextView.setVisibility(View.GONE);
@@ -117,21 +116,34 @@ public class ItemDetailActivity extends AppCompatActivity {
                 });
             });
 
-             viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), result -> {
+            viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), (success, request) -> {
                 runOnUiThread(() -> {
                     Button acceptButton = findViewById(R.id.acceptButton);
                     Button rejectButton = findViewById(R.id.rejectButton);
                     Button counter = findViewById(R.id.counterofferButton);
-                    if (result) {
+                    TextView otheriteminfo = findViewById(R.id.OtherItemInfo);
+
+                    if (success && request != null) {
                         acceptButton.setVisibility(View.VISIBLE);
                         rejectButton.setVisibility(View.VISIBLE);
                         counter.setVisibility(View.VISIBLE);
                         editButton.setVisibility(View.GONE);
+
+                        // Display request details in the TextView
+                        String offeredItemDetails = request.getOfferedItem().getItemName();
+                        otheriteminfo.setVisibility(View.VISIBLE);
+                        otheriteminfo.setText("Requested by: " + request.getRequester().getUsername() +
+                                " Offering: " + offeredItemDetails);
+                    } else {
+                        // Hide the TextView
+                        otheriteminfo.setVisibility(View.GONE);
                     }
                 });
             });
 
+
         });
+
 
         viewModel.getItemById(itemId).observe(this, item -> {
             if (item != null) {

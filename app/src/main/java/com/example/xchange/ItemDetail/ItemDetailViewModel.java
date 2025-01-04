@@ -65,11 +65,11 @@ public class ItemDetailViewModel extends AndroidViewModel {
             });
         });
     }
-    public void checkToDisplayAcceptReject(long itemId, String username, FetchResultCallback callback) {
+    public void checkToDisplayAcceptReject(long itemId, String username, FetchRequestCallback callback) {
         LiveData<Item> itemLiveData = getItemById(itemId);
         itemLiveData.observeForever(item -> {
             if (item == null) {
-                callback.onResult(false);
+                callback.onResult(false, null);
                 return;
             }
             executor.execute(() -> {
@@ -77,14 +77,15 @@ public class ItemDetailViewModel extends AndroidViewModel {
                 for (Request req : requests) {
                     if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
                             username.equals(req.getRequestee().getUsername())) {
-                        callback.onResult(true);
+                        callback.onResult(true, req);
                         return;
                     }
                 }
-                callback.onResult(false);
+                callback.onResult(false, null);
             });
         });
     }
+
     public void findRequest(long itemId, String username, UserRepository.FindRequestCallback callback) {
         repository.findRequest(itemId, username, new UserRepository.FindRequestCallback() {
             @Override
@@ -128,7 +129,8 @@ public class ItemDetailViewModel extends AndroidViewModel {
         void onResult(boolean result);
     }
     public interface FetchRequestCallback {
-        void onResult(boolean result,Request request);
+        void onResult(boolean success, @Nullable Request request);
     }
+
 }
 
