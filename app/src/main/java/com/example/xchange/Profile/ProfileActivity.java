@@ -142,14 +142,10 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(showRequestsReceived);
         });
 
-
-
-        // Request Profile data
         viewModel.loadProfileData();
         viewModel.loadUserItems();
         viewModel.loadRequestsCount();
 
-        // Initialize BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.menu_profile);
 

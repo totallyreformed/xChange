@@ -41,6 +41,7 @@ public class RequestsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.requestsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
         // Retrieve the current user and request type from the intent
         Intent intent = getIntent();
         User currentUser = intent.getParcelableExtra("USER");

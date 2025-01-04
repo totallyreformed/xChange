@@ -52,6 +52,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
     }
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
+        TextView requestIdTextView;
         TextView requesterTextView;
         TextView requesteeTextView;
         TextView requestStatusTextView;
@@ -60,6 +61,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
+            requestIdTextView =itemView.findViewById(R.id.requestIdTextView);
             requesterTextView = itemView.findViewById(R.id.requesterTextView);
             requesteeTextView = itemView.findViewById(R.id.requesteeTextView);
             requestStatusTextView = itemView.findViewById(R.id.statusTextView);

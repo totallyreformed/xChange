@@ -103,16 +103,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_horizontal"
+                android:weightSum="2"
                 android:layout_marginTop="16dp">
 
                 <!-- Requests Sent -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:layout_marginEnd="16dp">
+                    android:gravity="center_horizontal">
 
                     <TextView
                         android:id="@+id/requestsSentCountTextView"
@@ -120,49 +120,143 @@
                         android:layout_height="wrap_content"
                         android:text="0 Requests"
                         android:textSize="14sp"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
                         android:textColor="@color/secondary_text"
                         android:gravity="center" />
+
                     <Button
                         android:id="@+id/requestsSentButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="164dp"
                         android:layout_height="wrap_content"
-                        android:text="Requests Sent"
-                        android:textSize="16sp"
                         android:backgroundTint="@color/primary"
+                        android:elevation="2dp"
+                        android:text="Requests Sent"
                         android:textColor="@color/white"
-                        android:elevation="2dp" />
-
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <!-- Requests Received -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:layout_marginStart="16dp">
+                    android:gravity="center_horizontal">
+
                     <TextView
                         android:id="@+id/requestsReceivedCountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0 Requests"
                         android:textSize="14sp"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
                         android:textColor="@color/secondary_text"
                         android:gravity="center" />
+
                     <Button
                         android:id="@+id/requestsReceivedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Requests Received"
-                        android:textSize="16sp"
                         android:backgroundTint="@color/primary"
+                        android:elevation="2dp"
+                        android:text="Requests Received"
                         android:textColor="@color/white"
-                        android:elevation="2dp" />
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
+            <!-- Additional Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginTop="16dp">
+
+                <!-- Favorites -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal">
+
+                    <TextView
+                        android:id="@+id/favoritesCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 Counter Offers"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/secondary_text"
+                        android:gravity="center" />
+
+                    <Button
+                        android:id="@+id/favoritesButton"
+                        android:layout_width="163dp"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/primary"
+                        android:elevation="2dp"
+                        android:text="Counter Offers Sent"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Reviews -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal">
+
+                    <TextView
+                        android:id="@+id/reviewsCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 Counter Offers"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/secondary_text"
+                        android:gravity="center" />
+
+                    <Button
+                        android:id="@+id/reviewsButton"
+                        android:layout_width="190dp"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/primary"
+                        android:elevation="2dp"
+                        android:text="Counter Offers Received"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/XChangesTextView"
+                android:layout_width="107dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="0 xChanges"
+                android:textColor="@color/secondary_text"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/XChnagesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="xChanges"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/primary"
+                android:textColor="@color/white"
+                android:elevation="2dp" />
         </LinearLayout>
+
     </ScrollView>
 
     <!-- Logout Button -->
@@ -190,6 +284,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_navigation_menu"/>
+        app:menu="@menu/bottom_navigation_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,12 +47,10 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             String userType = currentUser.getUser_type();
             if ("admin".equalsIgnoreCase(userType)) {
-                // Load AdminHomeFragment into the fragment container
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new AdminHomeFragment())
                         .commit();
             } else if ("xChanger".equalsIgnoreCase(userType)) {
-                // Load XChangerHomeFragment into the fragment container
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new XChangerHomeFragment())
                         .commit();
