@@ -65,7 +65,7 @@ public class UserDaoTest {
         User user = new User("testXChanger", "xchanger@example.com", null, "xPass", "TestLocation", "xChanger");
         userDao.insertUser(user);
 
-        User loginUser = userDao.loginxChanger("testXChanger", "xPass");
+        User loginUser = userDao.loginUser("testXChanger", "xPass");
         assertNotNull(loginUser);
         assertEquals("xchanger@example.com", loginUser.getEmail());
     }
@@ -75,7 +75,7 @@ public class UserDaoTest {
         User user = new User("testXChanger", "xchanger@example.com", null, "xPass", "TestLocation", "xChanger");
         userDao.insertUser(user);
 
-        User loginUser = userDao.loginxChanger("testXChanger", "wrongPass");
+        User loginUser = userDao.loginUser("testXChanger", "wrongPass");
         assertNull(loginUser);
     }
 
@@ -84,7 +84,7 @@ public class UserDaoTest {
         User admin = new User("adminUser", "admin@example.com", null, "adminPass", "AdminLocation", "IamtheAdmin");
         userDao.insertUser(admin);
 
-        User loginAdmin = userDao.loginadmin("adminUser", "adminPass");
+        User loginAdmin = userDao.loginUser("adminUser", "adminPass");
         assertNotNull(loginAdmin);
         assertEquals("admin@example.com", loginAdmin.getEmail());
     }
@@ -94,7 +94,7 @@ public class UserDaoTest {
         User admin = new User("adminUser", "admin@example.com", null, "adminPass", "AdminLocation", "IamtheAdmin");
         userDao.insertUser(admin);
 
-        User loginAdmin = userDao.loginadmin("adminUser", "wrongPass");
+        User loginAdmin = userDao.loginUser("adminUser", "wrongPass");
         assertNull(loginAdmin);
     }
 

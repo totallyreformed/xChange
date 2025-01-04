@@ -76,7 +76,7 @@ public class LoginPresenterTest {
         insertTestUser("testXChanger", "xchanger@example.com", "password123", "xChanger");
 
         // Εκτέλεση της μεθόδου loginAsXChanger
-        presenter.loginAsXChanger("testXChanger", "password123", fakeView);
+        presenter.loginUser("testXChanger", "password123", fakeView);
 
         // Επιβεβαίωση ότι το onLoginSuccess καλείται με τον σωστό χρήστη
         assertNotNull("User should have been set on success", fakeView.loggedInUser);
@@ -89,7 +89,7 @@ public class LoginPresenterTest {
         // Δεν εισάγουμε κανέναν χρήστη στη βάση δεδομένων
 
         // Εκτέλεση της μεθόδου loginAsXChanger με μη έγκυρα credentials
-        presenter.loginAsXChanger("nonexistentUser", "wrongPassword", fakeView);
+        presenter.loginUser("nonexistentUser", "wrongPassword", fakeView);
 
         // Επιβεβαίωση ότι το onLoginFailure καλείται με το σωστό μήνυμα
         assertNull("User should not be set on failure", fakeView.loggedInUser);
@@ -103,7 +103,7 @@ public class LoginPresenterTest {
         insertTestUser("adminUser", "admin@example.com", "adminPass", "admin");
 
         // Εκτέλεση της μεθόδου loginAsAdmin
-        presenter.loginAsAdmin("adminUser", "adminPass", fakeView);
+        presenter.loginUser("adminUser", "adminPass", fakeView);
 
         // Επιβεβαίωση ότι το onLoginSuccess καλείται με τον σωστό χρήστη
         assertNotNull("User should have been set on success", fakeView.loggedInUser);
@@ -116,7 +116,7 @@ public class LoginPresenterTest {
         // Δεν εισάγουμε κανέναν admin χρήστη στη βάση δεδομένων
 
         // Εκτέλεση της μεθόδου loginAsAdmin με μη έγκυρα credentials
-        presenter.loginAsAdmin("adminUser", "wrongPass", fakeView);
+        presenter.loginUser("adminUser", "wrongPass", fakeView);
 
         // Επιβεβαίωση ότι το onLoginFailure καλείται με το σωστό μήνυμα
         assertNull("User should not be set on failure", fakeView.loggedInUser);
