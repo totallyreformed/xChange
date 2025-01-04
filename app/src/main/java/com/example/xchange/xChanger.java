@@ -150,7 +150,6 @@ public class xChanger extends User implements Parcelable {
         this.failedDeals++;
     }
 
-    // Item Management
     public void deleteItem(Item item) {
         this.items.removeIf(i -> i.equals(item));
     }
@@ -176,12 +175,28 @@ public class xChanger extends User implements Parcelable {
         this.requests.add(request);
     }
 
-    // Counteroffer Methods
     public void counterOffer(Item item, String message, Request request) {
         if (item == null || message == null || request == null) {
             throw new IllegalArgumentException("Item, message, or request cannot be null.");
         }
         Counteroffer counterOffer = new Counteroffer(request, message, item);
         this.counterOffers.add(counterOffer);
+    }
+
+    public void acceptRequest(Request request,float rating){
+        xChange xChange=new xChange(request,null);
+        xChange.acceptOffer(rating);
+    }
+    public void rejectRequest(Request request,float rating){
+        xChange xChange=new xChange(request,null);
+        xChange.rejectOffer(rating);
+    }
+    public void acceptCounteroffer(Counteroffer counteroffer,float rating){
+        xChange xChange=new xChange(counteroffer.getRequest(),counteroffer,null);
+        xChange.acceptOffer(rating);
+    }
+    public void rejectCounteroffer(Counteroffer counteroffer,float rating){
+        xChange xChange=new xChange(counteroffer.getRequest(),counteroffer,null);
+        xChange.rejectOffer(rating);
     }
 }

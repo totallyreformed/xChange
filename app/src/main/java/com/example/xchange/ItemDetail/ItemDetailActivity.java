@@ -3,7 +3,7 @@ package com.example.xchange.ItemDetail;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import com.example.xchange.CounterOffer.Counteroffer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -111,7 +111,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 });
             });
 
-            viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), result -> {
+             viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), result -> {
                 runOnUiThread(() -> {
                     Button acceptButton = findViewById(R.id.acceptButton);
                     Button rejectButton = findViewById(R.id.rejectButton);
@@ -142,6 +142,11 @@ public class ItemDetailActivity extends AppCompatActivity {
             Intent intent = getIntent();
             finish(); // Finish the current activity
             startActivity(intent);
+
+        });
+        Button counter=findViewById(R.id.counterofferButton);
+        counter.setOnClickListener(v -> {
+            Intent intent=new Intent(this, Counteroffer.class);
 
         });
     }

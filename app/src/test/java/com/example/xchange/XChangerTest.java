@@ -60,7 +60,7 @@ public class XChangerTest {
         // Accept the request with a rating of 5.0
         testXChanger.acceptRequest(request, 5.0f);
 
-        assertEquals(1, testXChanger.getSucceed_Deals());
+        assertEquals(1, testXChanger.getSucceedDeals());
         assertEquals(5.0f, otherXChanger.getAverageRating(), 0.01f);
         assertEquals(1, otherXChanger.getTotalRatings());
     }
@@ -76,7 +76,7 @@ public class XChangerTest {
         // Reject the request with a rating of 2.0
         testXChanger.rejectRequest(request, 2.0f);
 
-        assertEquals(1, testXChanger.getFailed_Deals());
+        assertEquals(1, testXChanger.getFailedDeals());
         assertEquals(2.0f, otherXChanger.getAverageRating(), 0.01f);
         assertEquals(1, otherXChanger.getTotalRatings());
     }
@@ -146,7 +146,7 @@ public class XChangerTest {
         // Assertions
         assertFalse(counteroffer.isActive()); // Counteroffer is deactivated
         assertFalse(request.isActive());     // Request is also deactivated
-        assertEquals(1, testXChanger.getFailed_Deals()); // Failed deals incremented
+        assertEquals(1, testXChanger.getFailedDeals()); // Failed deals incremented
 
         // Verify rating updates
         assertEquals(1, otherXChanger.getTotalRatings());

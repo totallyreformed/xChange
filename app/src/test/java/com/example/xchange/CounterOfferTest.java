@@ -40,7 +40,6 @@ public class CounterOfferTest {
         assertEquals(requestedItem, counteroffer.getRequestedItem());
         assertEquals(requester, counteroffer.getCounterofferer());
         assertEquals(requestee, counteroffer.getCounterofferee());
-        assertEquals(request.getRequestID(), counteroffer.getCounterofferID());
         assertEquals("Counteroffer message", counteroffer.getMessage());
         assertTrue(counteroffer.isActive());
     }

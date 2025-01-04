@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.xchange.ItemDetail.ItemDetailActivity;
 import com.example.xchange.Upload.UploadActivity;
+import com.example.xchange.database.AppDatabase;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppDatabase appDatabase=AppDatabase.getInstance(this);
 
         Intent intent = getIntent();
         uploadFab = findViewById(R.id.uploadFab);

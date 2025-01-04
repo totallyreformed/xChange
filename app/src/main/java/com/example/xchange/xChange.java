@@ -16,9 +16,6 @@ public class xChange implements Parcelable {
 
     // Constructors
     public xChange(Request request, SimpleCalendar date_finalized) {
-        if (request == null || date_finalized == null) {
-            throw new IllegalArgumentException("Request and date_finalized cannot be null.");
-        }
         this.request = request;
         this.finalized_id = request.getRequestId();
         this.date_finalized = date_finalized;
@@ -30,9 +27,6 @@ public class xChange implements Parcelable {
     }
 
     public xChange(Request request, Counteroffer counteroffer, SimpleCalendar date_finalized) {
-        if (request == null || counteroffer == null || date_finalized == null) {
-            throw new IllegalArgumentException("Request, counteroffer, and date_finalized cannot be null.");
-        }
         this.counteroffer = counteroffer;
         this.request = request;
         this.finalized_id = request.getRequestId();
