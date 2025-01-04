@@ -115,9 +115,12 @@ public class ItemDetailActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Button acceptButton = findViewById(R.id.acceptButton);
                     Button rejectButton = findViewById(R.id.rejectButton);
+                    Button counter = findViewById(R.id.counterofferButton);
                     if (result) {
                         acceptButton.setVisibility(View.VISIBLE);
                         rejectButton.setVisibility(View.VISIBLE);
+                        counter.setVisibility(View.VISIBLE);
+                        editButton.setVisibility(View.GONE);
                     }
                 });
             });

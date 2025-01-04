@@ -136,7 +136,6 @@
             android:text="Accept"
             android:visibility="gone" />
 
-        <!-- Reject Button -->
         <Button
             android:id="@+id/rejectButton"
             android:layout_width="match_parent"
@@ -145,6 +144,15 @@
             android:backgroundTint="@color/black"
             android:textColor="@color/white"
             android:text="Reject"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/counterofferButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/Yellow"
+            android:textColor="@color/white"
+            android:text="Counter Offer"
             android:visibility="gone" />
 
         <!-- Edit Button -->
