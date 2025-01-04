@@ -6,6 +6,7 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
@@ -84,6 +85,20 @@ public class ItemDetailViewModel extends AndroidViewModel {
             });
         });
     }
+    public void findRequest(long itemId, String username, UserRepository.FindRequestCallback callback) {
+        repository.findRequest(itemId, username, new UserRepository.FindRequestCallback() {
+            @Override
+            public void onResult(boolean success, @Nullable Request request) {
+                if (success && request != null) {
+                    callback.onResult(true, request);
+                } else {
+                    callback.onResult(false, null);
+                }
+            }
+        });
+    }
+
+
     public void cancelRequest(long itemId, String username) {
         if (itemId <= 0 || username == null || username.isEmpty()) {
             Log.e("ItemDetailViewModel", "Invalid itemId or username for cancelRequest.");
@@ -91,11 +106,29 @@ public class ItemDetailViewModel extends AndroidViewModel {
         }
         repository.cancelItemRequest(itemId, username);
     }
+    public void findItemsByXChanger(String xChangerUsername, UserRepository.UserItemsCallback callback) {
+        repository.findItemsByXChanger(xChangerUsername, new UserRepository.UserItemsCallback() {
+            @Override
+            public void onSuccess(List<Item> items) {
+                callback.onSuccess(items);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                callback.onFailure(message);
+            }
+        });
+    }
+
+
 
 
     // Callback interface
     public interface FetchResultCallback {
         void onResult(boolean result);
+    }
+    public interface FetchRequestCallback {
+        void onResult(boolean result,Request request);
     }
 }
 

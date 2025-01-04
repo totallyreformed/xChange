@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.example.xchange.Category;
@@ -53,6 +54,9 @@ public class UserRepository {
         void onFailure(String message);
     }
 
+    public interface FindRequestCallback {
+        void onResult(boolean success, @Nullable Request request);
+    }
     public interface UserItemsCallback {
         void onSuccess(List<Item> items);
         void onFailure(String message);
@@ -73,6 +77,8 @@ public class UserRepository {
         void onSuccess(List<Request> requests);
         void onFailure(String message);
     }
+
+
 
     public interface RequestItemsCallback {
         void onSuccess(List<Request> requests);
@@ -360,16 +366,9 @@ public class UserRepository {
 
     public void cancelItemRequest(long itemId, String username) {
         Handler mainHandler = new Handler(Looper.getMainLooper());
-
         mainHandler.post(() -> {
             LiveData<Item> itemLiveData = itemDao.getItemById(itemId);
-
             itemLiveData.observeForever(item -> {
-                if (item == null) {
-                    Log.w("UserRepository", "Item not found for itemId: " + itemId);
-                    return;
-                }
-
                 executor.execute(() -> {
                     try {
                         List<Request> requests = requestDao.getAllRequests();
@@ -382,12 +381,8 @@ public class UserRepository {
                                 break;
                             }
                         }
-
                         if (tobedeleted != null) {
                             requestDao.deleteRequest(tobedeleted);
-                            Log.d("UserRepository", "Request successfully canceled: " + tobedeleted.toString());
-                        } else {
-                            Log.w("UserRepository", "No matching request found to cancel.");
                         }
                     } catch (Exception e) {
                         Log.e("UserRepository", "Error canceling request: ", e);
@@ -396,5 +391,47 @@ public class UserRepository {
             });
         });
     }
+
+    public void findRequest(long itemId, String username, FindRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                Item item = itemDao.getItemByIdSync(itemId); // Ensure this method exists or adjust accordingly
+                if (item == null) {
+                    callback.onResult(false, null);
+                    return;
+                }
+                List<Request> requests = requestDao.getAllRequests();
+
+                for (Request req : requests) {
+                    if (req.getRequestedItem() != null &&
+                            req.getRequestedItem().equals(item) &&
+                            username.equals(req.getRequestee().getUsername())) {
+                        callback.onResult(true, req);
+                        return;
+                    }
+                }
+
+                // No matching request found
+                Log.d("FindRequest", "No matching request found in Repository.");
+                callback.onResult(false, null);
+            } catch (Exception e) {
+                Log.e("FindRequest", "Error finding request: ", e);
+                callback.onResult(false, null);
+            }
+        });
+    }
+    public void findItemsByXChanger(String xChangerUsername, UserItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Item> items = itemDao.getItemsByXChanger(xChangerUsername); // Synchronous method
+                callback.onSuccess(items);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error finding items by xChanger: ", e);
+                callback.onFailure("Failed to fetch items for xChanger.");
+            }
+        });
+    }
+
+
 
 }

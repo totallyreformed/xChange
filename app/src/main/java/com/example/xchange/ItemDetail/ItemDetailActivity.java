@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import com.example.xchange.CounterOffer.Counteroffer;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,8 +21,12 @@ import com.example.xchange.EditItem.EditItemActivity;
 import com.example.xchange.Item;
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
+import com.example.xchange.database.UserRepository;
 import com.example.xchange.request.RequestActivity;
 import com.example.xchange.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemDetailActivity extends AppCompatActivity {
 
@@ -144,11 +150,33 @@ public class ItemDetailActivity extends AppCompatActivity {
             startActivity(intent);
 
         });
-        Button counter=findViewById(R.id.counterofferButton);
+        Button counter = findViewById(R.id.counterofferButton);
         counter.setOnClickListener(v -> {
-            Intent intent=new Intent(this, Counteroffer.class);
+            viewModel.findRequest(itemId, user.getUsername(), (success, request) -> {
+                if (success && request != null) {
+                    Intent intent = new Intent(this, Counteroffer.class);
+                    intent.putExtra("REQUEST", request);
 
+                    // Fetch all items of the xChanger
+                    viewModel.findItemsByXChanger(request.getRequester().getUsername(), new UserRepository.UserItemsCallback() {
+                        @Override
+                        public void onSuccess(List<Item> items) {
+                            // Ensure items list is not null before adding to the Intent
+                            if (items != null && !items.isEmpty()) {
+                                intent.putParcelableArrayListExtra("XCHANGER_ITEMS", new ArrayList<>(items));
+                            }
+                            // Start the Counteroffer activity
+                            startActivity(intent);
+                        }
+                        @Override
+                        public void onFailure(String message) {
+                            startActivity(intent);
+                        }
+                    });
+                }
+            });
         });
+
     }
         @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, User user) {

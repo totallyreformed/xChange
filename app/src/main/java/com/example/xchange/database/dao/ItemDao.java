@@ -36,6 +36,10 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")
     LiveData<Item> getItemById(long itemId);
 
+    @Query("SELECT * FROM items WHERE itemId = :itemId")
+    Item getItemByIdSync(long itemId);
+
+
     @Query("SELECT COUNT(*) from items")
     LiveData<Integer> getItemCount();
 
@@ -46,6 +50,9 @@ public interface ItemDao {
     // Delete an item
     @Query("DELETE FROM items WHERE itemId = :itemId")
     void deleteItemById(long itemId);
+    @Query("SELECT * FROM items WHERE xChanger = :xChangerUsername")
+    List<Item> getItemsByXChanger(String xChangerUsername);
+
 
     // Delete all items
     @Query("DELETE FROM items")
