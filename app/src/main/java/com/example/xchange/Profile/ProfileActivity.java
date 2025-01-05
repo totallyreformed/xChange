@@ -2,7 +2,6 @@ package com.example.xchange.Profile;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,8 +9,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.ProfileData.AllItemsActivity;
+import com.example.xchange.ProfileData.CounteroffersActivity;
 import com.example.xchange.ProfileData.RequestsActivity;
 import com.example.xchange.R;
 import com.example.xchange.Request;
@@ -125,11 +126,28 @@ public class ProfileActivity extends AppCompatActivity {
                 sentRequests.addAll(sent);
             }
         });
-
         viewModel.getRequestsReceived().observe(this, received -> {
             if (received != null) {
                 receivedRequests.clear();
                 receivedRequests.addAll(received);
+            }
+        });
+        ArrayList<Counteroffer> sentCounterOffers = new ArrayList<>();
+        ArrayList<Counteroffer> receivedCounterOffers = new ArrayList<>();
+
+        viewModel.loadCounterOffers();
+
+        viewModel.getCounterOffersSent().observe(this, sent -> {
+            if (sent != null) {
+                sentCounterOffers.clear();
+                sentCounterOffers.addAll(sent); // Now the types match
+            }
+        });
+
+        viewModel.getCounterOffersReceived().observe(this, received -> {
+            if (received != null) {
+                receivedCounterOffers.clear();
+                receivedCounterOffers.addAll(received); // Now the types match
             }
         });
 
@@ -151,6 +169,27 @@ public class ProfileActivity extends AppCompatActivity {
             showRequestsReceived.putExtra("USER", user);
             startActivity(showRequestsReceived);
         });
+
+        // New Counter Offer Buttons
+        Button counterOffersSent = findViewById(R.id.counterOffersSentButton);
+        Button counterOffersReceived = findViewById(R.id.counterOffersReceivedButton);
+
+        counterOffersSent.setOnClickListener(v -> {
+            Intent showCounterOffersSent = new Intent(ProfileActivity.this, CounteroffersActivity.class);
+            showCounterOffersSent.putExtra("REQUEST_TYPE", "COUNTER_OFFERS_SENT");
+            showCounterOffersSent.putParcelableArrayListExtra("COUNTEROFFERS", new ArrayList<>(sentCounterOffers));
+            showCounterOffersSent.putExtra("USER", user);
+            startActivity(showCounterOffersSent);
+        });
+
+        counterOffersReceived.setOnClickListener(v -> {
+            Intent showCounterOffersReceived = new Intent(ProfileActivity.this, CounteroffersActivity.class);
+            showCounterOffersReceived.putExtra("REQUEST_TYPE", "COUNTER_OFFERS_RECEIVED");
+            showCounterOffersReceived.putParcelableArrayListExtra("COUNTEROFFERS", new ArrayList<>(receivedCounterOffers));
+            showCounterOffersReceived.putExtra("USER", user);
+            startActivity(showCounterOffersReceived);
+        });
+
 
         viewModel.loadProfileData();
         viewModel.loadUserItems();

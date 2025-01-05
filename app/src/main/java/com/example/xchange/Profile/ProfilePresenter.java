@@ -2,6 +2,7 @@ package com.example.xchange.Profile;
 
 import android.content.Context;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
@@ -24,6 +25,13 @@ public class ProfilePresenter {
         void onCounterOffersSentCountLoaded(int count);
         void onCounterOffersReceivedCountLoaded(int count);
         void onCounterOffersCountFailed(String message);
+
+        void onSentCounterOffersLoaded(List<Counteroffer> counterOffers);
+
+        void onReceivedCounterOffersLoaded(List<Counteroffer> counterOffers);
+
+        void onCounterOffersFailed(String message);
+
     }
 
     private final UserRepository userRepository;
@@ -143,4 +151,32 @@ public class ProfilePresenter {
             }
         });
     }
+    public void loadSentCounterOffers() {
+        userRepository.getSentCounterOffers(user.getUsername(), new UserRepository.UserCounterOffersCallback() {
+            @Override
+            public void onSuccess(List<Counteroffer> counterOffers) {
+                view.onSentCounterOffersLoaded(counterOffers);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onCounterOffersFailed(message);
+            }
+        });
+    }
+
+    public void loadReceivedCounterOffers() {
+        userRepository.getReceivedCounterOffers(user.getUsername(), new UserRepository.UserCounterOffersCallback() {
+            @Override
+            public void onSuccess(List<Counteroffer> counterOffers) {
+                view.onReceivedCounterOffersLoaded(counterOffers);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onCounterOffersFailed(message);
+            }
+        });
+    }
+
 }

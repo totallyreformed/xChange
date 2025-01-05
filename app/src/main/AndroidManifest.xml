@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
         <activity
+            android:name=".ProfileData.CounteroffersActivity"
+            android:exported="false" />
+        <activity
             android:name=".CounterOffer.CounterofferActivity"
             android:exported="false" />
         <activity
@@ -31,6 +34,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- RegisterActivity for user registration -->
@@ -51,8 +55,6 @@
         <activity android:name=".Admin.AdminItemsActivity" />
         <activity android:name=".Admin.AdminReceivedRequestsActivity" />
         <activity android:name=".Admin.AdminSentRequestsActivity" />
-        <!-- Added Counteroffer Activity -->
-
     </application>
 
 </manifest>

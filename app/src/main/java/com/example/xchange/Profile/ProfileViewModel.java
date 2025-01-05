@@ -1,13 +1,13 @@
 package com.example.xchange.Profile;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
@@ -27,6 +27,8 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     private final MutableLiveData<List<Request>> receivedRequests = new MutableLiveData<>();
     private final MutableLiveData<Integer> counterOffersSentCount = new MutableLiveData<>();
     private final MutableLiveData<Integer> counterOffersReceivedCount = new MutableLiveData<>();
+    private final MutableLiveData<List<Counteroffer>> sentCounterOffers = new MutableLiveData<>();
+    private final MutableLiveData<List<Counteroffer>> receivedCounterOffers = new MutableLiveData<>();
 
     public ProfileViewModel(@NonNull Application application, User user) {
         super(application);
@@ -156,6 +158,33 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
 
     @Override
     public void onCounterOffersCountFailed(String message) {
+        error.postValue(message);
+    }
+    public LiveData<List<Counteroffer>> getCounterOffersSent() {
+        return sentCounterOffers;
+    }
+
+    public LiveData<List<Counteroffer>> getCounterOffersReceived() {
+        return receivedCounterOffers;
+    }
+
+    public void loadCounterOffers() {
+        presenter.loadSentCounterOffers();
+        presenter.loadReceivedCounterOffers();
+    }
+
+    @Override
+    public void onSentCounterOffersLoaded(List<Counteroffer> counterOffers) {
+        sentCounterOffers.postValue(counterOffers);
+    }
+
+    @Override
+    public void onReceivedCounterOffersLoaded(List<Counteroffer> counterOffers) {
+        receivedCounterOffers.postValue(counterOffers);
+    }
+
+    @Override
+    public void onCounterOffersFailed(String message) {
         error.postValue(message);
     }
 }

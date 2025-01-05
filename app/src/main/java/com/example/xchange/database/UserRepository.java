@@ -44,6 +44,10 @@ public class UserRepository {
         void onSuccess(User user);
         void onFailure(String message);
     }
+    public interface UserCounterOffersCallback {
+        void onSuccess(List<Counteroffer> counterOffers);
+        void onFailure(String message);
+    }
 
     public interface RegisterCallback {
         void onSuccess();
@@ -462,6 +466,40 @@ public class UserRepository {
             }
         });
     }
+    public void getSentCounterOffers(String username, UserCounterOffersCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                List<Counteroffer> sentCounterOffers = new ArrayList<>();
+                for (Counteroffer counter : counters) {
+                    if (username.equals(counter.getCounterofferer().getUsername())) {
+                        sentCounterOffers.add(counter);
+                    }
+                }
+                callback.onSuccess(sentCounterOffers);
+            } catch (Exception e) {
+                Log.e("CounterOfferError", "Error fetching sent counter offers: " + e.getMessage(), e);
+                callback.onFailure("Failed to fetch sent counter offers: " + e.getMessage());
+            }
+        });
+    }
 
+    public void getReceivedCounterOffers(String username, UserCounterOffersCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                List<Counteroffer> receivedCounterOffers = new ArrayList<>();
+                for (Counteroffer counter : counters) {
+                    if (username.equals(counter.getCounterofferee().getUsername())) {
+                        receivedCounterOffers.add(counter);
+                    }
+                }
+                callback.onSuccess(receivedCounterOffers);
+            } catch (Exception e) {
+                Log.e("CounterOfferError", "Error fetching received counter offers: " + e.getMessage(), e);
+                callback.onFailure("Failed to fetch received counter offers: " + e.getMessage());
+            }
+        });
+    }
 
 }
