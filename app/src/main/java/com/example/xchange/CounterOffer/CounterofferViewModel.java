@@ -1,11 +1,14 @@
 package com.example.xchange.CounterOffer;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.Item;
 import com.example.xchange.Request;
+import com.example.xchange.database.UserRepository;
 
 import java.util.List;
 
@@ -20,9 +23,9 @@ public class CounterofferViewModel extends ViewModel {
 
     private CounterofferPresenter presenter;
 
-    public CounterofferViewModel() {
+    public CounterofferViewModel(Context context) {
         // Initialize presenter and pass LiveData references
-        presenter = new CounterofferPresenter(requesterText, requesteeText, requestedItemText, spinnerItems, selectedItemText, errorMessage);
+        presenter = new CounterofferPresenter(requesterText, requesteeText, requestedItemText, spinnerItems, selectedItemText, errorMessage,context);
     }
 
     // LiveData Getters
@@ -74,4 +77,19 @@ public class CounterofferViewModel extends ViewModel {
     public void setError(String message) {
         presenter.displayError(message);
     }
+    public void findRequest(long itemId, String username, UserRepository.FindRequestCallback callback) {
+        // Delegate the logic to the presenter
+        presenter.findRequest(itemId, username, new UserRepository.FindRequestCallback() {
+            @Override
+            public void onResult(boolean found, Request request) {
+                if (found) {
+                    // You can handle additional logic here if needed before passing to the callback
+                    callback.onResult(true, request);
+                } else {
+                    callback.onResult(false, null);
+                }
+            }
+        });
+    }
+
 }

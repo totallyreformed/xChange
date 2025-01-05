@@ -1,12 +1,17 @@
 package com.example.xchange.CounterOffer;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.R;
@@ -29,7 +34,13 @@ public class Counteroffer extends AppCompatActivity {
         setContentView(R.layout.activity_counter_offer);
 
         // Initialize ViewModel
-        viewModel = new ViewModelProvider(this).get(CounterofferViewModel.class);
+        viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new CounterofferViewModel(Counteroffer.this);
+            }
+        }).get(CounterofferViewModel.class);
 
         // Retrieve UI components
         Requester = findViewById(R.id.requesterTextView);
@@ -43,20 +54,38 @@ public class Counteroffer extends AppCompatActivity {
         viewModel.getRequestedItemText().observe(this, text -> RequestedItem.setText(text));
 
         // Observe spinner items from ViewModel
-        viewModel.getSpinnerItems().observe(this, spinnerItems -> populateSpinner(spinnerItems));
+        viewModel.getSpinnerItems().observe(this, this::populateSpinner);
 
         Request request = getIntent().getParcelableExtra("REQUEST");
+        assert request != null;
+        String user=request.getRequestee().getUsername();
         ArrayList<Item> items = getIntent().getParcelableArrayListExtra("XCHANGER_ITEMS");
 
-        // Pass request to ViewModel
-        if (request != null) {
-            viewModel.setRequestDetails(request);
-        }
+        viewModel.setRequestDetails(request);
 
-        // Pass items to ViewModel to populate the spinner
         if (items != null) {
             viewModel.populateSpinner(items);
         }
+
+        Button initializeCounterofferButton = findViewById(R.id.initializeCounterofferButton);
+        initializeCounterofferButton.setOnClickListener(view -> {
+            Item selectedItem = (Item) OfferedItemSpinner.getSelectedItem();
+            if (selectedItem != null) {
+                viewModel.findRequest(request.getRequestedItem().getItemId(), user, (found, foundRequest) -> {
+                    runOnUiThread(() -> { // Ensure this block runs on the main thread
+                        if (found) {
+                            Log.d("Counteroffer", "Request found: " + foundRequest);
+                            // Handle found request and create counteroffer
+                        } else {
+                            Toast.makeText(this, "No matching request found!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
+            } else {
+                Toast.makeText(this, "Please select an item to counteroffer.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     // Helper method to populate the spinner

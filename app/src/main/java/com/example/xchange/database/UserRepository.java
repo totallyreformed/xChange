@@ -306,8 +306,6 @@ public class UserRepository {
     public void getReceivedRequests(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
-                // Assuming you have a way to identify Admin's username or use a global query
-                // For simplicity, fetch all received requests
                 List<Request> requests = requestDao.getAllReceivedRequests(); // Implement this in RequestDao
                 callback.onSuccess(requests);
             } catch (Exception e) {
@@ -410,9 +408,6 @@ public class UserRepository {
                         return;
                     }
                 }
-
-                // No matching request found
-                Log.d("FindRequest", "No matching request found in Repository.");
                 callback.onResult(false, null);
             } catch (Exception e) {
                 Log.e("FindRequest", "Error finding request: ", e);
