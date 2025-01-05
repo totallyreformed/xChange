@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
         <activity
-            android:name=".CounterOffer.Counteroffer"
+            android:name=".CounterOffer.CounterofferActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileData.RequestsActivity"

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.database.UserRepository;
+import com.example.xchange.xChanger;
 
 import java.util.List;
 
@@ -91,5 +92,7 @@ public class CounterofferViewModel extends ViewModel {
             }
         });
     }
-
+    public void initializeCounterRequest(Request request, Item counterItem, xChanger xchanger) {
+        presenter.createCounterOffer(request, counterItem,xchanger);
+    }
 }

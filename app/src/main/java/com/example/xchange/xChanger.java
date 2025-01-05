@@ -1,7 +1,9 @@
 package com.example.xchange;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.xchange.database.AppDatabase;
 
@@ -175,11 +177,20 @@ public class xChanger extends User implements Parcelable {
         this.requests.add(request);
     }
 
-    public void counterOffer(Item item, String message, Request request) {
-        if (item == null || message == null || request == null) {
+    public void counterOffer(Item item, Request request) {
+        if (item == null || request == null) {
             throw new IllegalArgumentException("Item, message, or request cannot be null.");
         }
         Counteroffer counterOffer = new Counteroffer(request, item);
+        new Thread(() -> {
+            try {
+                AppDatabase.getCounterofferDao().deleteAll();
+                long id=AppDatabase.getCounterofferDao().insertCounteroffer(counterOffer);
+                Log.d("TEST", String.valueOf(id));
+            } catch (Exception e) {
+                Log.e("xChanger", "Error saving counteroffer", e);
+            }
+        }).start();
         this.counterOffers.add(counterOffer);
     }
 

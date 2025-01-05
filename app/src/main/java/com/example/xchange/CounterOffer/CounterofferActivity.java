@@ -1,7 +1,7 @@
 package com.example.xchange.CounterOffer;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -14,14 +14,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
+import com.example.xchange.User;
+import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Counteroffer extends AppCompatActivity {
+public class CounterofferActivity extends AppCompatActivity {
 
     TextView Requester, Requestee, RequestedItem;
     Spinner OfferedItemSpinner;
@@ -38,7 +41,7 @@ public class Counteroffer extends AppCompatActivity {
             @NonNull
             @Override
             public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) new CounterofferViewModel(Counteroffer.this);
+                return (T) new CounterofferViewModel(CounterofferActivity.this);
             }
         }).get(CounterofferViewModel.class);
 
@@ -58,7 +61,7 @@ public class Counteroffer extends AppCompatActivity {
 
         Request request = getIntent().getParcelableExtra("REQUEST");
         assert request != null;
-        String user=request.getRequestee().getUsername();
+        User user=request.getRequestee();
         ArrayList<Item> items = getIntent().getParcelableArrayListExtra("XCHANGER_ITEMS");
 
         viewModel.setRequestDetails(request);
@@ -71,11 +74,16 @@ public class Counteroffer extends AppCompatActivity {
         initializeCounterofferButton.setOnClickListener(view -> {
             Item selectedItem = (Item) OfferedItemSpinner.getSelectedItem();
             if (selectedItem != null) {
-                viewModel.findRequest(request.getRequestedItem().getItemId(), user, (found, foundRequest) -> {
+                viewModel.findRequest(request.getRequestedItem().getItemId(), user.getUsername(), (found, foundRequest) -> {
                     runOnUiThread(() -> { // Ensure this block runs on the main thread
                         if (found) {
-                            Log.d("Counteroffer", "Request found: " + foundRequest);
-                            // Handle found request and create counteroffer
+                            xChanger xchanger=new xChanger(user.getUsername(),user.getEmail(),user.getJoin_Date(),user.getPassword(), user.getLocation());
+                            viewModel.initializeCounterRequest(foundRequest, selectedItem,xchanger);
+                            Toast.makeText(this,"Counter offer initialized",Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(this, com.example.xchange.MainActivity.MainActivity.class);
+                            intent.putExtra("USER",user);
+                            startActivity(intent);
+
                         } else {
                             Toast.makeText(this, "No matching request found!", Toast.LENGTH_SHORT).show();
                         }

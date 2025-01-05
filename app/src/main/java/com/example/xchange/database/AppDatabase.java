@@ -36,7 +36,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract ItemDao itemDao();
     public abstract RequestDao requestDao();
-    public abstract CounterofferDao counterofferDao(); // Add this line
+    public abstract CounterofferDao CounteofferDao();
 
 
     public static AppDatabase getInstance(final Context context) {
@@ -111,5 +111,5 @@ public abstract class AppDatabase extends RoomDatabase {
     public static RequestDao getRequestDao() {
         return INSTANCE.requestDao();
     }
-    public static CounterofferDao getCounterofferDao(){return INSTANCE.counterofferDao();}
+    public static CounterofferDao getCounterofferDao(){return INSTANCE.CounteofferDao();}
 }

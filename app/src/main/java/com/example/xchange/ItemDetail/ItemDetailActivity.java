@@ -3,9 +3,8 @@ package com.example.xchange.ItemDetail;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import com.example.xchange.CounterOffer.Counteroffer;
+import com.example.xchange.CounterOffer.CounterofferActivity;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -166,7 +165,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         counter.setOnClickListener(v -> {
             viewModel.findRequest(itemId, user.getUsername(), (success, request) -> {
                 if (success && request != null) {
-                    Intent intent = new Intent(this, Counteroffer.class);
+                    Intent intent = new Intent(this, CounterofferActivity.class);
                     intent.putExtra("REQUEST", request);
 
                     // Fetch all items of the xChanger

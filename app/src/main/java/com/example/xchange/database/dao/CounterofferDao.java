@@ -31,6 +31,8 @@ public interface CounterofferDao {
     // Delete a Counteroffer
     @Delete
     void deleteCounteroffer(Counteroffer counteroffer);
+    @Query("DELETE FROM counteroffer")
+    void deleteAll();
 
     // Retrieve a Counteroffer by ID
     @Query("SELECT * FROM counteroffer WHERE counteroffer_id = :id")

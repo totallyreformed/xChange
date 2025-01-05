@@ -6,17 +6,24 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import android.content.Context;
+
+import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.dao.CounterofferDao;
 
 public class XChangerTest {
 
     private xChanger testXChanger;
     private xChanger otherXChanger;
 
+
     @BeforeEach
     public void setUp() {
         testXChanger = new xChanger("testXChanger", "test@example.com", new SimpleCalendar(2024, 12, 1), "password123", "TestLocation");
         otherXChanger = new xChanger("otherXChanger", "other@example.com", new SimpleCalendar(2024, 12, 1), "password123", "OtherLocation");
-
     }
 
     @Test
@@ -90,7 +97,7 @@ public class XChangerTest {
         System.out.println("CounterOffers before: " + testXChanger.getCounterOffers().size());
 
         Request request = new Request(testXChanger, otherXChanger, item, item, new SimpleCalendar(2024, 12, 1));
-        testXChanger.counterOffer(item, "Counteroffer message", request);
+        testXChanger.counterOffer(item,request);
         assertEquals(1, otherXChanger.getCounterOffers().size());
         assertEquals(1, testXChanger.getCounterOffers().size());
     }

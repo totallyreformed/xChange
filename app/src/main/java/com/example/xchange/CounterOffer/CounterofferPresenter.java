@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.database.UserRepository;
+import com.example.xchange.xChanger;
 
 import java.util.List;
 
@@ -77,6 +78,18 @@ public class CounterofferPresenter {
             }
         });
     }
+    public void createCounterOffer(Request request, Item counterItem, xChanger xchanger) {
+        if (request != null && counterItem != null) {
+            try {
+                xchanger.counterOffer(counterItem, request);
+            } catch (Exception e) {
+                Log.e("CounterofferPresenter", "Error creating counteroffer", e);
+            }
+        } else {
+            Log.e("CounterofferPresenter", "Invalid data for creating counteroffer");
+        }
+    }
+
 
 
 }
