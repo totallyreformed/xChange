@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.example.xchange.Category;
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
@@ -426,7 +427,41 @@ public class UserRepository {
             }
         });
     }
+    public void getCounterOffersSentCount(String username, UserRequestsCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                long count = counters.stream()
+                        .filter(counter -> username.equals(counter.getCounterofferer().getUsername()))
+                        .count();
 
+                callback.onSuccess((int) count);
+            } catch (Exception e) {
+                Log.e("CounterOfferError", "Error fetching sent counter offers: " + e.getMessage(), e);
+                callback.onFailure("Failed to fetch counter offers sent count: " + e.getMessage());
+            }
+        });
+    }
+
+    public void getCounterOffersReceivedCount(String username, UserRequestsCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Fetch all counteroffers synchronously
+                List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+
+                // Filter the counteroffers based on the counterofferee's username
+                long count = counters.stream()
+                        .filter(counter -> username.equals(counter.getCounterofferee().getUsername()))
+                        .count();
+
+                // Return the count via the callback
+                callback.onSuccess((int) count);
+            } catch (Exception e) {
+                Log.e("CounterOfferError", "Error fetching received counter offers: " + e.getMessage(), e);
+                callback.onFailure("Failed to fetch counter offers received count: " + e.getMessage());
+            }
+        });
+    }
 
 
 }

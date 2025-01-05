@@ -39,8 +39,6 @@ public class Counteroffer implements Parcelable {
     @ColumnInfo(name = "counterofferee")
     private xChanger counterofferee;
 
-    private String message;
-
     private Boolean active;
 
     // Constructor
@@ -67,7 +65,6 @@ public class Counteroffer implements Parcelable {
         requestedItem = in.readParcelable(Item.class.getClassLoader());
         counterofferer = in.readParcelable(xChanger.class.getClassLoader());
         counterofferee = in.readParcelable(xChanger.class.getClassLoader());
-        message = in.readString();
         active = in.readByte() != 0;
     }
 
@@ -96,7 +93,6 @@ public class Counteroffer implements Parcelable {
         dest.writeParcelable(requestedItem, flags);
         dest.writeParcelable(counterofferer, flags);
         dest.writeParcelable(counterofferee, flags);
-        dest.writeString(message);
         dest.writeByte((byte) (active ? 1 : 0));
     }
 
@@ -154,16 +150,6 @@ public class Counteroffer implements Parcelable {
         this.counterofferee = counterofferee;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        if (message == null || message.trim().isEmpty()) {
-            throw new IllegalArgumentException("Message cannot be null or empty.");
-        }
-        this.message = message;
-    }
 
     public Boolean isActive() {
         return active;

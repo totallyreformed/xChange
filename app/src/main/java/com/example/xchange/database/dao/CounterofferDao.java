@@ -50,6 +50,9 @@ public interface CounterofferDao {
     @Query("SELECT * FROM counteroffer")
     LiveData<List<Counteroffer>> getAllCounteroffers();
 
+    @Query("SELECT * FROM counteroffer")
+    List<Counteroffer> getAllCounteroffersSync();
+
     // Mark a Counteroffer as inactive
     @Query("UPDATE counteroffer SET active = 0 WHERE counteroffer_id = :id")
     void markCounterofferAsInactive(long id);

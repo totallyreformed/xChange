@@ -184,7 +184,6 @@ public class xChanger extends User implements Parcelable {
         Counteroffer counterOffer = new Counteroffer(request, item);
         new Thread(() -> {
             try {
-                AppDatabase.getCounterofferDao().deleteAll();
                 long id=AppDatabase.getCounterofferDao().insertCounteroffer(counterOffer);
                 Log.d("TEST", String.valueOf(id));
             } catch (Exception e) {

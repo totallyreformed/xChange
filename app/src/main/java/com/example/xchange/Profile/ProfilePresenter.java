@@ -21,8 +21,10 @@ public class ProfilePresenter {
         void onRequestsCountFailed(String message);
         void onReceivedRequestsLoaded(List<Request> requests);
         void onSentRequestsLoaded(List<Request> requests);
+        void onCounterOffersSentCountLoaded(int count);
+        void onCounterOffersReceivedCountLoaded(int count);
+        void onCounterOffersCountFailed(String message);
     }
-
 
     private final UserRepository userRepository;
     private final ProfileView view;
@@ -87,6 +89,7 @@ public class ProfilePresenter {
             }
         });
     }
+
     public void loadReceivedRequests() {
         userRepository.getRequestsReceived(user.getUsername(), new UserRepository.UserRequestsReceivedCallback() {
             @Override
@@ -115,4 +118,29 @@ public class ProfilePresenter {
         });
     }
 
+    public void loadCounterOffersCount() {
+        userRepository.getCounterOffersSentCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
+            @Override
+            public void onSuccess(int count) {
+                view.onCounterOffersSentCountLoaded(count);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onCounterOffersCountFailed(message);
+            }
+        });
+
+        userRepository.getCounterOffersReceivedCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
+            @Override
+            public void onSuccess(int count) {
+                view.onCounterOffersReceivedCountLoaded(count);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onCounterOffersCountFailed(message);
+            }
+        });
+    }
 }

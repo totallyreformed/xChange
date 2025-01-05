@@ -24,20 +24,12 @@ import java.util.ArrayList;
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView,requestsSentCountTextView,requestsReceivedCountTextView;
+    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView, requestsSentCountTextView, requestsReceivedCountTextView, counterOffersSentCountTextView, counterOffersReceivedCountTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        // Add Logout Button functionality
-        Button logoutButton = findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(v -> {
-            Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
-            loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
-            startActivity(loginIntent);
-            finish(); // Close the current activity
-        });
 
         // Initialize UI elements
         usernameTextView = findViewById(R.id.profileUsernameTextView);
@@ -47,6 +39,17 @@ public class ProfileActivity extends AppCompatActivity {
         statsTextView = findViewById(R.id.profileStatsTextView);
         requestsSentCountTextView = findViewById(R.id.requestsSentCountTextView);
         requestsReceivedCountTextView = findViewById(R.id.requestsReceivedCountTextView);
+        counterOffersSentCountTextView = findViewById(R.id.counterOffersSentCountTextView);
+        counterOffersReceivedCountTextView = findViewById(R.id.counterOffersReceivedCountTextView);
+
+        // Initialize Logout Button
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> {
+            Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
+            loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+            startActivity(loginIntent);
+            finish(); // Close the current activity
+        });
 
         // Retrieve the User object from the Intent
         Intent intent = getIntent();
@@ -86,6 +89,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        // Observe LiveData for requests and counters
         viewModel.getSentRequestsCount().observe(this, count -> {
             requestsSentCountTextView.setText(count + " Requests Sent");
         });
@@ -94,15 +98,22 @@ public class ProfileActivity extends AppCompatActivity {
             requestsReceivedCountTextView.setText(count + " Requests Received");
         });
 
+        viewModel.getCounterOffersSentCount().observe(this, count -> {
+            counterOffersSentCountTextView.setText(count + " Counter Offers Sent");
+        });
+
+        viewModel.getCounterOffersReceivedCount().observe(this, count -> {
+            counterOffersReceivedCountTextView.setText(count + " Counter Offers Received");
+        });
+
         // Navigate to AllItemsActivity
         Button viewAllItemsButton = findViewById(R.id.viewAllItemsButton);
         viewAllItemsButton.setOnClickListener(v -> {
             Intent allItemsIntent = new Intent(ProfileActivity.this, AllItemsActivity.class);
-            allItemsIntent.putExtra("USER", user); // Pass the current User object
-            allItemsIntent.putParcelableArrayListExtra("ITEMS", new ArrayList<>(viewModel.getUserItems().getValue())); // Pass the items
+            allItemsIntent.putExtra("USER", user);
+            allItemsIntent.putParcelableArrayListExtra("ITEMS", new ArrayList<>(viewModel.getUserItems().getValue()));
             startActivity(allItemsIntent);
         });
-
 
         ArrayList<Request> sentRequests = new ArrayList<>();
         ArrayList<Request> receivedRequests = new ArrayList<>();
@@ -119,7 +130,6 @@ public class ProfileActivity extends AppCompatActivity {
             if (received != null) {
                 receivedRequests.clear();
                 receivedRequests.addAll(received);
-
             }
         });
 
@@ -130,14 +140,14 @@ public class ProfileActivity extends AppCompatActivity {
             Intent showRequestsSent = new Intent(ProfileActivity.this, RequestsActivity.class);
             showRequestsSent.putExtra("REQUEST_TYPE", "SENT");
             showRequestsSent.putExtra("USER", user);
-            showRequestsSent.putParcelableArrayListExtra("REQUESTS", sentRequests); // Use consistent key
+            showRequestsSent.putParcelableArrayListExtra("REQUESTS", sentRequests);
             startActivity(showRequestsSent);
         });
 
         requestsReceived.setOnClickListener(v -> {
             Intent showRequestsReceived = new Intent(ProfileActivity.this, RequestsActivity.class);
             showRequestsReceived.putExtra("REQUEST_TYPE", "RECEIVED");
-            showRequestsReceived.putParcelableArrayListExtra("REQUESTS", receivedRequests); // Use consistent key
+            showRequestsReceived.putParcelableArrayListExtra("REQUESTS", receivedRequests);
             showRequestsReceived.putExtra("USER", user);
             startActivity(showRequestsReceived);
         });
@@ -145,6 +155,7 @@ public class ProfileActivity extends AppCompatActivity {
         viewModel.loadProfileData();
         viewModel.loadUserItems();
         viewModel.loadRequestsCount();
+        viewModel.loadCounterOffersCount();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.menu_profile);

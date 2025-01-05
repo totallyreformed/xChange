@@ -1,6 +1,7 @@
 package com.example.xchange.Profile;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -24,12 +25,15 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     private final MutableLiveData<Integer> receivedRequestsCount = new MutableLiveData<>();
     private final MutableLiveData<List<Request>> sentRequests = new MutableLiveData<>();
     private final MutableLiveData<List<Request>> receivedRequests = new MutableLiveData<>();
+    private final MutableLiveData<Integer> counterOffersSentCount = new MutableLiveData<>();
+    private final MutableLiveData<Integer> counterOffersReceivedCount = new MutableLiveData<>();
 
     public ProfileViewModel(@NonNull Application application, User user) {
         super(application);
         presenter = new ProfilePresenter(application.getApplicationContext(), user, this);
     }
 
+    // LiveData for User
     public LiveData<User> getUser() {
         return userLiveData;
     }
@@ -42,44 +46,11 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
         return error;
     }
 
-    public void loadProfileData() {
-        presenter.loadProfileData();
-    }
-
     public LiveData<List<Item>> getUserItems() {
         return userItems;
     }
 
-    public void loadUserItems() {
-        presenter.loadUserItems();
-    }
-
-    @Override
-    public void onProfileDataLoaded(User user, String stats) {
-        userLiveData.postValue(user);
-        userStatistics.postValue(stats);
-    }
-
-    @Override
-    public void onProfileDataFailed(String message) {
-        error.postValue(message);
-    }
-    public void loadRequests() {
-        presenter.loadSentRequests();
-        presenter.loadReceivedRequests();
-    }
-
-
-    @Override
-    public void onUserItemsLoaded(List<Item> items) {
-        userItems.postValue(items);
-    }
-
-    @Override
-    public void onUserItemsFailed(String message) {
-        error.postValue(message);
-    }
-
+    // LiveData for Requests and Counters
     public LiveData<Integer> getSentRequestsCount() {
         return sentRequestsCount;
     }
@@ -96,8 +67,56 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
         return receivedRequests;
     }
 
+    public LiveData<Integer> getCounterOffersSentCount() {
+        return counterOffersSentCount;
+    }
+
+    public LiveData<Integer> getCounterOffersReceivedCount() {
+        return counterOffersReceivedCount;
+    }
+
+    // Loading Data
+    public void loadProfileData() {
+        presenter.loadProfileData();
+    }
+
+    public void loadUserItems() {
+        presenter.loadUserItems();
+    }
+
+    public void loadRequests() {
+        presenter.loadSentRequests();
+        presenter.loadReceivedRequests();
+    }
+
     public void loadRequestsCount() {
         presenter.loadRequestsCount();
+    }
+
+    public void loadCounterOffersCount() {
+        presenter.loadCounterOffersCount();
+    }
+
+    // Callbacks from Presenter
+    @Override
+    public void onProfileDataLoaded(User user, String stats) {
+        userLiveData.postValue(user);
+        userStatistics.postValue(stats);
+    }
+
+    @Override
+    public void onProfileDataFailed(String message) {
+        error.postValue(message);
+    }
+
+    @Override
+    public void onUserItemsLoaded(List<Item> items) {
+        userItems.postValue(items);
+    }
+
+    @Override
+    public void onUserItemsFailed(String message) {
+        error.postValue(message);
     }
 
     @Override
@@ -123,5 +142,20 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     @Override
     public void onSentRequestsLoaded(List<Request> requests) {
         sentRequests.postValue(requests);
+    }
+
+    @Override
+    public void onCounterOffersSentCountLoaded(int count) {
+        counterOffersSentCount.postValue(count);
+    }
+
+    @Override
+    public void onCounterOffersReceivedCountLoaded(int count) {
+        counterOffersReceivedCount.postValue(count);
+    }
+
+    @Override
+    public void onCounterOffersCountFailed(String message) {
+        error.postValue(message);
     }
 }
