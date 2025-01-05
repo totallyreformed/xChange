@@ -82,6 +82,9 @@ public class UserRepository {
         void onSuccess(List<Request> requests);
         void onFailure(String message);
     }
+    public interface CheckCounterofferCallback {
+        void onResult(boolean success);
+    }
 
 
 
@@ -484,6 +487,7 @@ public class UserRepository {
         });
     }
 
+
     public void getReceivedCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
             try {
@@ -501,5 +505,45 @@ public class UserRepository {
             }
         });
     }
+    public boolean checkIfRequesteeWithCounteroffer(long itemId,String username) {
+        try {
+            List<Request> requests = requestDao.getAllRequests();
+            Item item=itemDao.getItemByIdSync(itemId);
+            for (Request req : requests) {
+                if (req.getRequestee().getUsername().equals(username) && item.equals(req.getRequestedItem())) {
+                    List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                    for (Counteroffer counter : counteroffers) {
+                        if (counter.getCounterofferer().getUsername().equals(username)&& item.equals(req.getRequestedItem())) {
+                            return true; // Found a match
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("UserRepository", "Error checking requestee with counteroffer: " + e.getMessage(), e);
+        }
+        return false; // No match found
+    }
+    public boolean checkIfRequesterWithCounterofferee(String username) {
+        try {
+            List<Request> requests = requestDao.getAllRequests();
+            for (Request req : requests) {
+                // Check if the user is the requester
+                if (req.getRequester().getUsername().equals(username)) {
+                    // Fetch all counteroffers and check if the user is the counterofferee
+                    List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                    for (Counteroffer counter : counteroffers) {
+                        if (counter.getCounterofferee().getUsername().equals(username)) {
+                            return true; // Found a match
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("UserRepository", "Error checking requester with counterofferee: " + e.getMessage(), e);
+        }
+        return false; // No match found
+    }
+
 
 }

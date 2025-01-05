@@ -120,6 +120,32 @@ public class ItemDetailViewModel extends AndroidViewModel {
             }
         });
     }
+    public void checkIfRequesteeWithCounteroffer(long itemId,String username, CheckCounterofferCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        executor.execute(() -> {
+            boolean result = repository.checkIfRequesteeWithCounteroffer(itemId,username); // Assuming repository returns a boolean
+            callback.onResult(result);
+        });
+    }
+    public void checkIfRequesterWithCounterofferee(String username, CheckCounterofferCallback callback) {
+        if (callback == null) {
+            Log.e("ItemDetailViewModel", "Callback is null in checkIfRequesterWithCounterofferee.");
+            return;
+        }
+        executor.execute(() -> {
+            boolean result = repository.checkIfRequesterWithCounterofferee(username); // Call the repository method
+            callback.onResult(result);
+        });
+    }
+
+
+
+    public interface CheckCounterofferCallback {
+        void onResult(boolean success);
+    }
+
 
 
 

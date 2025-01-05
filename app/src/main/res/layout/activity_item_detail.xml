@@ -160,6 +160,20 @@
             android:textColor="@color/white"
             android:text="Reject"
             android:visibility="gone" />
+        <TextView
+            android:id="@+id/counterofferInitiatedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:text="Counteroffer initiated"
+            android:textStyle="bold"
+            android:textColor="@color/primary_text"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@id/counterofferButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <!-- Counteroffer Button -->
         <Button

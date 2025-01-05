@@ -3,8 +3,10 @@ package com.example.xchange.ItemDetail;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+
 import com.example.xchange.CounterOffer.CounterofferActivity;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -119,26 +121,44 @@ public class ItemDetailActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Button acceptButton = findViewById(R.id.acceptButton);
                     Button rejectButton = findViewById(R.id.rejectButton);
-                    Button counter = findViewById(R.id.counterofferButton);
+                    Button counterofferButton = findViewById(R.id.counterofferButton);
                     TextView otheriteminfo = findViewById(R.id.OtherItemInfo);
 
+                    // Handle checkToDisplayAcceptReject logic
                     if (success && request != null) {
                         acceptButton.setVisibility(View.VISIBLE);
                         rejectButton.setVisibility(View.VISIBLE);
-                        counter.setVisibility(View.VISIBLE);
+                        counterofferButton.setVisibility(View.VISIBLE);
                         editButton.setVisibility(View.GONE);
 
-                        // Display request details in the TextView
                         String offeredItemDetails = request.getOfferedItem().getItemName();
                         otheriteminfo.setVisibility(View.VISIBLE);
                         otheriteminfo.setText("Requested by: " + request.getRequester().getUsername() +
                                 " Offering: " + offeredItemDetails);
                     } else {
-                        // Hide the TextView
                         otheriteminfo.setVisibility(View.GONE);
                     }
+                    viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), checkSuccess -> {
+                        runOnUiThread(() -> {
+                            TextView counterofferInitiatedTextView = findViewById(R.id.counterofferInitiatedTextView);
+                            if (checkSuccess) {
+                                acceptButton.setVisibility(View.GONE);
+                                rejectButton.setVisibility(View.GONE);
+                                counterofferButton.setVisibility(View.GONE);
+                                counterofferInitiatedTextView.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    });
                 });
             });
+
+
+
+//            viewModel.checkIfRequesterWithCounterofferee(user.getUsername(), success -> {
+//                if (success) {
+//
+//                }
+//            });
 
 
         });
@@ -179,6 +199,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                             // Start the Counteroffer activity
                             startActivity(intent);
                         }
+
                         @Override
                         public void onFailure(String message) {
                             startActivity(intent);
@@ -189,7 +210,8 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
 
     }
-        @SuppressLint("SetTextI18n")
+
+    @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, User user) {
         itemNameTextView.setText(item.getItemName());
         itemDescriptionTextView.setText(item.getItemDescription());
@@ -236,24 +258,25 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
 
         // Handle request button click
-            requestButton.setOnClickListener(v -> {
-                LiveData<User> ownerLiveData = viewModel.getUserByUsername(item.getXchanger());
-                ownerLiveData.observe(ItemDetailActivity.this, owner -> {
-                    if (owner != null) {
-                        Intent intent = new Intent(ItemDetailActivity.this, RequestActivity.class);
-                        intent.putExtra("REQUESTED_ITEM", item);
-                        intent.putExtra("USER", user);
-                        intent.putExtra("ITEM_OWNER", owner);
-                        startActivity(intent);;
+        requestButton.setOnClickListener(v -> {
+            LiveData<User> ownerLiveData = viewModel.getUserByUsername(item.getXchanger());
+            ownerLiveData.observe(ItemDetailActivity.this, owner -> {
+                if (owner != null) {
+                    Intent intent = new Intent(ItemDetailActivity.this, RequestActivity.class);
+                    intent.putExtra("REQUESTED_ITEM", item);
+                    intent.putExtra("USER", user);
+                    intent.putExtra("ITEM_OWNER", owner);
+                    startActivity(intent);
+                    ;
 
-                        Intent intent1=new Intent(this, MainActivity.class);
-                        startActivity(intent1);
-                    } else {
-                        Toast.makeText(ItemDetailActivity.this, "Owner not found!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                    Intent intent1 = new Intent(this, MainActivity.class);
+                    startActivity(intent1);
+                } else {
+                    Toast.makeText(ItemDetailActivity.this, "Owner not found!", Toast.LENGTH_SHORT).show();
+                }
             });
-        }
+
+        });
+    }
 
 }
