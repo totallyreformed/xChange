@@ -29,7 +29,7 @@ public class CounterOfferTest {
         request = new Request(requester, requestee, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
 
         // Initialize a Counteroffer object
-        counteroffer = new Counteroffer(request, "Counteroffer message", offeredItem);
+        counteroffer = new Counteroffer(request, offeredItem);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class CounterOfferTest {
     @Test
     public void testCounterofferWithNullRequest() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Counteroffer(null, "Message", offeredItem);
+            new Counteroffer(null, offeredItem);
         });
 
         assertEquals("Request cannot be null.", exception.getMessage());
@@ -101,7 +101,7 @@ public class CounterOfferTest {
     @Test
     public void testCounterofferWithNullItem() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Counteroffer(request, "Message", null);
+            new Counteroffer(request, null);
         });
 
         assertEquals("Offered item cannot be null.", exception.getMessage());
@@ -109,7 +109,7 @@ public class CounterOfferTest {
 
     @Test
     public void testDuplicateCounteroffer() {
-        Counteroffer duplicateCounteroffer = new Counteroffer(request, "Another message", offeredItem);
+        Counteroffer duplicateCounteroffer = new Counteroffer(request, offeredItem);
         assertNotEquals(counteroffer, duplicateCounteroffer);
     }
 

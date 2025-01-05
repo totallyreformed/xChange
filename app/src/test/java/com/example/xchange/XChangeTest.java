@@ -98,7 +98,7 @@ class XChangeTest {
 
     @Test
     public void testInitializationWithCounteroffer() {
-        Counteroffer counteroffer = new Counteroffer(request, "Counteroffer message", offeredItem);
+        Counteroffer counteroffer = new Counteroffer(request, offeredItem);
         xChange exchangeWithCounteroffer = new xChange(request, counteroffer, new SimpleCalendar(2024, 12, 2));
 
         // Assertions

@@ -10,6 +10,7 @@ import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.xchange.Category;
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Image;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
@@ -17,6 +18,7 @@ import com.example.xchange.R;
 import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 
+import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
@@ -25,8 +27,8 @@ import com.example.xchange.xChanger;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Item.class, Request.class}, version = 2, exportSchema = false)
-@TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class})
+@Database(entities = {User.class, Item.class, Request.class, Counteroffer.class}, version = 2, exportSchema = false)
+@TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class, RequestConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
@@ -34,6 +36,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract ItemDao itemDao();
     public abstract RequestDao requestDao();
+    public abstract CounterofferDao counterofferDao(); // Add this line
+
 
     public static AppDatabase getInstance(final Context context) {
         if (INSTANCE == null) {
@@ -107,4 +111,5 @@ public abstract class AppDatabase extends RoomDatabase {
     public static RequestDao getRequestDao() {
         return INSTANCE.requestDao();
     }
+    public static CounterofferDao getCounterofferDao(){return INSTANCE.counterofferDao();}
 }

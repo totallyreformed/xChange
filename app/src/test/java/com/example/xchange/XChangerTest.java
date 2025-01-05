@@ -122,7 +122,7 @@ public class XChangerTest {
         Item requestedItem = new Item(testXChanger.toString(), "Laptop", "Gaming laptop", Category.TECHNOLOGY, "New", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
-        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", offeredItem);
+        Counteroffer counteroffer = new Counteroffer(request, offeredItem);
 
         testXChanger.acceptCounteroffer(counteroffer, 4.5f);
 
@@ -138,7 +138,7 @@ public class XChangerTest {
         Item newRequestedItem = new Item(testXChanger.toString(), "Shoes", "Shoes", Category.FASHION, "Used", images);
 
         Request request = new Request(testXChanger, otherXChanger, offeredItem, requestedItem, new SimpleCalendar(2024, 12, 1));
-        Counteroffer counteroffer = new Counteroffer(request, "Let's exchange", newRequestedItem);
+        Counteroffer counteroffer = new Counteroffer(request, newRequestedItem);
 
         // Reject the counteroffer with a rating of 2.0
         testXChanger.rejectCounteroffer(counteroffer, 2.0f);

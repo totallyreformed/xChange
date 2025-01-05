@@ -2,114 +2,71 @@ package com.example.xchange;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.ColumnInfo;
+import androidx.room.TypeConverters;
 
+import com.example.xchange.database.ItemConverter;
+import com.example.xchange.database.RequestConverter;
+import com.example.xchange.database.XChangerConverter;
+
+@Entity(tableName = "counteroffer")
 public class Counteroffer implements Parcelable {
-    private final Request request;
-    private Item offered_item;
-    private Item requested_item;
-    private final xChanger counterofferer;
-    private final xChanger counterofferee;
-    private final Long counteroffer_id; // Derived from the request's Room-generated ID
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "counteroffer_id")
+    private Long counterofferId;
+
+
+    @TypeConverters(RequestConverter.class)
+    @ColumnInfo(name = "request")
+    private Request request;
+
+    @TypeConverters(ItemConverter.class)
+    @ColumnInfo(name = "offered_item")
+    private Item offeredItem;
+
+    @TypeConverters(ItemConverter.class)
+    @ColumnInfo(name = "requested_item")
+    private Item requestedItem;
+
+    @ColumnInfo(name = "counterofferer")
+    @TypeConverters(XChangerConverter.class)
+    private xChanger counterofferer;
+
+    @TypeConverters(XChangerConverter.class)
+    @ColumnInfo(name = "counterofferee")
+    private xChanger counterofferee;
+
     private String message;
+
     private Boolean active;
 
     // Constructor
-    public Counteroffer(Request request, String message, Item item) {
+    public Counteroffer(Request request, Item offeredItem) {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null.");
         }
-        if (item == null) {
+        if (offeredItem == null) {
             throw new IllegalArgumentException("Offered item cannot be null.");
         }
-        if (request.getRequestId() == null) {
-            throw new IllegalStateException("Request ID cannot be null. Ensure the Request is saved in the database.");
-        }
-
-        this.counterofferer = request.getRequester();
-        this.counterofferee = request.getRequestee();
         this.request = request;
-        this.offered_item = item;
-        this.requested_item = request.getRequestedItem();
-        this.counteroffer_id = request.getRequestId(); // Use the Room-managed ID
-        this.message = message;
+        this.offeredItem = offeredItem;
+        this.requestedItem = request.getRequestedItem();
+        this.counterofferer = request.getRequestee();
+        this.counterofferee = request.getRequester();
         this.active = true;
-
-        addToLists();
     }
 
-    // Getters
-    public Request getRequest() {
-        return request;
-    }
-
-    public Item getOfferedItem() {
-        return offered_item;
-    }
-
-    public Item getRequestedItem() {
-        return requested_item;
-    }
-
-    public xChanger getCounterofferer() {
-        return counterofferer;
-    }
-
-    public xChanger getCounterofferee() {
-        return counterofferee;
-    }
-
-    public Long getCounterofferID() {
-        return counteroffer_id;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Boolean isActive() {
-        return active;
-    }
-
-    // Setters
-    public void setRequestedItem(Item requested_item) {
-        if (requested_item == null) {
-            throw new IllegalArgumentException("Requested item cannot be null.");
-        }
-        this.requested_item = requested_item;
-    }
-
-    public void setOfferedItem(Item offered_item) {
-        if (offered_item == null) {
-            throw new IllegalArgumentException("Offered item cannot be null.");
-        }
-        this.offered_item = offered_item;
-    }
-
-    public void setMessage(String message) {
-        if (message == null || message.trim().isEmpty()) {
-            throw new IllegalArgumentException("Message cannot be null or empty.");
-        }
-        this.message = message;
-    }
-
-    // Additional Methods
-    private void addToLists() {
-        this.counterofferee.getCounterOffers().add(this);
-        this.getCounterofferer().getCounterOffers().add(this);
-    }
-
-    public void make_unactive() {
-        this.active = false;
-    }
-
-    // Parcelable Implementation
+    // Parcelable implementation
     protected Counteroffer(Parcel in) {
+        counterofferId = (in.readByte() == 0) ? null : in.readLong();
         request = in.readParcelable(Request.class.getClassLoader());
-        offered_item = in.readParcelable(Item.class.getClassLoader());
-        requested_item = in.readParcelable(Item.class.getClassLoader());
+        offeredItem = in.readParcelable(Item.class.getClassLoader());
+        requestedItem = in.readParcelable(Item.class.getClassLoader());
         counterofferer = in.readParcelable(xChanger.class.getClassLoader());
         counterofferee = in.readParcelable(xChanger.class.getClassLoader());
-        counteroffer_id = in.readByte() == 0 ? null : in.readLong();
         message = in.readString();
         active = in.readByte() != 0;
     }
@@ -128,17 +85,17 @@ public class Counteroffer implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(request, flags);
-        dest.writeParcelable(offered_item, flags);
-        dest.writeParcelable(requested_item, flags);
-        dest.writeParcelable(counterofferer, flags);
-        dest.writeParcelable(counterofferee, flags);
-        if (counteroffer_id == null) {
+        if (counterofferId == null) {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
-            dest.writeLong(counteroffer_id);
+            dest.writeLong(counterofferId);
         }
+        dest.writeParcelable(request, flags);
+        dest.writeParcelable(offeredItem, flags);
+        dest.writeParcelable(requestedItem, flags);
+        dest.writeParcelable(counterofferer, flags);
+        dest.writeParcelable(counterofferee, flags);
         dest.writeString(message);
         dest.writeByte((byte) (active ? 1 : 0));
     }
@@ -146,5 +103,77 @@ public class Counteroffer implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    // Getters and setters
+    public Long getCounterofferId() {
+        return counterofferId;
+    }
+
+    public void setCounterofferId(Long counterofferId) {
+        this.counterofferId = counterofferId;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    public Item getOfferedItem() {
+        return offeredItem;
+    }
+
+    public void setOfferedItem(Item offeredItem) {
+        this.offeredItem = offeredItem;
+    }
+
+    public Item getRequestedItem() {
+        return requestedItem;
+    }
+
+    public void setRequestedItem(Item requestedItem) {
+        this.requestedItem = requestedItem;
+    }
+
+    public xChanger getCounterofferer() {
+        return counterofferer;
+    }
+
+    public void setCounterofferer(xChanger counterofferer) {
+        this.counterofferer = counterofferer;
+    }
+
+    public xChanger getCounterofferee() {
+        return counterofferee;
+    }
+
+    public void setCounterofferee(xChanger counterofferee) {
+        this.counterofferee = counterofferee;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            throw new IllegalArgumentException("Message cannot be null or empty.");
+        }
+        this.message = message;
+    }
+
+    public Boolean isActive() {
+        return active;
+    }
+
+    public void make_unactive() {
+        this.active = false;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

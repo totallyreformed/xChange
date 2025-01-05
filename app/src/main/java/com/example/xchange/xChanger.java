@@ -179,7 +179,7 @@ public class xChanger extends User implements Parcelable {
         if (item == null || message == null || request == null) {
             throw new IllegalArgumentException("Item, message, or request cannot be null.");
         }
-        Counteroffer counterOffer = new Counteroffer(request, message, item);
+        Counteroffer counterOffer = new Counteroffer(request, item);
         this.counterOffers.add(counterOffer);
     }
 
