@@ -1,6 +1,7 @@
 package com.example.xchange.database;
 
 import android.content.Context;
+import android.media.browse.MediaBrowser;
 import android.net.DnsResolver;
 import android.os.Handler;
 import android.os.Looper;
@@ -48,7 +49,9 @@ public class UserRepository {
         void onSuccess(List<Counteroffer> counterOffers);
         void onFailure(String message);
     }
-
+    public interface ItemCallback {
+        void onItemFetched(Item item);
+    }
     public interface RegisterCallback {
         void onSuccess();
         void onFailure(String message);
@@ -464,7 +467,6 @@ public class UserRepository {
                 // Return the count via the callback
                 callback.onSuccess((int) count);
             } catch (Exception e) {
-                Log.e("CounterOfferError", "Error fetching received counter offers: " + e.getMessage(), e);
                 callback.onFailure("Failed to fetch counter offers received count: " + e.getMessage());
             }
         });
@@ -544,6 +546,26 @@ public class UserRepository {
         }
         return false; // No match found
     }
+    public Item getOfferedItemForCounteroffer(long itemId, String username) {
+        try {
+            List<Request> requests = requestDao.getAllRequests();
+            Item requestedItem = itemDao.getItemByIdSync(itemId);
+            for (Request req : requests) {
+                if (req.getRequestee().getUsername().equals(username) && requestedItem.equals(req.getRequestedItem())) {
+                    List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                    for (Counteroffer counter : counteroffers) {
+                        if (counter.getCounterofferer().getUsername().equals(username) && requestedItem.equals(req.getRequestedItem())) {
+                            return counter.getOfferedItem(); // Return the offered item
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("UserRepository", "Error fetching offered item for counteroffer: " + e.getMessage(), e);
+        }
+        return null; // Return null if no match found
+    }
+
 
 
 }

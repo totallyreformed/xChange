@@ -82,6 +82,7 @@ public class CounterofferActivity extends AppCompatActivity {
                             Toast.makeText(this,"Counter offer initialized",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(this, com.example.xchange.MainActivity.MainActivity.class);
                             intent.putExtra("USER",user);
+                            intent.putExtra("REQUESTED_ITEM_ID", selectedItem.getItemId()); // Add the requested item ID as an extra
                             startActivity(intent);
 
                         } else {

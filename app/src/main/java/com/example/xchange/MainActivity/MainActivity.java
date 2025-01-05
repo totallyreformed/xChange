@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton uploadFab;
     private User currentUser;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,17 @@ public class MainActivity extends AppCompatActivity {
         uploadFab = findViewById(R.id.uploadFab);
 
         currentUser = intent.getParcelableExtra("USER");
+            int requestedItemId = -1; // Default value if parsing fails
+            String requestedItemIdString = intent.getStringExtra("REQUESTED_ITEM_ID");
+            if (requestedItemIdString != null) {
+                try {
+                    requestedItemId = Integer.parseInt(requestedItemIdString);
+                    Toast.makeText(this, "Requested Item ID: " + requestedItemId, Toast.LENGTH_SHORT).show();
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Invalid Requested Item ID", Toast.LENGTH_SHORT).show();
+                }
+            }
+
 
         if (currentUser != null) {
             String userType = currentUser.getUser_type();

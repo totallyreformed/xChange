@@ -134,7 +134,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                         String offeredItemDetails = request.getOfferedItem().getItemName();
                         otheriteminfo.setVisibility(View.VISIBLE);
                         otheriteminfo.setText("Requested by: " + request.getRequester().getUsername() +
-                                " Offering: " + offeredItemDetails);
+                                ", Offering: " + offeredItemDetails);
                     } else {
                         otheriteminfo.setVisibility(View.GONE);
                     }
@@ -142,6 +142,26 @@ public class ItemDetailActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             TextView counterofferInitiatedTextView = findViewById(R.id.counterofferInitiatedTextView);
                             if (checkSuccess) {
+                                // Fetch the offered item for the counteroffer
+                                viewModel.getOfferedItemForCounteroffer(itemId, user.getUsername(), new ItemDetailViewModel.ItemCallback() {
+                                    @Override
+                                    public void onItemFetched(Item offeredItem) {
+                                        runOnUiThread(() -> {
+                                            if (offeredItem != null) {
+                                                String newItemDetails = "Counteroffer Item: " + offeredItem.getItemName(); // Ensure Item has a 'getName()' method
+                                                counterofferInitiatedTextView.setText(newItemDetails);
+                                            } else {
+                                                counterofferInitiatedTextView.setText("Failed to load counteroffer item.");
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(String message) {
+                                        runOnUiThread(() -> counterofferInitiatedTextView.setText(message));
+                                    }
+                                });
+
                                 acceptButton.setVisibility(View.GONE);
                                 rejectButton.setVisibility(View.GONE);
                                 counterofferButton.setVisibility(View.GONE);
@@ -149,6 +169,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                             }
                         });
                     });
+
+
                 });
             });
 

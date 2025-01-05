@@ -1,7 +1,5 @@
 package com.example.xchange.ItemDetail;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Executors;
+
 import android.app.Application;
 import android.util.Log;
 
@@ -18,11 +16,14 @@ import com.example.xchange.database.UserRepository;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.RequestDao;
 
+import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class ItemDetailViewModel extends AndroidViewModel {
     private final ItemDao itemDao;
     private final Executor executor;
-    private UserRepository repository;
+    private final UserRepository repository;
     private final RequestDao requestDao;
 
     public ItemDetailViewModel(@NonNull Application application) {
@@ -30,8 +31,8 @@ public class ItemDetailViewModel extends AndroidViewModel {
         AppDatabase db = AppDatabase.getInstance(application);
         itemDao = db.itemDao();
         executor = Executors.newSingleThreadExecutor();
-        requestDao=AppDatabase.getRequestDao();
-        this.repository=new UserRepository(application);
+        requestDao = AppDatabase.getRequestDao();
+        this.repository = new UserRepository(application);
     }
 
     public LiveData<Item> getItemById(long itemId) {
@@ -41,7 +42,8 @@ public class ItemDetailViewModel extends AndroidViewModel {
     public void deleteItemById(long itemId) {
         executor.execute(() -> itemDao.deleteItemById(itemId));
     }
-    public LiveData<User> getUserByUsername(String name){
+
+    public LiveData<User> getUserByUsername(String name) {
         return this.repository.getUserByUsername(name);
     }
 
@@ -65,6 +67,7 @@ public class ItemDetailViewModel extends AndroidViewModel {
             });
         });
     }
+
     public void checkToDisplayAcceptReject(long itemId, String username, FetchRequestCallback callback) {
         LiveData<Item> itemLiveData = getItemById(itemId);
         itemLiveData.observeForever(item -> {
@@ -87,18 +90,8 @@ public class ItemDetailViewModel extends AndroidViewModel {
     }
 
     public void findRequest(long itemId, String username, UserRepository.FindRequestCallback callback) {
-        repository.findRequest(itemId, username, new UserRepository.FindRequestCallback() {
-            @Override
-            public void onResult(boolean success, @Nullable Request request) {
-                if (success && request != null) {
-                    callback.onResult(true, request);
-                } else {
-                    callback.onResult(false, null);
-                }
-            }
-        });
+        repository.findRequest(itemId, username, callback);
     }
-
 
     public void cancelRequest(long itemId, String username) {
         if (itemId <= 0 || username == null || username.isEmpty()) {
@@ -107,28 +100,21 @@ public class ItemDetailViewModel extends AndroidViewModel {
         }
         repository.cancelItemRequest(itemId, username);
     }
-    public void findItemsByXChanger(String xChangerUsername, UserRepository.UserItemsCallback callback) {
-        repository.findItemsByXChanger(xChangerUsername, new UserRepository.UserItemsCallback() {
-            @Override
-            public void onSuccess(List<Item> items) {
-                callback.onSuccess(items);
-            }
 
-            @Override
-            public void onFailure(String message) {
-                callback.onFailure(message);
-            }
-        });
+    public void findItemsByXChanger(String xChangerUsername, UserRepository.UserItemsCallback callback) {
+        repository.findItemsByXChanger(xChangerUsername, callback);
     }
-    public void checkIfRequesteeWithCounteroffer(long itemId,String username, CheckCounterofferCallback callback) {
+
+    public void checkIfRequesteeWithCounteroffer(long itemId, String username, CheckCounterofferCallback callback) {
         if (callback == null) {
             return;
         }
         executor.execute(() -> {
-            boolean result = repository.checkIfRequesteeWithCounteroffer(itemId,username); // Assuming repository returns a boolean
+            boolean result = repository.checkIfRequesteeWithCounteroffer(itemId, username); // Assuming repository returns a boolean
             callback.onResult(result);
         });
     }
+
     public void checkIfRequesterWithCounterofferee(String username, CheckCounterofferCallback callback) {
         if (callback == null) {
             Log.e("ItemDetailViewModel", "Callback is null in checkIfRequesterWithCounterofferee.");
@@ -140,23 +126,33 @@ public class ItemDetailViewModel extends AndroidViewModel {
         });
     }
 
+    public void getOfferedItemForCounteroffer(long itemId, String username, ItemCallback callback) {
+        executor.execute(() -> {
+            Item offeredItem = repository.getOfferedItemForCounteroffer(itemId, username);
+            if (offeredItem != null) {
+                callback.onItemFetched(offeredItem); // Use the callback to return the item
+            } else {
+                callback.onFailure("No offered item found for counteroffer.");
+            }
+        });
+    }
 
-
+    // Callback interfaces
     public interface CheckCounterofferCallback {
         void onResult(boolean success);
     }
 
-
-
-
-
-    // Callback interface
     public interface FetchResultCallback {
         void onResult(boolean result);
     }
+
     public interface FetchRequestCallback {
         void onResult(boolean success, @Nullable Request request);
     }
 
-}
+    public interface ItemCallback {
+        void onItemFetched(Item item);
 
+        void onFailure(String message);
+    }
+}
