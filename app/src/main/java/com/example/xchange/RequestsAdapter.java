@@ -15,10 +15,16 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
 
     private List<Request> requests;
     private User currentUser;
+    private final OnRequestClickListener clickListener;
 
-    public RequestsAdapter(List<Request> requests, User currentUser) {
+    public interface OnRequestClickListener {
+        void onRequestClicked(Request request);
+    }
+
+    public RequestsAdapter(List<Request> requests, User currentUser, OnRequestClickListener clickListener) {
         this.requests = requests;
         this.currentUser = currentUser;
+        this.clickListener = clickListener;
     }
 
     public void setRequests(List<Request> newRequests) {
@@ -44,6 +50,9 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
         holder.requestStatusTextView.setText("Status: " + request.getStatus());
         holder.requestedItemTextView.setText("Requested Item: " + request.getRequestedItem().getItemName());
         holder.offeredItemTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
+
+        // Set the click listener for the entire itemView
+        holder.itemView.setOnClickListener(v -> clickListener.onRequestClicked(request));
     }
 
     @Override
@@ -61,7 +70,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
-            requestIdTextView =itemView.findViewById(R.id.requestIdTextView);
+            requestIdTextView = itemView.findViewById(R.id.requestIdTextView);
             requesterTextView = itemView.findViewById(R.id.requesterTextView);
             requesteeTextView = itemView.findViewById(R.id.requesteeTextView);
             requestStatusTextView = itemView.findViewById(R.id.statusTextView);
