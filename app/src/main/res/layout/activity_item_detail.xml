@@ -116,7 +116,15 @@
         app:layout_constraintTop_toBottomOf="@id/OtherItemInfo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
+        <Button
+            android:id="@+id/seeRequestCounterofferButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/Orange"
+            android:textColor="@color/white"
+            android:text="See Request/Counteroffer"
+            android:visibility="gone" />
         <!-- Request Button -->
         <Button
             android:id="@+id/requestItemButton"
@@ -215,6 +223,7 @@
             android:backgroundTint="@color/secondary_text"
             android:textColor="@color/white"
             android:text="Back to Main" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

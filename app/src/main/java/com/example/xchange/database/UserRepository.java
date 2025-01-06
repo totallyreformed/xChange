@@ -459,7 +459,6 @@ public class UserRepository {
                 // Fetch all counteroffers synchronously
                 List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
 
-                // Filter the counteroffers based on the counterofferee's username
                 long count = counters.stream()
                         .filter(counter -> username.equals(counter.getCounterofferee().getUsername()))
                         .count();
@@ -473,6 +472,8 @@ public class UserRepository {
     }
     public void getSentCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
+//            AppDatabase.getRequestDao().deleteAllRequests();
+//            AppDatabase.getCounterofferDao().deleteAll();
             try {
                 List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                 List<Counteroffer> sentCounterOffers = new ArrayList<>();

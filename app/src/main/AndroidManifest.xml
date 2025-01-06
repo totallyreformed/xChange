@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
         <activity
+            android:name=".ItemDetail.SeerequestsCounteroffersActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfileData.CounteroffersActivity"
             android:exported="false" />
         <activity

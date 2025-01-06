@@ -16,6 +16,7 @@
     <color name="error_color">#B00020</color>
     <color name="Green">#4CAF50</color> <!-- Green -->
     <color name="Red">#F44336</color>
-    <color name="Yellow">#CDDC39</color><!-- Red --><!-- Material Design default error color -->
+    <color name="Yellow">#CDDC39</color>
+    <color name="Orange">#ff8000</color>
 
 </resources>
