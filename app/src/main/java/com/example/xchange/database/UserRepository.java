@@ -508,7 +508,7 @@ public class UserRepository {
             }
         });
     }
-    public Counteroffer  checkIfRequesteeWithCounteroffer(long itemId,String username) {
+    public Counteroffer checkIfRequesteeWithCounteroffer(long itemId,String username) {
         try {
             List<Request> requests = requestDao.getAllRequests();
             Item item=itemDao.getItemByIdSync(itemId);
@@ -527,17 +527,18 @@ public class UserRepository {
         }
         return null;
     }
-    public boolean checkIfRequesterWithCounterofferee(String username) {
+
+    public Counteroffer checkIfRequesterWithCounterofferee(long itemId,String username) {
         try {
             List<Request> requests = requestDao.getAllRequests();
+            Item item=itemDao.getItemByIdSync(itemId);
             for (Request req : requests) {
-                // Check if the user is the requester
                 if (req.getRequester().getUsername().equals(username)) {
-                    // Fetch all counteroffers and check if the user is the counterofferee
                     List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                     for (Counteroffer counter : counteroffers) {
-                        if (counter.getCounterofferee().getUsername().equals(username)) {
-                            return true; // Found a match
+                        if (counter.getCounterofferee().getUsername().equals(username) && item.equals(req.getRequestedItem())) {
+                            Log.d("TEST","YES");
+                            return counter; // Found a match
                         }
                     }
                 }
@@ -545,7 +546,7 @@ public class UserRepository {
         } catch (Exception e) {
             Log.e("UserRepository", "Error checking requester with counterofferee: " + e.getMessage(), e);
         }
-        return false; // No match found
+        return null;
     }
     public Item getOfferedItemForCounteroffer(long itemId, String username) {
         try {

@@ -107,12 +107,13 @@ public class ItemDetailViewModel extends AndroidViewModel {
         });
     }
 
-    public void checkIfRequesterWithCounterofferee(String username, CheckCounteroffereeCallback callback) {
+    public void checkIfRequesterWithCounterofferee(long itemid,String username, CheckCounterofferCallback callback) {
         executor.execute(() -> {
-            boolean result = repository.checkIfRequesterWithCounterofferee(username);
-            callback.onResult(result);
+            Counteroffer counteroffer = repository.checkIfRequesterWithCounterofferee(itemid,username); // Retrieve Counteroffer
+            callback.onResult(counteroffer); // Pass Counteroffer object to the callback
         });
     }
+
 
     public void getOfferedItemForCounteroffer(long itemId, String username, ItemCallback callback) {
         executor.execute(() -> {
@@ -144,7 +145,4 @@ public class ItemDetailViewModel extends AndroidViewModel {
         void onResult(@Nullable Counteroffer counteroffer);
     }
 
-    public interface CheckCounteroffereeCallback {
-        void onResult(boolean result);
-    }
 }

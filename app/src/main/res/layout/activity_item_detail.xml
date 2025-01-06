@@ -91,6 +91,7 @@
         app:layout_constraintTop_toBottomOf="@id/detailItemXchangerTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Buttons -->
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -101,6 +102,7 @@
         app:layout_constraintTop_toBottomOf="@id/requestStatusTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
         <Button
             android:id="@+id/seeRequestCounterofferButton"
             android:layout_width="match_parent"
@@ -110,6 +112,7 @@
             android:textColor="@color/white"
             android:text="See Request/Counteroffer"
             android:visibility="gone" />
+
         <!-- Request Button -->
         <Button
             android:id="@+id/requestItemButton"
@@ -119,17 +122,6 @@
             android:backgroundTint="@color/primary"
             android:textColor="@color/white"
             android:text="Request"
-            android:visibility="gone" />
-
-        <!-- Cancel Request Button -->
-        <Button
-            android:id="@+id/cancelRequestButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/Red"
-            android:textColor="@color/white"
-            android:text="Cancel Request"
             android:visibility="gone" />
 
         <!-- Accept Button -->
@@ -152,7 +144,19 @@
             android:backgroundTint="@color/black"
             android:textColor="@color/white"
             android:text="Reject"
-            android:visibility="gone"/>
+            android:visibility="gone" />
+
+        <!-- Cancel Request Button -->
+        <Button
+            android:id="@+id/cancelRequestButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/Red"
+            android:textColor="@color/white"
+            android:text="Cancel Request"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/counterofferInitiatedTextView"
             android:layout_width="wrap_content"
@@ -162,11 +166,7 @@
             android:text="Counteroffer initiated"
             android:textStyle="bold"
             android:textColor="@color/primary_text"
-            android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/counterofferButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
+            android:textSize="18sp" />
 
         <!-- Counteroffer Button -->
         <Button

@@ -3,6 +3,7 @@ package com.example.xchange.ItemDetail;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -97,6 +98,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             startActivity(editIntent);
         });
 
+
+
         viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), (success, request) -> {
             runOnUiThread(() -> {
                 Button acceptButton = findViewById(R.id.acceptButton);
@@ -167,6 +170,28 @@ public class ItemDetailActivity extends AppCompatActivity {
                             }
                         });
                     });
+                });
+            });
+            viewModel.checkIfRequesterWithCounterofferee(itemId,user.getUsername(), counteroffer  -> {
+                runOnUiThread(() -> {
+                    Log.d("TEST", String.valueOf(counteroffer==null));
+                    Button seeExtraButton=findViewById(R.id.seeRequestCounterofferButton);
+                    Button acceptButton=findViewById(R.id.acceptButton);
+                    Button rejectButton=findViewById(R.id.rejectButton);
+                    TextView iteminfo=findViewById(R.id.requestStatusTextView);
+                    if (counteroffer!=null) {
+                        seeExtraButton.setText("See Counteroffer");
+                        seeExtraButton.setVisibility(View.VISIBLE);
+                        acceptButton.setVisibility(View.VISIBLE);
+                        rejectButton.setVisibility(View.VISIBLE);
+                        iteminfo.setText("Other xChanger came back with a counteroffer");
+                        seeExtraButton.setOnClickListener(view -> {
+                            Intent intent = new Intent(this, SeerequestsCounteroffersActivity.class);
+                            intent.putExtra("COUNTEROFFER", counteroffer);
+                            intent.putExtra("HAS_COUNTEROFFER", true);
+                            startActivity(intent);
+                        });
+                    }
                 });
             });
         });
