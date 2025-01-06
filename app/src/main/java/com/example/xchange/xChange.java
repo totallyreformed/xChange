@@ -46,15 +46,11 @@ public class xChange implements Parcelable {
     }
 
     // Getters
-    public String getDeal_status() {
-        return deal_status;
-    }
-
     public Request getRequest() {
         return request;
     }
 
-    public Counteroffer getCounteroffer() {
+    public Counteroffer getCounterOffer() {
         return counteroffer;
     }
 
@@ -92,6 +88,7 @@ public class xChange implements Parcelable {
     public String getStatus() {
         return this.deal_status;
     }
+
 
     // Parcelable Constructor
     protected xChange(Parcel in) {
@@ -149,18 +146,54 @@ public class xChange implements Parcelable {
     public String acceptOffer(float ratingValue) {
         this.setDealStatus("Accepted");
 
-        // Implement logic to handle the acceptance
-        // For example, update database, remove items from inventories, etc.
+        // Remove items from inventories
+        this.getOfferer().deleteItem(this.getRequestedItem());
+        this.getOfferee().deleteItem(this.getOfferedItem());
 
-        return this.offeree != null ? this.offeree.getEmail() : "No Email";
+        // Finalize the exchange
+        this.getOfferee().getFinalized().add(this);
+        this.getOfferer().getFinalized().add(this);
+        this.getRequest().make_unactive();
+
+        // Deactivate counteroffer if present
+        if (this.getCounterOffer() != null && this.getCounterOffer().getRequest() == this.getRequest()) {
+            this.getCounterOffer().make_unactive();
+        }
+
+        // Update deals statistics
+        this.getOfferee().plusOneSucceedDeal();
+        this.getOfferer().plusOneSucceedDeal();
+
+        // Add rating to offeree
+        Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
+        this.getOfferee().addRating(rating);
+
+        return this.getOfferee().getEmail();
     }
+
 
     public void rejectOffer(float ratingValue) {
         this.setDealStatus("Rejected");
 
-        // Implement logic to handle the rejection
-        // For example, update database, adjust deal statistics, etc.
+        // Finalize the exchange
+        this.getOfferee().getFinalized().add(this);
+        this.getOfferer().getFinalized().add(this);
+        this.getRequest().make_unactive();
+
+        // Deactivate counteroffer if present
+        if (this.getCounterOffer() != null && this.getCounterOffer().getRequest() == this.getRequest()) {
+            this.getCounterOffer().make_unactive();
+        }
+
+        // Update deals statistics
+        this.getOfferee().plusOneFailedDeal();
+        this.getOfferer().plusOneFailedDeal();
+
+        // Add rating to offeree
+        Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
+        this.getOfferee().addRating(rating);
     }
+
 
     // toString method for better debugging
     @Override
