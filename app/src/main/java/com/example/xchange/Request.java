@@ -12,6 +12,8 @@ import com.example.xchange.database.CalendarConverter;
 import com.example.xchange.database.ItemConverter;
 import com.example.xchange.database.XChangerConverter;
 
+import java.util.Objects;
+
 @Entity(tableName = "requests")
 public class Request implements Parcelable {
 
@@ -190,4 +192,17 @@ public class Request implements Parcelable {
                 "Requester: " + requester.getUsername()+" "+
                 "Requestee: " + requestee.getUsername()+" ";
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Request request = (Request) o;
+        return Objects.equals(requestId, request.requestId); // Compare based on unique identifier
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(requestId);
+    }
+
 }

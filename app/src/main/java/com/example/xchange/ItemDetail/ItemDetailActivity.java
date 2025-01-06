@@ -92,7 +92,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
         cancelbutton.setOnClickListener(v -> {
             viewModel.cancelRequest(itemId,user.getUsername());
-            Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Request Canceled", Toast.LENGTH_SHORT).show();
             finish();
         });
 

@@ -390,6 +390,12 @@ public class UserRepository {
                                 break;
                             }
                         }
+                        List<Counteroffer> counters=AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                        for(Counteroffer counter:counters){
+                            if (counter.getRequest() != null && counter.getRequest().equals(tobedeleted)) {
+                                AppDatabase.getCounterofferDao().deleteCounteroffer(counter);
+                            }
+                        }
                         if (tobedeleted != null) {
                             requestDao.deleteRequest(tobedeleted);
                         }

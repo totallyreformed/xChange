@@ -114,6 +114,9 @@ public class RequestActivity extends AppCompatActivity {
         }
         viewModel.sendRequest(Requester, Requestee, offeredItem, requestedItem);
         Toast.makeText(this, "Request sent successfully!", Toast.LENGTH_SHORT).show();
+        Intent intent=new Intent(this, MainActivity.class);
+        intent.putExtra("USER",user);
+        startActivity(intent);
         finish(); // Finish the current activity
     }
 }
