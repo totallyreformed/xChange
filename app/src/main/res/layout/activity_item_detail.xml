@@ -91,21 +91,6 @@
         app:layout_constraintTop_toBottomOf="@id/detailItemXchangerTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/OtherItemInfo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textColor="@color/primary_text"
-        android:textSize="18sp"
-    android:textStyle="bold"
-    android:visibility="gone"
-    app:layout_constraintTop_toBottomOf="@id/requestStatusTextView"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
-
-
     <!-- Buttons -->
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -113,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/OtherItemInfo"
+        app:layout_constraintTop_toBottomOf="@id/requestStatusTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         <Button
@@ -167,7 +152,7 @@
             android:backgroundTint="@color/black"
             android:textColor="@color/white"
             android:text="Reject"
-            android:visibility="gone" />
+            android:visibility="gone"/>
         <TextView
             android:id="@+id/counterofferInitiatedTextView"
             android:layout_width="wrap_content"

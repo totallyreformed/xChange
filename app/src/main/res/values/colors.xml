@@ -18,5 +18,7 @@
     <color name="Red">#F44336</color>
     <color name="Yellow">#CDDC39</color>
     <color name="Orange">#ff8000</color>
+    <color name="button_color">#6200EE</color>
+
 
 </resources>
