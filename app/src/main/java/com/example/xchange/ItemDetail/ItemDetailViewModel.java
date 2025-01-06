@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
@@ -37,12 +38,44 @@ public class ItemDetailViewModel extends AndroidViewModel {
     }
 
     public LiveData<Item> getItemById(long itemId) {
-        return itemDao.getItemById(itemId);
+        MutableLiveData<Item> itemLiveData = new MutableLiveData<>();
+        executor.execute(() -> {
+            Item item = itemDao.getItemByIdSync(itemId); // Assuming getItemByIdSync exists for synchronous call
+            if (item != null) {
+                itemLiveData.postValue(item);
+            } else {
+                Log.e("ItemDetailViewModel", "Item with ID " + itemId + " not found.");
+                itemLiveData.postValue(null); // Ensure observer is notified with null if no item is found
+            }
+        });
+        return itemLiveData;
     }
 
+
     public void deleteItemById(long itemId) {
-        executor.execute(() -> itemDao.deleteItemById(itemId));
+        executor.execute(() -> {
+            try {
+                // Fetch related requests and counteroffers
+                List<Request> requests = requestDao.getAllRequests();
+                List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
+                Item item = itemDao.getItemByIdSync(itemId);
+
+                for (Request request : requests) {
+                    if (item != null && (item.equals(request.getOfferedItem()) || item.equals(request.getRequestedItem()))) {
+                        AppDatabase.getRequestDao().deleteRequest(request);
+                    }
+                }
+                for (Counteroffer counter : counteroffers) {
+                    if (item != null && (item.equals(counter.getOfferedItem()) || item.equals(counter.getRequestedItem()))) {
+                        AppDatabase.getCounterofferDao().deleteCounteroffer(counter);
+                    }
+                }
+                itemDao.deleteItemById(itemId);
+            } catch (Exception e) {
+            }
+        });
     }
+
 
     public LiveData<User> getUserByUsername(String username) {
         return repository.getUserByUsername(username);

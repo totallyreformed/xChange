@@ -537,7 +537,6 @@ public class UserRepository {
                     List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                     for (Counteroffer counter : counteroffers) {
                         if (counter.getCounterofferee().getUsername().equals(username) && item.equals(req.getRequestedItem())) {
-                            Log.d("TEST","YES");
                             return counter; // Found a match
                         }
                     }

@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.xchange.CounterOffer.CounterofferActivity;
 import com.example.xchange.EditItem.EditItemActivity;
 import com.example.xchange.Item;
+import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.Request;
 import com.example.xchange.User;
@@ -52,6 +53,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         Button deleteButton = findViewById(R.id.deleteItemButton);
         Button editButton = findViewById(R.id.editItemButton);
         Button seeRequestCounterofferButton = findViewById(R.id.seeRequestCounterofferButton);
+        Button cancelbutton=findViewById(R.id.cancelRequestButton);
 
         // Handle "Back to Main" Button
         backButton.setOnClickListener(v -> finish());
@@ -73,8 +75,6 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this, new ItemDetailViewModelFactory(getApplication())).get(ItemDetailViewModel.class);
-
-        // Fetch item details and display
         viewModel.getItemById(itemId).observe(this, item -> {
             if (item != null) {
                 displayItemDetails(item, user);
@@ -87,6 +87,11 @@ public class ItemDetailActivity extends AppCompatActivity {
         // Delete button functionality
         deleteButton.setOnClickListener(v -> {
             viewModel.deleteItemById(itemId);
+            Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
+            finish();
+        });
+        cancelbutton.setOnClickListener(v -> {
+            viewModel.cancelRequest(itemId,user.getUsername());
             Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
             finish();
         });
@@ -112,13 +117,12 @@ public class ItemDetailActivity extends AppCompatActivity {
                 Button cancelRequestButton = findViewById(R.id.cancelRequestButton);
 
                 if (success && request != null) {
-                    requestToSend = request; // Store the request to send
+                    requestToSend = request;
                     acceptButton.setVisibility(View.VISIBLE);
                     rejectButton.setVisibility(View.VISIBLE);
                     counterofferButton.setVisibility(View.VISIBLE);
                     editButton1.setVisibility(View.GONE);
 
-                    // Check if there's a counteroffer
                     viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), counteroffer  -> {
                         runOnUiThread(() -> {
                             if (counteroffer!=null) {
@@ -151,9 +155,13 @@ public class ItemDetailActivity extends AppCompatActivity {
                         viewModel.getItemById(itemId).observe(this, item -> {
                             if (item == null) {
                                 Toast.makeText(this, "Item not found", Toast.LENGTH_SHORT).show();
-                                finish();
+                                Intent intent = new Intent(this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Ensures MainActivity is launched correctly
+                                startActivity(intent);
+                                finish(); // Close the current activity
+                                return;
                             }
-                            if (user.getUsername().trim().equals(item.getXchanger().trim())) {
+                            if (user.getUsername().trim().equals(item.getXchanger())) {
                                 requestStatusTextView.setVisibility(View.GONE);
                                 requestItemButton.setVisibility(View.GONE);
                                 cancelRequestButton.setVisibility(View.GONE);
@@ -174,7 +182,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             });
             viewModel.checkIfRequesterWithCounterofferee(itemId,user.getUsername(), counteroffer  -> {
                 runOnUiThread(() -> {
-                    Log.d("TEST", String.valueOf(counteroffer==null));
                     Button seeExtraButton=findViewById(R.id.seeRequestCounterofferButton);
                     Button acceptButton=findViewById(R.id.acceptButton);
                     Button rejectButton=findViewById(R.id.rejectButton);
@@ -205,7 +212,6 @@ public class ItemDetailActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, CounterofferActivity.class);
                     intent.putExtra("REQUEST", request);
 
-                    // Fetch all items of the xChanger
                     viewModel.findItemsByXChanger(request.getRequester().getUsername(), new UserRepository.UserItemsCallback() {
                         @Override
                         public void onSuccess(List<Item> items) {
