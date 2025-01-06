@@ -1,11 +1,7 @@
-// File: com/example/xchange/SimpleCalendar.java
-
 package com.example.xchange;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.util.Calendar;
 
 public class SimpleCalendar implements Parcelable {
     private int year;
@@ -73,9 +69,7 @@ public class SimpleCalendar implements Parcelable {
         // Implement parsing logic based on the toString() format
         // Example implementation:
         try {
-            String[] dateTime = dateString.split(" ");
-            String[] dateParts = dateTime[0].split("-");
-
+            String[] dateParts = dateString.split("-");
             int year = Integer.parseInt(dateParts[0]);
             int month = Integer.parseInt(dateParts[1]) - 1; // Months are 0-based in Calendar
             int day = Integer.parseInt(dateParts[2]);

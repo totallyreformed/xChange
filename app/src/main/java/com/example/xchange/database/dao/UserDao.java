@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.xchange.Item;
 import com.example.xchange.User;
@@ -50,4 +51,7 @@ public interface UserDao {
     // Modify the getTotalCategories query to use the correct column name 'itemCategory'
     @Query("SELECT COUNT(DISTINCT item_category) FROM items")
     int getTotalCategories();
+
+    @Update
+    void updateUser(User user);
 }

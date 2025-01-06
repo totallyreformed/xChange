@@ -22,11 +22,11 @@ public class Request implements Parcelable {
 
     @ColumnInfo(name = "requester")
     @TypeConverters(XChangerConverter.class)
-    private xChanger requester;
+    private transient xChanger requester;
 
     @ColumnInfo(name = "requestee")
     @TypeConverters(XChangerConverter.class)
-    private xChanger requestee;
+    private transient xChanger requestee;
 
     @ColumnInfo(name = "offered_item")
     @TypeConverters(ItemConverter.class)
@@ -88,17 +88,14 @@ public class Request implements Parcelable {
     public void setOfferedItem(Item offeredItem) {
         this.offeredItem = offeredItem;
     }
+
     public void make_unactive(){
-        this.active=false;
-    }
-    public String getStatus(){
-        if (this.active){
-            return "Active";
-        }else{
-            return "Inactive";
-        }
+        this.active = false;
     }
 
+    public String getStatus(){
+        return this.active ? "Active" : "Inactive";
+    }
 
     public Item getRequestedItem() {
         return requestedItem;

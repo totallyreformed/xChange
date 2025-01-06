@@ -173,7 +173,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     rejectButton.setVisibility(View.GONE);
                     counterofferButton.setVisibility(View.GONE);
                     seeExtraButton.setVisibility(View.GONE); // Hide "See Request" button
-                    editButton1.setVisibility(View.VISIBLE);
+                    editButton1.setVisibility(View.GONE);
                     requestStatusTextView.setVisibility(View.GONE);
                     requestItemButton.setVisibility(View.GONE);
                     cancelRequestButton.setVisibility(View.GONE);
@@ -342,7 +342,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     acceptButton.setVisibility(View.GONE);
                     rejectButton.setVisibility(View.GONE);
                     counterofferButton.setVisibility(View.GONE);
-                    editButton1.setVisibility(View.VISIBLE);
+                    editButton1.setVisibility(View.GONE);
                     seeExtraButton.setVisibility(View.GONE); // Optionally hide if not needed
                     requestStatusTextView.setVisibility(View.GONE);
                     requestItemButton.setVisibility(View.GONE);

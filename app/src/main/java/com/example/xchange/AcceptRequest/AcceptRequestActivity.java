@@ -124,8 +124,9 @@ public class AcceptRequestActivity extends AppCompatActivity {
         viewModel.acceptRequest(request, rating).observe(this, success -> {
             if (success != null && success) {
                 Toast.makeText(AcceptRequestActivity.this, "Request accepted successfully!", Toast.LENGTH_SHORT).show();
-                // Navigate back to Admin or Main Activity
-                Intent intent = new Intent(AcceptRequestActivity.this, MainActivity.class);
+
+                Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
+                intent.putExtra("REQUEST", request);
                 intent.putExtra("USER", currentUser);
                 startActivity(intent);
                 finish();

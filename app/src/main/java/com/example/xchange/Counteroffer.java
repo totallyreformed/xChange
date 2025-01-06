@@ -11,13 +11,12 @@ import com.example.xchange.database.ItemConverter;
 import com.example.xchange.database.RequestConverter;
 import com.example.xchange.database.XChangerConverter;
 
-@Entity(tableName = "counteroffer")
+@Entity(tableName = "counteroffers")
 public class Counteroffer implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "counteroffer_id")
     private Long counterofferId;
-
 
     @TypeConverters(RequestConverter.class)
     @ColumnInfo(name = "request")
@@ -33,16 +32,16 @@ public class Counteroffer implements Parcelable {
 
     @ColumnInfo(name = "counterofferer")
     @TypeConverters(XChangerConverter.class)
-    private xChanger counterofferer;
+    private transient xChanger counterofferer; // Excluded from parceling
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "counterofferee")
-    private xChanger counterofferee;
+    private transient xChanger counterofferee; // Excluded from parceling
 
     private Boolean active;
 
     // Constructor
-    public Counteroffer(Request request, Item offeredItem) {
+    public Counteroffer(Request request, Item offeredItem, xChanger counterofferer, xChanger counterofferee) {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null.");
         }
@@ -52,19 +51,24 @@ public class Counteroffer implements Parcelable {
         this.request = request;
         this.offeredItem = offeredItem;
         this.requestedItem = request.getRequestedItem();
-        this.counterofferer = request.getRequestee();
-        this.counterofferee = request.getRequester();
+        this.counterofferer = counterofferer;
+        this.counterofferee = counterofferee;
         this.active = true;
     }
 
-    // Parcelable implementation
+    // Parcelable Constructor
     protected Counteroffer(Parcel in) {
-        counterofferId = (in.readByte() == 0) ? null : in.readLong();
+        if (in.readByte() == 0) {
+            counterofferId = null;
+        } else {
+            counterofferId = in.readLong();
+        }
         request = in.readParcelable(Request.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
-        counterofferer = in.readParcelable(xChanger.class.getClassLoader());
-        counterofferee = in.readParcelable(xChanger.class.getClassLoader());
+        // Excluded: counterofferer and counterofferee
+        this.counterofferer = null;
+        this.counterofferee = null;
         active = in.readByte() != 0;
     }
 
@@ -91,9 +95,8 @@ public class Counteroffer implements Parcelable {
         dest.writeParcelable(request, flags);
         dest.writeParcelable(offeredItem, flags);
         dest.writeParcelable(requestedItem, flags);
-        dest.writeParcelable(counterofferer, flags);
-        dest.writeParcelable(counterofferee, flags);
-        dest.writeByte((byte) (active ? 1 : 0));
+        // Excluded: counterofferer and counterofferee
+        dest.writeByte((byte) (active != null && active ? 1 : 0));
     }
 
     @Override
@@ -101,7 +104,7 @@ public class Counteroffer implements Parcelable {
         return 0;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public Long getCounterofferId() {
         return counterofferId;
     }
@@ -150,7 +153,6 @@ public class Counteroffer implements Parcelable {
         this.counterofferee = counterofferee;
     }
 
-
     public Boolean isActive() {
         return active;
     }
@@ -161,5 +163,19 @@ public class Counteroffer implements Parcelable {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    // toString method for better debugging
+    @Override
+    public String toString() {
+        return "Counteroffer{" +
+                "counterofferId=" + counterofferId +
+                ", requestId=" + (request != null ? request.getRequestId() : "null") +
+                ", offeredItem=" + (offeredItem != null ? offeredItem.getItemId() : "null") +
+                ", requestedItem=" + (requestedItem != null ? requestedItem.getItemId() : "null") +
+                ", counterofferer=" + (counterofferer != null ? counterofferer.getUsername() : "null") +
+                ", counterofferee=" + (counterofferee != null ? counterofferee.getUsername() : "null") +
+                ", active=" + active +
+                '}';
     }
 }

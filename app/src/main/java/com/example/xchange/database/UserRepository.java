@@ -168,8 +168,12 @@ public class UserRepository {
                 xChanger requester = (xChanger) request.getRequester();
                 xChanger requestee = (xChanger) request.getRequestee();
 
-                // Call xChanger's acceptRequest method
+                // Update requestee's side (e.g., add rating)
                 requestee.acceptRequest(request, rating);
+                userDao.updateUser(requestee); // Ensure the requestee's data is updated in the database
+
+                // Optionally, update requester if there are any changes on their side
+                userDao.updateUser(requester);
 
                 // Optionally, notify or update other parts of the system
                 callback.onSuccess();
