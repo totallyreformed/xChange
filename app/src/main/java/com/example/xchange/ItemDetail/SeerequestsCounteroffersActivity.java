@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.R;
 import com.example.xchange.Request;
@@ -34,16 +35,28 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         requesteeNameTextView = findViewById(R.id.requesteeNameTextView);
         backButton = findViewById(R.id.backButton);
 
-        // Retrieve the Request object from Intent
-        Request request = getIntent().getParcelableExtra("REQUEST");
-        if (request == null) {
-            Toast.makeText(this, "No request data available", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        // Retrieve the HAS_COUNTEROFFER flag
+        boolean hasCounteroffer = getIntent().getBooleanExtra("HAS_COUNTEROFFER", false);
 
-        // Display request details
-        displayRequestDetails(request);
+        if (hasCounteroffer) {
+            // Handle Counteroffer
+            Counteroffer counteroffer = getIntent().getParcelableExtra("COUNTEROFFER");
+            if (counteroffer == null) {
+                Toast.makeText(this, "No counteroffer data available.", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+            displayCounterofferDetails(counteroffer);
+        } else {
+            // Handle Request
+            Request request = getIntent().getParcelableExtra("REQUEST");
+            if (request == null) {
+                Toast.makeText(this, "No request data available.", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+            displayRequestDetails(request);
+        }
 
         // Handle Back button
         backButton.setOnClickListener(v -> finish());
@@ -54,37 +67,52 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         requesterNameTextView.setText("Requester: " + request.getRequester().getUsername());
         requesteeNameTextView.setText("Requestee: " + request.getRequestee().getUsername());
 
-        // Display the offered item details
+        // Display the offered item
         Item offeredItem = request.getOfferedItem();
         if (offeredItem != null) {
             offeredItemNameTextView.setText("Offered Item: " + offeredItem.getItemName());
-            if (offeredItem.getFirstImage() != null && offeredItem.getFirstImage().getFilePath() != null) {
-                String filePath = offeredItem.getFirstImage().getFilePath();
-                loadImage(filePath, offeredItemImageView);
-            } else {
-                offeredItemImageView.setImageResource(R.drawable.image_placeholder);
-            }
+            loadImage(offeredItem.getFirstImage() != null ? offeredItem.getFirstImage().getFilePath() : null, offeredItemImageView);
         } else {
             offeredItemNameTextView.setText("Offered Item: Not available");
             offeredItemImageView.setImageResource(R.drawable.image_placeholder);
         }
 
-        // Display the requested item details
+        // Display the requested item
         Item requestedItem = request.getRequestedItem();
         if (requestedItem != null) {
             requestedItemNameTextView.setText("Requested Item: " + requestedItem.getItemName());
-            if (requestedItem.getFirstImage() != null && requestedItem.getFirstImage().getFilePath() != null) {
-                String filePath = requestedItem.getFirstImage().getFilePath();
-                loadImage(filePath, requestedItemImageView);
-            } else {
-                requestedItemImageView.setImageResource(R.drawable.image_placeholder);
-            }
+            loadImage(requestedItem.getFirstImage() != null ? requestedItem.getFirstImage().getFilePath() : null, requestedItemImageView);
         } else {
             requestedItemNameTextView.setText("Requested Item: Not available");
             requestedItemImageView.setImageResource(R.drawable.image_placeholder);
         }
     }
 
+    private void displayCounterofferDetails(Counteroffer counteroffer) {
+        // Display the counterofferer and counterofferee names
+        requesterNameTextView.setText("Counterofferer: " + counteroffer.getCounterofferer().getUsername());
+        requesteeNameTextView.setText("Counterofferee: " + counteroffer.getCounterofferee().getUsername());
+
+        // Display the offered item for the counteroffer
+        Item offeredItem = counteroffer.getOfferedItem();
+        if (offeredItem != null) {
+            offeredItemNameTextView.setText("Counteroffer Item: " + offeredItem.getItemName());
+            loadImage(offeredItem.getFirstImage() != null ? offeredItem.getFirstImage().getFilePath() : null, offeredItemImageView);
+        } else {
+            offeredItemNameTextView.setText("Counteroffer Item: Not available");
+            offeredItemImageView.setImageResource(R.drawable.image_placeholder);
+        }
+
+        // Display the requested item for the counteroffer
+        Item requestedItem = counteroffer.getRequestedItem();
+        if (requestedItem != null) {
+            requestedItemNameTextView.setText("Requested Item: " + requestedItem.getItemName());
+            loadImage(requestedItem.getFirstImage() != null ? requestedItem.getFirstImage().getFilePath() : null, requestedItemImageView);
+        } else {
+            requestedItemNameTextView.setText("Requested Item: Not available");
+            requestedItemImageView.setImageResource(R.drawable.image_placeholder);
+        }
+    }
 
     private void loadImage(String filePath, ImageView imageView) {
         if (filePath != null) {
@@ -109,5 +137,4 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
             imageView.setImageResource(R.drawable.image_placeholder);
         }
     }
-
 }

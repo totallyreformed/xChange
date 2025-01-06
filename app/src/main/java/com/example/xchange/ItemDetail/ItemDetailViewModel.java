@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
@@ -32,7 +33,7 @@ public class ItemDetailViewModel extends AndroidViewModel {
         itemDao = db.itemDao();
         executor = Executors.newSingleThreadExecutor();
         requestDao = AppDatabase.getRequestDao();
-        this.repository = new UserRepository(application);
+        repository = new UserRepository(application);
     }
 
     public LiveData<Item> getItemById(long itemId) {
@@ -43,48 +44,42 @@ public class ItemDetailViewModel extends AndroidViewModel {
         executor.execute(() -> itemDao.deleteItemById(itemId));
     }
 
-    public LiveData<User> getUserByUsername(String name) {
-        return this.repository.getUserByUsername(name);
+    public LiveData<User> getUserByUsername(String username) {
+        return repository.getUserByUsername(username);
     }
 
     public void checkRequestToDisplay(long itemId, String username, FetchResultCallback callback) {
-        LiveData<Item> itemLiveData = getItemById(itemId);
-        itemLiveData.observeForever(item -> {
+        getItemById(itemId).observeForever(item -> {
             if (item == null) {
                 callback.onResult(false);
                 return;
             }
             executor.execute(() -> {
-                List<Request> requests = requestDao.getAllRequests();
-                for (Request req : requests) {
-                    if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
-                            username.equals(req.getRequester().getUsername())) {
-                        callback.onResult(true);
-                        return;
-                    }
-                }
-                callback.onResult(false);
+                boolean found = requestDao.getAllRequests()
+                        .stream()
+                        .anyMatch(req -> req.getRequestedItem() != null
+                                && req.getRequestedItem().equals(item)
+                                && username.equals(req.getRequester().getUsername()));
+                callback.onResult(found);
             });
         });
     }
 
     public void checkToDisplayAcceptReject(long itemId, String username, FetchRequestCallback callback) {
-        LiveData<Item> itemLiveData = getItemById(itemId);
-        itemLiveData.observeForever(item -> {
+        getItemById(itemId).observeForever(item -> {
             if (item == null) {
                 callback.onResult(false, null);
                 return;
             }
             executor.execute(() -> {
-                List<Request> requests = requestDao.getAllRequests();
-                for (Request req : requests) {
-                    if (req.getRequestedItem() != null && req.getRequestedItem().equals(item) &&
-                            username.equals(req.getRequestee().getUsername())) {
-                        callback.onResult(true, req);
-                        return;
-                    }
-                }
-                callback.onResult(false, null);
+                Request matchingRequest = requestDao.getAllRequests()
+                        .stream()
+                        .filter(req -> req.getRequestedItem() != null
+                                && req.getRequestedItem().equals(item)
+                                && username.equals(req.getRequestee().getUsername()))
+                        .findFirst()
+                        .orElse(null);
+                callback.onResult(matchingRequest != null, matchingRequest);
             });
         });
     }
@@ -94,11 +89,11 @@ public class ItemDetailViewModel extends AndroidViewModel {
     }
 
     public void cancelRequest(long itemId, String username) {
-        if (itemId <= 0 || username == null || username.isEmpty()) {
+        if (itemId > 0 && username != null && !username.isEmpty()) {
+            repository.cancelItemRequest(itemId, username);
+        } else {
             Log.e("ItemDetailViewModel", "Invalid itemId or username for cancelRequest.");
-            return;
         }
-        repository.cancelItemRequest(itemId, username);
     }
 
     public void findItemsByXChanger(String xChangerUsername, UserRepository.UserItemsCallback callback) {
@@ -106,22 +101,15 @@ public class ItemDetailViewModel extends AndroidViewModel {
     }
 
     public void checkIfRequesteeWithCounteroffer(long itemId, String username, CheckCounterofferCallback callback) {
-        if (callback == null) {
-            return;
-        }
         executor.execute(() -> {
-            boolean result = repository.checkIfRequesteeWithCounteroffer(itemId, username); // Assuming repository returns a boolean
-            callback.onResult(result);
+            Counteroffer counteroffer = repository.checkIfRequesteeWithCounteroffer(itemId, username);
+            callback.onResult(counteroffer);
         });
     }
 
-    public void checkIfRequesterWithCounterofferee(String username, CheckCounterofferCallback callback) {
-        if (callback == null) {
-            Log.e("ItemDetailViewModel", "Callback is null in checkIfRequesterWithCounterofferee.");
-            return;
-        }
+    public void checkIfRequesterWithCounterofferee(String username, CheckCounteroffereeCallback callback) {
         executor.execute(() -> {
-            boolean result = repository.checkIfRequesterWithCounterofferee(username); // Call the repository method
+            boolean result = repository.checkIfRequesterWithCounterofferee(username);
             callback.onResult(result);
         });
     }
@@ -130,18 +118,14 @@ public class ItemDetailViewModel extends AndroidViewModel {
         executor.execute(() -> {
             Item offeredItem = repository.getOfferedItemForCounteroffer(itemId, username);
             if (offeredItem != null) {
-                callback.onItemFetched(offeredItem); // Use the callback to return the item
+                callback.onItemFetched(offeredItem);
             } else {
                 callback.onFailure("No offered item found for counteroffer.");
             }
         });
     }
 
-    // Callback interfaces
-    public interface CheckCounterofferCallback {
-        void onResult(boolean success);
-    }
-
+    // Callback Interfaces
     public interface FetchResultCallback {
         void onResult(boolean result);
     }
@@ -154,5 +138,13 @@ public class ItemDetailViewModel extends AndroidViewModel {
         void onItemFetched(Item item);
 
         void onFailure(String message);
+    }
+
+    public interface CheckCounterofferCallback {
+        void onResult(@Nullable Counteroffer counteroffer);
+    }
+
+    public interface CheckCounteroffereeCallback {
+        void onResult(boolean result);
     }
 }

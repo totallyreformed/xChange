@@ -116,17 +116,17 @@ public class ItemDetailActivity extends AppCompatActivity {
                     editButton1.setVisibility(View.GONE);
 
                     // Check if there's a counteroffer
-                    viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), hasCounteroffer -> {
+                    viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), counteroffer  -> {
                         runOnUiThread(() -> {
-                            if (hasCounteroffer) {
+                            if (counteroffer!=null) {
                                 seeExtraButton.setText("See Counteroffer");
                                 seeExtraButton.setVisibility(View.VISIBLE);
 
                                 // On button click, send the counteroffer
                                 seeExtraButton.setOnClickListener(view -> {
                                     Intent intent = new Intent(this, SeerequestsCounteroffersActivity.class);
-                                    intent.putExtra("REQUEST", requestToSend);
-                                    intent.putExtra("HAS_COUNTEROFFER", true); // Pass extra data for counteroffer
+                                    intent.putExtra("COUNTEROFFER", counteroffer);
+                                    intent.putExtra("HAS_COUNTEROFFER", true);// Pass extra data for counteroffer
                                     startActivity(intent);
                                 });
                             } else {

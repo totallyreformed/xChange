@@ -508,7 +508,7 @@ public class UserRepository {
             }
         });
     }
-    public boolean checkIfRequesteeWithCounteroffer(long itemId,String username) {
+    public Counteroffer  checkIfRequesteeWithCounteroffer(long itemId,String username) {
         try {
             List<Request> requests = requestDao.getAllRequests();
             Item item=itemDao.getItemByIdSync(itemId);
@@ -517,7 +517,7 @@ public class UserRepository {
                     List<Counteroffer> counteroffers = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                     for (Counteroffer counter : counteroffers) {
                         if (counter.getCounterofferer().getUsername().equals(username)&& item.equals(req.getRequestedItem())) {
-                            return true; // Found a match
+                            return counter; // Found a match
                         }
                     }
                 }
@@ -525,7 +525,7 @@ public class UserRepository {
         } catch (Exception e) {
             Log.e("UserRepository", "Error checking requestee with counteroffer: " + e.getMessage(), e);
         }
-        return false; // No match found
+        return null;
     }
     public boolean checkIfRequesterWithCounterofferee(String username) {
         try {
