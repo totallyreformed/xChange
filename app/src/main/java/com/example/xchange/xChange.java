@@ -99,18 +99,6 @@ public class xChange implements Parcelable {
         requested_item = in.readParcelable(Item.class.getClassLoader());
     }
 
-    public static final Creator<xChange> CREATOR = new Creator<xChange>() {
-        @Override
-        public xChange createFromParcel(Parcel in) {
-            return new xChange(in);
-        }
-
-        @Override
-        public xChange[] newArray(int size) {
-            return new xChange[size];
-        }
-    };
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(deal_status);
@@ -133,6 +121,19 @@ public class xChange implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    public static final Creator<xChange> CREATOR = new Creator<xChange>() {
+        @Override
+        public xChange createFromParcel(Parcel in) {
+            return new xChange(in);
+        }
+
+        @Override
+        public xChange[] newArray(int size) {
+            return new xChange[size];
+        }
+    };
+
 
     // Methods to accept or reject the offer
     public String acceptOffer(float ratingValue) {

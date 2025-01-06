@@ -60,7 +60,7 @@ public class AdminReceivedRequestsActivity extends AppCompatActivity {
         userRepository = new UserRepository(this);
 
         // Fetch received requests
-        userRepository.getReceivedRequests(new UserRepository.RequestItemsCallback() {
+        userRepository.getReceivedRequestsAdmin(new UserRepository.RequestItemsCallback() {
             @Override
             public void onSuccess(List<Request> requests) {
                 runOnUiThread(() -> requestsAdapter.setRequests(requests));

@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.xchange.Request;
 
@@ -38,10 +39,18 @@ public interface RequestDao {
     void deleteAllRequests();
 
     @Query("SELECT * FROM requests")
-    List<Request> getAllReceivedRequests();
+    List<Request> getAllReceivedRequestsAdmin();
 
     @Query("SELECT * FROM requests")
-    List<Request> getAllSentRequests();
+    List<Request> getAllSentRequestsAdmin();
+
+    // Retrieve all received active requests for a specific user
+    @Query("SELECT * FROM requests WHERE requestee = :username AND active = 1")
+    LiveData<List<Request>> getAllReceivedRequests(String username);
+
+    // Retrieve all sent active requests for a specific user
+    @Query("SELECT * FROM requests WHERE requester = :username AND active = 1")
+    LiveData<List<Request>> getAllSentRequests(String username);
 
     @Query("SELECT COUNT(*) FROM requests")
     LiveData<Integer> getRequestsSentCount();
@@ -50,5 +59,9 @@ public interface RequestDao {
     LiveData<Integer> getRequestsReceivedCount();
     @Delete
     void deleteRequest(Request request);
+
+    // Update a request
+    @Update
+    void updateRequest(Request request);
 
 }

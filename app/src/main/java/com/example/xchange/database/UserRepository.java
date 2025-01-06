@@ -1,8 +1,6 @@
 package com.example.xchange.database;
 
 import android.content.Context;
-import android.media.browse.MediaBrowser;
-import android.net.DnsResolver;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -15,10 +13,11 @@ import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
-import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
+import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,7 @@ public class UserRepository {
     private final UserDao userDao;
     private final ItemDao itemDao;
     private final RequestDao requestDao;
+    private final CounterofferDao counterofferDao;
     private final ExecutorService executor;
 
     public UserRepository(Context context) {
@@ -38,6 +38,7 @@ public class UserRepository {
         userDao = db.userDao();
         itemDao = db.itemDao();
         requestDao = db.requestDao();
+        counterofferDao = db.getCounterofferDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -89,7 +90,11 @@ public class UserRepository {
         void onResult(boolean success);
     }
 
-
+    // Interface for AcceptRequest Callback
+    public interface AcceptRequestCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
 
     public interface RequestItemsCallback {
         void onSuccess(List<Request> requests);
@@ -146,6 +151,31 @@ public class UserRepository {
                 callback.onSuccess(items);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve user items.");
+            }
+        });
+    }
+
+    // Accept Request
+    public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Update the request to inactive
+                request.make_unactive();
+                requestDao.updateRequest(request);
+
+                // Assuming xChanger's acceptRequest handles further logic
+                // Retrieve the requester and requestee from the request
+                xChanger requester = (xChanger) request.getRequester();
+                xChanger requestee = (xChanger) request.getRequestee();
+
+                // Call xChanger's acceptRequest method
+                requestee.acceptRequest(request, rating);
+
+                // Optionally, notify or update other parts of the system
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error accepting request", e);
+                callback.onFailure("Failed to accept request.");
             }
         });
     }
@@ -254,7 +284,7 @@ public class UserRepository {
     public void getSentRequests(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
-                List<Request> requests = requestDao.getAllSentRequests();
+                List<Request> requests = requestDao.getAllSentRequestsAdmin();
                 callback.onSuccess(requests);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve sent requests.");
@@ -311,13 +341,43 @@ public class UserRepository {
         });
     }
 
+    // New Method: Get Active Received Requests
+    public void getActiveReceivedRequests(String username, UserRepository.RequestItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                LiveData<List<Request>> liveData = requestDao.getAllReceivedRequests(username);
+                // Observe LiveData on the main thread
+                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(requests -> {
+                    callback.onSuccess(requests);
+                }));
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch received requests: " + e.getMessage());
+            }
+        });
+    }
+
+    // New Method: Get Active Sent Requests
+    public void getActiveSentRequests(String username, UserRepository.RequestItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                LiveData<List<Request>> liveData = requestDao.getAllSentRequests(username);
+                // Observe LiveData on the main thread
+                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(requests -> {
+                    callback.onSuccess(requests);
+                }));
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch sent requests: " + e.getMessage());
+            }
+        });
+    }
+
 
 
     // Get Received Requests (For Admin)
-    public void getReceivedRequests(RequestItemsCallback callback) {
+    public void getReceivedRequestsAdmin(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
-                List<Request> requests = requestDao.getAllReceivedRequests(); // Implement this in RequestDao
+                List<Request> requests = requestDao.getAllReceivedRequestsAdmin();
                 callback.onSuccess(requests);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve received requests.");

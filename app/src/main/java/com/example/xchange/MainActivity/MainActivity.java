@@ -27,6 +27,7 @@ import com.example.xchange.MainActivity.XChangerHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AppDatabase appDatabase=AppDatabase.getInstance(this);
+        AppDatabase appDatabase = AppDatabase.getInstance(this);
 
         Intent intent = getIntent();
         uploadFab = findViewById(R.id.uploadFab);
