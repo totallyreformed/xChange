@@ -126,8 +126,14 @@ public class ItemDetailActivity extends AppCompatActivity {
                     viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), counteroffer  -> {
                         runOnUiThread(() -> {
                             if (counteroffer!=null) {
+                                TextView otherInfo=findViewById(R.id.requestStatusTextView);
+                                otherInfo.setVisibility(View.VISIBLE);
+                                otherInfo.setText("You counter-offered, see it below ");
                                 seeExtraButton.setText("See Counteroffer");
                                 seeExtraButton.setVisibility(View.VISIBLE);
+                                acceptButton.setVisibility(View.GONE);
+                                rejectButton.setVisibility(View.GONE);
+                                counterofferButton.setVisibility(View.GONE);
 
                                 // On button click, send the counteroffer
                                 seeExtraButton.setOnClickListener(view -> {
