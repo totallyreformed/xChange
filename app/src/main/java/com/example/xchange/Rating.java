@@ -100,7 +100,7 @@ public class Rating implements Parcelable {
                 ", rater=" + (rater != null ? rater.getUsername() : "null") +
                 ", ratee=" + (ratee != null ? ratee.getUsername() : "null") +
                 ", request=" + (request != null ? request.getRequestId() : "null") +
-                ", xChange=" + (xChange != null ? xChange.getFinalizedID() : "null") +
+                ", xChange=" + (xChange != null ? xChange.getFinalizedId() : "null") +
                 '}';
     }
 }

@@ -133,7 +133,7 @@ public class xChanger extends User implements Parcelable {
     }
 
     public void report(xChanger xchanger, String message, xChange finalized) {
-        if (finalized.getStatus() != null) {
+        if (finalized.getDealStatus() != null) {
             message = "User " + this.getUsername() + " reported user " + xchanger.getUsername();
         }
         this.reports.add(message);

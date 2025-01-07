@@ -17,6 +17,8 @@ import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
+import com.example.xchange.database.dao.xChangeDao;
+import com.example.xchange.xChange;
 import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class UserRepository {
     private final ItemDao itemDao;
     private final RequestDao requestDao;
     private final CounterofferDao counterofferDao;
+    private final xChangeDao xChangeDao;
     private final ExecutorService executor;
 
     public UserRepository(Context context) {
@@ -39,6 +42,7 @@ public class UserRepository {
         itemDao = db.itemDao();
         requestDao = db.requestDao();
         counterofferDao = db.getCounterofferDao();
+        xChangeDao = db.xChangeDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -92,6 +96,16 @@ public class UserRepository {
 
     // Interface for AcceptRequest Callback
     public interface AcceptRequestCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
+
+    public interface InsertXChangeCallback {
+        void onSuccess(long xChangeId);
+        void onFailure(String message);
+    }
+
+    public interface OperationCallback {
         void onSuccess();
         void onFailure(String message);
     }
@@ -163,7 +177,6 @@ public class UserRepository {
                 request.make_unactive();
                 requestDao.updateRequest(request);
 
-                // Assuming xChanger's acceptRequest handles further logic
                 // Retrieve the requester and requestee from the request
                 xChanger requester = (xChanger) request.getRequester();
                 xChanger requestee = (xChanger) request.getRequestee();
@@ -175,11 +188,58 @@ public class UserRepository {
                 // Optionally, update requester if there are any changes on their side
                 userDao.updateUser(requester);
 
-                // Optionally, notify or update other parts of the system
+                // Create a new xChange entry
+                xChange newXChange = new xChange(request, null, null); // Adjust parameters as needed
+                // Insert the xChange into the database
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId); // Set the generated ID
+
+                // Optionally, update xChange with additional details if necessary
+                xChangeDao.updateXChange(newXChange);
+
+                // Notify or update other parts of the system
                 callback.onSuccess();
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
+            }
+        });
+    }
+
+    // Insert xChange
+    public void insertXChange(xChange xchange, InsertXChangeCallback callback) {
+        executor.execute(() -> {
+            try {
+                long id = xChangeDao.insertXChange(xchange);
+                xchange.setXChangeId(id);
+                xChangeDao.updateXChange(xchange);
+                callback.onSuccess(id);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error inserting xChange", e);
+                callback.onFailure("Failed to insert xChange.");
+            }
+        });
+    }
+
+    // Example: Retrieve xChange by ID
+    public LiveData<xChange> getXChangeById(long id) {
+        return xChangeDao.getXChangeById(id);
+    }
+
+    // Example: Retrieve all xChanges
+    public LiveData<List<xChange>> getAllXChanges() {
+        return xChangeDao.getAllXChanges();
+    }
+
+    // Example: Mark xChange as Inactive
+    public void markXChangeAsInactive(long id, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                xChangeDao.markXChangeAsInactive(id);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error marking xChange as inactive", e);
+                callback.onFailure("Failed to mark xChange as inactive.");
             }
         });
     }
