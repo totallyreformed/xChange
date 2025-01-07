@@ -66,6 +66,11 @@
         <activity android:name=".AcceptRequest.xChangeConfirmationActivity"
             android:parentActivityName=".MainActivity.MainActivity">
         </activity>
+
+        <!-- Declare RejectRequestActivity -->
+        <activity android:name=".RejectRequest.RejectRequestActivity"
+            android:parentActivityName=".MainActivity.MainActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -29,14 +29,4 @@ public class AcceptRequestViewModel extends ViewModel {
     public LiveData<Boolean> acceptRequest(Request request, float rating) {
         return presenter.acceptRequest(request, rating);
     }
-
-    /**
-     * Initiates the rejection of a request.
-     *
-     * @param request The Request object to be rejected.
-     * @return LiveData<Boolean> indicating success or failure.
-     */
-    public LiveData<Boolean> rejectRequest(Request request) {
-        return presenter.rejectRequest(request);
-    }
 }

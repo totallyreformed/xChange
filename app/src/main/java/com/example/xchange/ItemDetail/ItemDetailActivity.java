@@ -25,6 +25,7 @@ import com.example.xchange.Request;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.request.RequestActivity;
+import com.example.xchange.RejectRequest.RejectRequestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +132,14 @@ public class ItemDetailActivity extends AppCompatActivity {
                     // Set Accept Button Click Listener
                     acceptButton.setOnClickListener(v -> {
                         Intent intent = new Intent(ItemDetailActivity.this, AcceptRequestActivity.class);
+                        intent.putExtra("REQUEST", requestToSend);
+                        intent.putExtra("USER", user);
+                        startActivity(intent);
+                    });
+
+                    // Set Reject Button Click Listener
+                    rejectButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(ItemDetailActivity.this, RejectRequestActivity.class);
                         intent.putExtra("REQUEST", requestToSend);
                         intent.putExtra("USER", user);
                         startActivity(intent);
@@ -306,6 +315,14 @@ public class ItemDetailActivity extends AppCompatActivity {
                     // Set Accept Button Click Listener
                     acceptButton.setOnClickListener(v -> {
                         Intent intent = new Intent(ItemDetailActivity.this, AcceptRequestActivity.class);
+                        intent.putExtra("REQUEST", requestToSend);
+                        intent.putExtra("USER", user);
+                        startActivity(intent);
+                    });
+
+                    // Set Reject Button Click Listener
+                    rejectButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(ItemDetailActivity.this, RejectRequestActivity.class);
                         intent.putExtra("REQUEST", requestToSend);
                         intent.putExtra("USER", user);
                         startActivity(intent);

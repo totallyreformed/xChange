@@ -31,7 +31,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
     private TextView requesterTextView, requesteeTextView, requestStatusTextView;
     private TextView offeredItemTextView, requestedItemTextView;
     private ImageView offeredItemImageView, requestedItemImageView;
-    private Button acceptButton, rejectButton;
+    private Button acceptButton, backButton;
     private RatingBar requestRatingBar;
     private float userRating = 5.0f; // Default rating or retrieve from UI
 
@@ -49,7 +49,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
         offeredItemImageView = findViewById(R.id.offeredItemImageView);
         requestedItemImageView = findViewById(R.id.requestedItemImageView);
         acceptButton = findViewById(R.id.acceptButton);
-        rejectButton = findViewById(R.id.rejectButton);
+        backButton = findViewById(R.id.backButton);
         requestRatingBar = findViewById(R.id.requestRatingBar);
 
 
@@ -79,7 +79,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
 
         // Set button click listeners
         acceptButton.setOnClickListener(v -> showAcceptConfirmationDialog());
-        rejectButton.setOnClickListener(v -> handleRejectRequest());
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void loadItemImage(Item item, ImageView imageView) {
@@ -120,15 +120,6 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void showRejectConfirmationDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Confirm Rejection")
-                .setMessage("Are you sure you want to reject this xChange?")
-                .setPositiveButton("Yes", (dialog, which) -> handleRejectRequest())
-                .setNegativeButton("No", null)
-                .show();
-    }
-
     private void handleAcceptRequest(float rating) {
         viewModel.acceptRequest(request, rating).observe(this, success -> {
             if (success != null && success) {
@@ -141,20 +132,6 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 finish();
             } else {
                 Toast.makeText(AcceptRequestActivity.this, "Failed to accept request.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void handleRejectRequest() {
-        viewModel.rejectRequest(request).observe(this, success -> {
-            if (success != null && success) {
-                Toast.makeText(AcceptRequestActivity.this, "Request rejected.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(AcceptRequestActivity.this, MainActivity.class);
-                intent.putExtra("USER", currentUser);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(AcceptRequestActivity.this, "Failed to reject request.", Toast.LENGTH_SHORT).show();
             }
         });
     }

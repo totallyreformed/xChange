@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/acceptRequestScrollView"
+    android:id="@+id/rejectRequestScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/acceptRequestLinearLayout"
+        android:id="@+id/rejectRequestLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <!-- Request Details Section -->
+        <TextView
+            android:id="@+id/requestDetailsHeaderTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Request Details"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
 
         <!-- Requester Details -->
         <TextView
@@ -17,34 +27,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Requester: "
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:layout_marginBottom="8dp" />
 
-        <!-- Requestee Details -->
+        <!-- Offered Item Section -->
         <TextView
-            android:id="@+id/requesteeTextView"
+            android:id="@+id/offeredItemHeaderTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Requestee: "
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Request Status -->
-        <TextView
-            android:id="@+id/requestStatusTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status: "
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Offered Item Details -->
-        <TextView
-            android:id="@+id/offeredItemTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Offered Item: "
-            android:textSize="18sp"
+            android:text="Offered Item:"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:layout_marginBottom="4dp" />
 
         <ImageView
@@ -52,16 +45,17 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:src="@drawable/image_placeholder" />
 
-        <!-- Requested Item Details -->
+        <!-- Requested Item Section -->
         <TextView
-            android:id="@+id/requestedItemTextView"
+            android:id="@+id/requestedItemHeaderTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Requested Item: "
-            android:textSize="18sp"
+            android:text="Requested Item:"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:layout_marginBottom="4dp" />
 
         <ImageView
@@ -69,25 +63,17 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:src="@drawable/image_placeholder" />
 
-        <!-- RatingBar for user rating -->
+        <!-- Additional Information -->
         <TextView
-            android:id="@+id/ratingTextView"
-            android:layout_width="wrap_content"
+            android:id="@+id/requestStatusTextView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rate the Exchange:"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp" />
-
-        <RatingBar
-            android:id="@+id/requestRatingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            android:stepSize="0.5"
-            android:layout_marginBottom="16dp" />
+            android:text="Request Status: Pending"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp" />
 
         <!-- Action Buttons -->
         <LinearLayout
@@ -98,10 +84,10 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/acceptButton"
+                android:id="@+id/rejectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Accept"
+                android:text="Reject"
                 android:layout_marginEnd="16dp" />
 
             <Button

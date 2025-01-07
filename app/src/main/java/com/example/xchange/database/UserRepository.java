@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
+import com.example.xchange.RejectRequest.RejectRequestActivity;
 import com.example.xchange.Request;
 import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
@@ -98,6 +99,11 @@ public class UserRepository {
 
     // Interface for AcceptRequest Callback
     public interface AcceptRequestCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
+
+    public interface RejectRequestCallback {
         void onSuccess();
         void onFailure(String message);
     }
@@ -228,12 +234,12 @@ public class UserRepository {
      * @param request  The Request object to be rejected.
      * @param callback Callback to handle success or failure.
      */
-    public void rejectRequest(Request request, AcceptRequestCallback callback) {
+    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
                 // 1. Mark the request as inactive
-                request.make_unactive();
-                requestDao.updateRequest(request);
+                xchanger.rejectRequest(request, 0);
+                requestDao.deleteRequest(request);
 
                 // 2. Retrieve the requester and requestee from the request
                 xChanger requester = request.getRequester();
