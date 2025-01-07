@@ -2,6 +2,7 @@ package com.example.xchange;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.Calendar;
 
 public class SimpleCalendar implements Parcelable {
     private int year;
@@ -25,6 +26,15 @@ public class SimpleCalendar implements Parcelable {
 
     public int getDay() {
         return day;
+    }
+
+    // Static helper method to get today's date
+    public static SimpleCalendar today() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH); // January is 0!
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return new SimpleCalendar(year, month, day);
     }
 
     // Parcelable Implementation

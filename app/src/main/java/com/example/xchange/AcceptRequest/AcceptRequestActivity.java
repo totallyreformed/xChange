@@ -120,6 +120,15 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showRejectConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Rejection")
+                .setMessage("Are you sure you want to reject this xChange?")
+                .setPositiveButton("Yes", (dialog, which) -> handleRejectRequest())
+                .setNegativeButton("No", null)
+                .show();
+    }
+
     private void handleAcceptRequest(float rating) {
         viewModel.acceptRequest(request, rating).observe(this, success -> {
             if (success != null && success) {
@@ -137,12 +146,6 @@ public class AcceptRequestActivity extends AppCompatActivity {
     }
 
     private void handleRejectRequest() {
-        // Optionally implement reject functionality
-        // For now, simply delete or mark the request as inactive
-        // You can create a similar method in ViewModel for rejection
-
-        // Example implementation:
-        request.make_unactive();
         viewModel.rejectRequest(request).observe(this, success -> {
             if (success != null && success) {
                 Toast.makeText(AcceptRequestActivity.this, "Request rejected.", Toast.LENGTH_SHORT).show();

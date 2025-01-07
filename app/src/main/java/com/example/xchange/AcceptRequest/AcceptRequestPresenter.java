@@ -22,6 +22,13 @@ public class AcceptRequestPresenter {
         this.viewModel = viewModel;
     }
 
+    /**
+     * Handles the acceptance of a request by invoking the UserRepository's acceptRequest method.
+     *
+     * @param request The Request object to be accepted.
+     * @param rating  The rating provided by the user.
+     * @return LiveData<Boolean> indicating success or failure.
+     */
     public LiveData<Boolean> acceptRequest(Request request, float rating) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         userRepository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
@@ -39,17 +46,26 @@ public class AcceptRequestPresenter {
         return result;
     }
 
+    /**
+     * Handles the rejection of a request by invoking the UserRepository's rejectRequest method.
+     *
+     * @param request The Request object to be rejected.
+     * @return LiveData<Boolean> indicating success or failure.
+     */
     public LiveData<Boolean> rejectRequest(Request request) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
-        // Implement rejection logic, similar to accept
-        try {
-            request.make_unactive();
-            AppDatabase.getRequestDao().updateRequest(request);
-            result.postValue(true);
-        } catch (Exception e) {
-            Log.e("AcceptRequestPresenter", "Error rejecting request: " + e.getMessage());
-            result.postValue(false);
-        }
+        userRepository.rejectRequest(request, new UserRepository.AcceptRequestCallback() {
+            @Override
+            public void onSuccess() {
+                result.postValue(true);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Log.e("AcceptRequestPresenter", "Error rejecting request: " + message);
+                result.postValue(false);
+            }
+        });
         return result;
     }
 }

@@ -18,6 +18,24 @@ public interface RequestDao {
     @Insert
     long insertRequest(Request request);
 
+    /**
+     * Retrieves all active requests for a specific item.
+     *
+     * @param itemId The ID of the item.
+     * @return LiveData list of active requests for the item.
+     */
+    @Query("SELECT * FROM requests WHERE requested_item = :itemId AND active = 1")
+    LiveData<List<Request>> getActiveRequestsForItem(long itemId);
+
+    /**
+     * Counts the number of active requests for a given item.
+     *
+     * @param itemId The ID of the item.
+     * @return The count of active requests.
+     */
+    @Query("SELECT COUNT(*) FROM requests WHERE requested_item = :itemId AND active = 1")
+    int countActiveRequestsForItem(long itemId);
+
     // Retrieve all requests
     @Query("SELECT * FROM requests")
     List<Request> getAllRequests();

@@ -7,11 +7,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
@@ -35,7 +37,7 @@ public class UserRepository {
     private final CounterofferDao counterofferDao;
     private final xChangeDao xChangeDao;
     private final ExecutorService executor;
-
+    
     public UserRepository(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
         userDao = db.userDao();
@@ -169,35 +171,49 @@ public class UserRepository {
         });
     }
 
-    // Accept Request
+    /**
+     * Accepts a trade request by marking it as inactive, creating an xChange entry,
+     * and updating both the requester and requestee's data accordingly.
+     *
+     * @param request  The Request object to be accepted.
+     * @param rating   The rating value provided by the user.
+     * @param callback Callback to handle success or failure.
+     */
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
-                // Update the request to inactive
+                // 1. Mark the request as inactive
                 request.make_unactive();
                 requestDao.updateRequest(request);
 
-                // Retrieve the requester and requestee from the request
-                xChanger requester = (xChanger) request.getRequester();
-                xChanger requestee = (xChanger) request.getRequestee();
+                // 2. Retrieve the requester and requestee from the request
+                xChanger requester = request.getRequester();
+                xChanger requestee = request.getRequestee();
 
-                // Update requestee's side (e.g., add rating)
+                // 3. Update requestee's side (e.g., add rating)
                 requestee.acceptRequest(request, rating);
-                userDao.updateUser(requestee); // Ensure the requestee's data is updated in the database
+                userDao.updateUser(requestee); // Update requestee in the database
 
-                // Optionally, update requester if there are any changes on their side
-                userDao.updateUser(requester);
+                // 4. Update requester's data if necessary
+                userDao.updateUser(requester); // Update requester in the database
 
-                // Create a new xChange entry
-                xChange newXChange = new xChange(request, null, null); // Adjust parameters as needed
-                // Insert the xChange into the database
+                // 5. Create a new SimpleCalendar instance with today's date using the helper method
+                SimpleCalendar today = SimpleCalendar.today();
+
+                // 6. Create a new xChange entry representing the finalized exchange
+                xChange newXChange = new xChange(request, null, today); // Use 'today' instead of 'new SimpleCalendar()'
+
+                // 7. Finalize the exchange by setting the deal status to "Accepted"
+                newXChange.acceptOffer(rating);
+
+                // 8. Insert the xChange into the database
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId); // Set the generated ID
 
-                // Optionally, update xChange with additional details if necessary
+                // 9. Update the xChange entry if necessary
                 xChangeDao.updateXChange(newXChange);
 
-                // Notify or update other parts of the system
+                // 10. Notify success via callback
                 callback.onSuccess();
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
@@ -206,7 +222,46 @@ public class UserRepository {
         });
     }
 
-    // Insert xChange
+    /**
+     * Rejects a trade request by marking it as inactive and updating both users' data.
+     *
+     * @param request  The Request object to be rejected.
+     * @param callback Callback to handle success or failure.
+     */
+    public void rejectRequest(Request request, AcceptRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // 1. Mark the request as inactive
+                request.make_unactive();
+                requestDao.updateRequest(request);
+
+                // 2. Retrieve the requester and requestee from the request
+                xChanger requester = request.getRequester();
+                xChanger requestee = request.getRequestee();
+
+                // 3. Update users in the database
+                userDao.updateUser(requester);
+                userDao.updateUser(requestee);
+
+                // 4. Optionally, handle any additional logic upon rejection
+                // For example, you might want to notify the requester about the rejection
+
+                // 5. Notify success via callback
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error rejecting request", e);
+                callback.onFailure("Failed to reject request.");
+            }
+        });
+    }
+
+    /**
+     * Example: Insert xChange (Additional Methods)
+     * Allows inserting a new xChange and receiving a callback with the generated ID.
+     *
+     * @param xchange  The xChange object to be inserted.
+     * @param callback Callback to handle success or failure.
+     */
     public void insertXChange(xChange xchange, InsertXChangeCallback callback) {
         executor.execute(() -> {
             try {
@@ -405,19 +460,50 @@ public class UserRepository {
         });
     }
 
-    // New Method: Get Active Received Requests
+    /**
+     * Retrieves active received requests for a specific user.
+     *
+     * @param username The username of the user.
+     * @param callback Callback to handle the list of active received requests.
+     */
     public void getActiveReceivedRequests(String username, UserRepository.RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
                 LiveData<List<Request>> liveData = requestDao.getAllReceivedRequests(username);
+                // Define the observer
+                Observer<List<Request>> observer = new Observer<List<Request>>() {
+                    @Override
+                    public void onChanged(List<Request> requests) {
+                        onRequestReceived(requests, callback);
+                        liveData.removeObserver(this); // Remove observer after receiving data
+                    }
+                };
                 // Observe LiveData on the main thread
-                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(requests -> {
-                    callback.onSuccess(requests);
-                }));
+                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(observer));
             } catch (Exception e) {
                 callback.onFailure("Failed to fetch received requests: " + e.getMessage());
             }
         });
+    }
+
+    /**
+     * Retrieves the count of active requests for a specific item.
+     *
+     * @param itemId The ID of the item.
+     * @return The count of active requests.
+     */
+    public int getActiveRequestCountForItem(long itemId) {
+        return requestDao.countActiveRequestsForItem(itemId);
+    }
+
+    /**
+     * Handles the received requests by invoking the callback.
+     *
+     * @param requests The list of received requests.
+     * @param callback The callback to handle success.
+     */
+    private void onRequestReceived(List<Request> requests, UserRepository.RequestItemsCallback callback) {
+        callback.onSuccess(requests);
     }
 
     // New Method: Get Active Sent Requests
@@ -485,6 +571,24 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Deletes an item from the database by its ID with callbacks.
+     *
+     * @param itemId   The ID of the item to delete.
+     * @param callback The callback to handle success or failure.
+     */
+    public void deleteItemById(long itemId, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                itemDao.deleteItemById(itemId);
+                Log.d("UserRepository", "Item deleted successfully: ID " + itemId);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error deleting item: " + itemId, e);
+                callback.onFailure("Failed to delete item.");
+            }
+        });
+    }
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
