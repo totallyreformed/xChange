@@ -2,6 +2,7 @@ package com.example.xchange.RejectRequest;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
+import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 import com.example.xchange.Item;
 
@@ -120,10 +124,33 @@ public class RejectRequestActivity extends AppCompatActivity {
         viewModel.rejectRequest(xchanger, requestToReject, new RejectRequestViewModel.RejectRequestCallback() {
             @Override
             public void onSuccess() {
-                runOnUiThread(() -> {
-                    Toast.makeText(RejectRequestActivity.this, "Request rejected successfully.", Toast.LENGTH_SHORT).show();
-                    finish();
+                Notification notification = new Notification(
+                        requestToReject.getRequester().getUsername(),
+                        "Your request has been rejected by " + currentUser.getUsername(),
+                        SimpleCalendar.today()
+                );
+
+                UserRepository userRepository = new UserRepository(getApplication());
+                userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("RejectRequestActivity", "Notification added successfully");
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        Log.e("RejectRequestActivity", "Failed to add notification: " + message);
+                    }
                 });
+
+                runOnUiThread(() -> new AlertDialog.Builder(RejectRequestActivity.this)
+                        .setTitle("Request Rejected")
+                        .setMessage("The requester has been notified of the rejection.")
+                        .setPositiveButton("Proceed", (dialog, which) -> {
+                            dialog.dismiss();
+                            finish();
+                        })
+                        .show());
             }
 
             @Override
@@ -131,5 +158,12 @@ public class RejectRequestActivity extends AppCompatActivity {
                 runOnUiThread(() -> Toast.makeText(RejectRequestActivity.this, "Failed to reject request: " + message, Toast.LENGTH_SHORT).show());
             }
         });
+    }
+
+    // Store the rejection notification for the other user
+    private void storeRejectionNotification(Request request) {
+        String notificationMessage = "Your request for \"" + request.getRequestedItem().getItemName() +
+                "\" has been rejected.";
+        viewModel.storeNotificationForUser(request.getRequester().getUsername(), notificationMessage);
     }
 }

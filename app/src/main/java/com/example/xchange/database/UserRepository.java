@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer;
 import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
-import com.example.xchange.RejectRequest.RejectRequestActivity;
 import com.example.xchange.Request;
 import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
@@ -23,6 +22,7 @@ import com.example.xchange.database.dao.UserDao;
 import com.example.xchange.database.dao.xChangeDao;
 import com.example.xchange.xChange;
 import com.example.xchange.xChanger;
+import com.example.xchange.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,11 @@ public class UserRepository {
 
     public interface LoginCallback {
         void onSuccess(User user);
+        void onFailure(String message);
+    }
+
+    public interface NotificationCallback {
+        void onSuccess(List<Notification> notifications);
         void onFailure(String message);
     }
     public interface UserCounterOffersCallback {
@@ -258,6 +263,58 @@ public class UserRepository {
         });
     }
 
+    public void storeNotification(String username, String message, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Create a notification object (or use a simple database table)
+                Notification notification = new Notification(username, message, SimpleCalendar.today());
+                AppDatabase.getNotificationDao().insertNotification(notification);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error storing notification", e);
+                callback.onFailure("Failed to store notification.");
+            }
+        });
+    }
+
+
+    public void addNotification(Notification notification, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                AppDatabase.getNotificationDao().insertNotification(notification);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error adding notification", e);
+                callback.onFailure("Failed to add notification.");
+            }
+        });
+    }
+
+    public void getNotificationsForUser(String username, UserRepository.NotificationCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Notification> notifications = AppDatabase.getNotificationDao().getNotificationsForUser(username);
+                callback.onSuccess(notifications);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error retrieving notifications", e);
+                callback.onFailure("Failed to retrieve notifications.");
+            }
+        });
+    }
+
+    public void deleteNotificationsForUser(String username, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                AppDatabase.getNotificationDao().deleteNotificationsForUser(username);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error deleting notifications", e);
+                callback.onFailure("Failed to delete notifications.");
+            }
+        });
+    }
+
+
     /**
      * Example: Insert xChange (Additional Methods)
      * Allows inserting a new xChange and receiving a callback with the generated ID.
@@ -282,6 +339,11 @@ public class UserRepository {
     // Example: Retrieve xChange by ID
     public LiveData<xChange> getXChangeById(long id) {
         return xChangeDao.getXChangeById(id);
+    }
+
+    // Example: Retrieve xChanger by username
+    public List<xChange> getXChangerByUser(String username) {
+        return xChangeDao.getXChangerByUser(username);
     }
 
     // Example: Retrieve all xChanges
@@ -321,6 +383,11 @@ public class UserRepository {
     public LiveData<Integer> getReceivedRequestsCount() {
         return requestDao.getRequestsReceivedCount();
     }
+
+    public List<Request> getRequestsByUsername(String username) {
+        return requestDao.findRequestsByUsername(username);
+    }
+
 
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.User;
 import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.UserRepository;
 
 public class LoginViewModel extends ViewModel implements LoginPresenter.LoginView {
 
@@ -22,14 +23,6 @@ public class LoginViewModel extends ViewModel implements LoginPresenter.LoginVie
     public void loginUser(String username, String password) {
         presenter.loginUser(username, password, this);
     }
-
-//    public void loginAsXChanger(String username, String password) {
-//        presenter.loginAsXChanger(username, password, this);
-//    }
-//
-//    public void loginAsAdmin(String username, String password) {
-//        presenter.loginAsAdmin(username, password, this);
-//    }
 
     public LiveData<User> getLoginSuccess() {
         return loginSuccess;
@@ -50,5 +43,13 @@ public class LoginViewModel extends ViewModel implements LoginPresenter.LoginVie
     }
     public LiveData<User> getUserByUsername(String username) {
         return presenter.getUserByUsername(username);
+    }
+
+    public void getNotificationsForUser(String username, UserRepository.NotificationCallback callback) {
+        presenter.getNotificationsForUser(username, callback);
+    }
+
+    public void deleteNotificationsForUser(String username, UserRepository.OperationCallback callback) {
+        presenter.deleteNotificationsForUser(username, callback);
     }
 }

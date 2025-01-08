@@ -4,8 +4,11 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.xchange.Notification;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
+
+import java.util.List;
 
 public class LoginPresenter {
     private final UserRepository userRepository;
@@ -64,6 +67,36 @@ public class LoginPresenter {
 
     public LiveData<User> getUserByUsername(String username) {
         return userRepository.getUserByUsername(username);
+    }
+
+    // Fetch notifications for a user
+    public void getNotificationsForUser(String username, UserRepository.NotificationCallback callback) {
+        userRepository.getNotificationsForUser(username, new UserRepository.NotificationCallback() {
+            @Override
+            public void onSuccess(List<Notification> notifications) {
+                callback.onSuccess(notifications);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                callback.onFailure(message);
+            }
+        });
+    }
+
+    // Delete notifications for a user
+    public void deleteNotificationsForUser(String username, UserRepository.OperationCallback callback) {
+        userRepository.deleteNotificationsForUser(username, new UserRepository.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                callback.onFailure(message);
+            }
+        });
     }
 
 }

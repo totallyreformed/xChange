@@ -44,6 +44,9 @@ public interface RequestDao {
     @Query("SELECT * FROM requests WHERE requestId = :requestId LIMIT 1")
     LiveData<Request> getRequestById(long requestId);
 
+    @Query("SELECT * FROM requests WHERE requester = :username OR requestee = :username")
+    List<Request> findRequestsByUsername(String username);
+
     // Retrieve active requests
     @Query("SELECT * FROM requests WHERE active = 1")
     LiveData<List<Request>> getActiveRequests();

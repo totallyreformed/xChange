@@ -1,6 +1,7 @@
 package com.example.xchange.RejectRequest;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -27,6 +28,20 @@ public class RejectRequestViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String message) {
                 callback.onFailure(message);
+            }
+        });
+    }
+
+    public void storeNotificationForUser(String username, String message) {
+        repository.storeNotification(username, message, new UserRepository.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d("RejectRequestViewModel", "Notification stored successfully for user: " + username);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Log.e("RejectRequestViewModel", "Failed to store notification: " + message);
             }
         });
     }

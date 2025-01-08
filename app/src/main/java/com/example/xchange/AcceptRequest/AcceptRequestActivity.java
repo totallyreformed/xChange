@@ -2,6 +2,7 @@ package com.example.xchange.AcceptRequest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -13,9 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
+import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 import com.example.xchange.Item;
 
@@ -136,15 +140,39 @@ public class AcceptRequestActivity extends AppCompatActivity {
         viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
             @Override
             public void onSuccess() {
-                runOnUiThread(() -> {
-                    Toast.makeText(AcceptRequestActivity.this, "Request accepted successfully.", Toast.LENGTH_SHORT).show();
+                // Create a notification for the requester
+                Notification notification = new Notification(
+                        request.getRequester().getUsername(),
+                        "Your request has been accepted by " + currentUser.getUsername(),
+                        SimpleCalendar.today()
+                );
 
-                    Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
-                    intent.putExtra("REQUEST", request);
-                    intent.putExtra("USER", currentUser);
-                    startActivity(intent);
-                    finish();
+                UserRepository userRepository = new UserRepository(getApplication());
+                userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("AcceptRequestActivity", "Notification added successfully");
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        Log.e("AcceptRequestActivity", "Failed to add notification: " + message);
+                    }
                 });
+
+                // Show the acceptance dialog
+                runOnUiThread(() -> new AlertDialog.Builder(AcceptRequestActivity.this)
+                        .setTitle("Request Accepted")
+                        .setMessage("The requester has been notified. Proceed to view the xChange confirmation.")
+                        .setPositiveButton("Proceed", (dialog, which) -> {
+                            Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
+                            intent.putExtra("REQUEST", request);
+                            intent.putExtra("USER", currentUser);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                        .show());
             }
 
             @Override
@@ -154,5 +182,20 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 );
             }
         });
+    }
+
+    private void notifyOtherUserOfAcceptance() {
+        runOnUiThread(() -> new AlertDialog.Builder(this)
+                .setTitle("Request Accepted")
+                .setMessage("The requester has been notified, and they will be redirected to the xChange confirmation.")
+                .setPositiveButton("Proceed", (dialog, which) -> {
+                    Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
+                    intent.putExtra("REQUEST", request);
+                    intent.putExtra("USER", currentUser);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .show());
     }
 }
