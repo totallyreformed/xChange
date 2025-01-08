@@ -1,5 +1,3 @@
-// File: com/example/xchange/acceptrequest/AcceptRequestActivity.java
-
 package com.example.xchange.AcceptRequest;
 
 import android.content.Intent;
@@ -12,11 +10,9 @@ import android.widget.Toast;
 import android.app.AlertDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.Request;
 import com.example.xchange.User;
@@ -33,7 +29,6 @@ public class AcceptRequestActivity extends AppCompatActivity {
     private ImageView offeredItemImageView, requestedItemImageView;
     private Button acceptButton, backButton;
     private RatingBar requestRatingBar;
-    private float userRating = 5.0f; // Default rating or retrieve from UI
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +47,6 @@ public class AcceptRequestActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         requestRatingBar = findViewById(R.id.requestRatingBar);
 
-
         // Retrieve data from Intent
         request = getIntent().getParcelableExtra("REQUEST");
         currentUser = getIntent().getParcelableExtra("USER");
@@ -64,7 +58,13 @@ public class AcceptRequestActivity extends AppCompatActivity {
         }
 
         // Convert currentUser to xChanger
-        xChanger xchanger = new xChanger(currentUser.getUsername(), currentUser.getEmail(), currentUser.getJoin_Date(), currentUser.getPassword(), currentUser.getLocation());
+        xChanger xchanger = new xChanger(
+                currentUser.getUsername(),
+                currentUser.getEmail(),
+                currentUser.getJoin_Date(),
+                currentUser.getPassword(),
+                currentUser.getLocation()
+        );
 
         // Display request details
         requesterTextView.setText("Requester: " + request.getRequester().getUsername());
@@ -78,7 +78,8 @@ public class AcceptRequestActivity extends AppCompatActivity {
         loadItemImage(request.getRequestedItem(), requestedItemImageView);
 
         // Initialize ViewModel
-        viewModel = new ViewModelProvider(this, new AcceptRequestViewModelFactory(getApplicationContext())).get(AcceptRequestViewModel.class);
+        viewModel = new ViewModelProvider(this, new AcceptRequestViewModelFactory(getApplicationContext()))
+                .get(AcceptRequestViewModel.class);
 
         // Set button click listeners
         acceptButton.setOnClickListener(v -> showAcceptConfirmationDialog());
@@ -116,7 +117,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 .setTitle("Confirm Acceptance")
                 .setMessage("Are you sure you want to accept this xChange?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    float rating = requestRatingBar != null ? requestRatingBar.getRating() : 5.0f; // Default rating if not using RatingBar
+                    float rating = requestRatingBar != null ? requestRatingBar.getRating() : 5.0f;
                     handleAcceptRequest(rating);
                 })
                 .setNegativeButton("No", null)
@@ -124,17 +125,33 @@ public class AcceptRequestActivity extends AppCompatActivity {
     }
 
     private void handleAcceptRequest(float rating) {
-        viewModel.acceptRequest(request, rating).observe(this, success -> {
-            if (success != null && success) {
-                Toast.makeText(AcceptRequestActivity.this, "Request accepted successfully!", Toast.LENGTH_SHORT).show();
+        xChanger xchanger = new xChanger(
+                currentUser.getUsername(),
+                currentUser.getEmail(),
+                currentUser.getJoin_Date(),
+                currentUser.getPassword(),
+                currentUser.getLocation()
+        );
 
-                Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
-                intent.putExtra("REQUEST", request);
-                intent.putExtra("USER", currentUser);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(AcceptRequestActivity.this, "Failed to accept request.", Toast.LENGTH_SHORT).show();
+        viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    Toast.makeText(AcceptRequestActivity.this, "Request accepted successfully.", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
+                    intent.putExtra("REQUEST", request);
+                    intent.putExtra("USER", currentUser);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onFailure(String message) {
+                runOnUiThread(() ->
+                        Toast.makeText(AcceptRequestActivity.this, "Failed to accept request: " + message, Toast.LENGTH_SHORT).show()
+                );
             }
         });
     }

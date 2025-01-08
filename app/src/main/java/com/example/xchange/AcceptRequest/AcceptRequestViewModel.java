@@ -1,11 +1,7 @@
-// File: com/example/xchange/acceptrequest/AcceptRequestViewModel.java
-
 package com.example.xchange.AcceptRequest;
 
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.Request;
@@ -14,20 +10,29 @@ import com.example.xchange.xChanger;
 
 public class AcceptRequestViewModel extends ViewModel {
 
-    private final AcceptRequestPresenter presenter;
+    private final UserRepository repository;
 
     public AcceptRequestViewModel(Context context) {
-        presenter = new AcceptRequestPresenter(context, this);
+        repository = new UserRepository(context);
     }
 
-    /**
-     * Initiates the acceptance of a request.
-     *
-     * @param request The Request object to be accepted.
-     * @param rating  The rating provided by the user.
-     * @return LiveData<Boolean> indicating success or failure.
-     */
-    public LiveData<Boolean> acceptRequest(Request request, float rating) {
-        return presenter.acceptRequest(request, rating);
+    public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
+        repository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
+            @Override
+            public void onSuccess() {
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                callback.onFailure(message);
+            }
+        });
+    }
+
+    public interface AcceptRequestCallback {
+        void onSuccess();
+
+        void onFailure(String message);
     }
 }

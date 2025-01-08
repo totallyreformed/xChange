@@ -190,40 +190,31 @@ public class UserRepository {
             try {
                 // 1. Mark the request as inactive
                 request.make_unactive();
-                requestDao.updateRequest(request);
+                requestDao.deleteRequest(request); // Delete request from the database
 
-                // 2. Retrieve the requester and requestee from the request
+                // 2. Finalize acceptance for both requester and requestee
                 xChanger requester = request.getRequester();
                 xChanger requestee = request.getRequestee();
 
-                // 3. Update requestee's side (e.g., add rating)
+                // Update requestee's rating and finalize the request
                 requestee.acceptRequest(request, rating);
-                userDao.updateUser(requestee); // Update requestee in the database
+                userDao.updateUser(requestee);
 
-                // 4. Update requester's data (e.g., finalize request on their end)
-                requester.getFinalized().add(new xChange(request, null, SimpleCalendar.today()));
-                userDao.updateUser(requester); // Update requester in the database
+                // Update requester's data (e.g., successful exchange count)
+                requester.plusOneSucceedDeal();
+                userDao.updateUser(requester);
 
-                // 5. Create a new SimpleCalendar instance with today's date using the helper method
+                // 3. Create and finalize a new xChange entry
                 SimpleCalendar today = SimpleCalendar.today();
-
-                // 6. Create a new xChange entry representing the finalized exchange
-                xChange newXChange = new xChange(request, null, today); // Use 'today' instead of 'new SimpleCalendar()'
-
-                // 7. Finalize the exchange by setting the deal status to "Accepted"
+                xChange newXChange = new xChange(request, null, today);
                 newXChange.acceptOffer(rating);
-
-                // 8. Insert the xChange into the database
                 long xChangeId = xChangeDao.insertXChange(newXChange);
-                newXChange.setXChangeId(xChangeId); // Set the generated ID
+                newXChange.setXChangeId(xChangeId);
 
-                // 9. Update the xChange entry if necessary
+                // Update xChange entry
                 xChangeDao.updateXChange(newXChange);
 
-                // 10. Notify the requester about the finalized exchange (optional)
-                requester.plusOneSucceedDeal();
-
-                // 11. Notify success via callback
+                // 4. Notify success via callback
                 callback.onSuccess();
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
@@ -231,6 +222,7 @@ public class UserRepository {
             }
         });
     }
+
 
 
     /**
