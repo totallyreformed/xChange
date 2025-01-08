@@ -63,6 +63,9 @@ public class AcceptRequestActivity extends AppCompatActivity {
             return;
         }
 
+        // Convert currentUser to xChanger
+        xChanger xchanger = new xChanger(currentUser.getUsername(), currentUser.getEmail(), currentUser.getJoin_Date(), currentUser.getPassword(), currentUser.getLocation());
+
         // Display request details
         requesterTextView.setText("Requester: " + request.getRequester().getUsername());
         requesteeTextView.setText("Requestee: " + request.getRequestee().getUsername());

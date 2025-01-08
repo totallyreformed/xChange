@@ -200,7 +200,8 @@ public class UserRepository {
                 requestee.acceptRequest(request, rating);
                 userDao.updateUser(requestee); // Update requestee in the database
 
-                // 4. Update requester's data if necessary
+                // 4. Update requester's data (e.g., finalize request on their end)
+                requester.getFinalized().add(new xChange(request, null, SimpleCalendar.today()));
                 userDao.updateUser(requester); // Update requester in the database
 
                 // 5. Create a new SimpleCalendar instance with today's date using the helper method
@@ -219,7 +220,10 @@ public class UserRepository {
                 // 9. Update the xChange entry if necessary
                 xChangeDao.updateXChange(newXChange);
 
-                // 10. Notify success via callback
+                // 10. Notify the requester about the finalized exchange (optional)
+                requester.plusOneSucceedDeal();
+
+                // 11. Notify success via callback
                 callback.onSuccess();
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
@@ -227,6 +231,7 @@ public class UserRepository {
             }
         });
     }
+
 
     /**
      * Rejects a trade request by marking it as inactive and updating both users' data.
