@@ -1,6 +1,8 @@
 package com.example.xchange.AcceptRequest;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,10 +12,14 @@ import com.example.xchange.R;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChange;
 import com.example.xchange.xChanger;
+import com.example.xchange.MainActivity.MainActivity;
 
 public class xChangeConfirmationActivity extends AppCompatActivity {
 
-    private TextView contactInfoTextView;
+    private TextView exchangeStatusTextView;
+    private TextView yourContactInfoHeader, yourContactInfoTextView;
+    private TextView counterpartyContactInfoHeader, counterpartyContactInfoTextView;
+    private Button backButton;
     private UserRepository userRepository;
     private xChanger currentUser;
 
@@ -22,7 +28,22 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xchange_confirmation);
 
-        contactInfoTextView = findViewById(R.id.contactInfoTextView);
+        // Map the new views based on the updated XML
+        exchangeStatusTextView = findViewById(R.id.exchangeStatusTextView);
+        yourContactInfoHeader = findViewById(R.id.yourContactInfoHeader);
+        yourContactInfoTextView = findViewById(R.id.yourContactInfoTextView);
+        counterpartyContactInfoHeader = findViewById(R.id.counterpartyContactInfoHeader);
+        counterpartyContactInfoTextView = findViewById(R.id.counterpartyContactInfoTextView);
+        backButton = findViewById(R.id.backButton);
+
+        // Back button navigates to MainActivity
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(xChangeConfirmationActivity.this, MainActivity.class);
+            intent.putExtra("USER", currentUser);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
 
         long xChangeId = getIntent().getLongExtra("XCHANGE_ID", -1);
         currentUser = getIntent().getParcelableExtra("USER");
@@ -46,20 +67,21 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
     }
 
     private void displayContactInfo(xChange xchange) {
-        StringBuilder contactInfo = new StringBuilder();
+        // Set the exchange status
+        exchangeStatusTextView.setText("Exchange Accepted!");
 
-        contactInfo.append("Exchange Accepted!\n\n");
+        // Populate your contact information
+        yourContactInfoHeader.setText("Your Contact Information:");
+        String yourContactInfo = "Name: " + xchange.getOfferer().getUsername() + "\n"
+                + "Email: " + xchange.getOfferer().getEmail() + "\n"
+                + "Location: " + xchange.getOfferer().getLocation();
+        yourContactInfoTextView.setText(yourContactInfo);
 
-        contactInfo.append("Your Contact Information:\n");
-        contactInfo.append("Name: ").append(xchange.getOfferer().getUsername()).append("\n");
-        contactInfo.append("Email: ").append(xchange.getOfferer().getEmail()).append("\n");
-        contactInfo.append("Location: ").append(xchange.getOfferer().getLocation()).append("\n\n");
-
-        contactInfo.append("Counterparty's Contact Information:\n");
-        contactInfo.append("Name: ").append(xchange.getOfferee().getUsername()).append("\n");
-        contactInfo.append("Email: ").append(xchange.getOfferee().getEmail()).append("\n");
-        contactInfo.append("Location: ").append(xchange.getOfferee().getLocation()).append("\n");
-
-        contactInfoTextView.setText(contactInfo.toString());
+        // Populate counterparty's contact information
+        counterpartyContactInfoHeader.setText("Counterparty's Contact Information:");
+        String counterpartyContactInfo = "Name: " + xchange.getOfferee().getUsername() + "\n"
+                + "Email: " + xchange.getOfferee().getEmail() + "\n"
+                + "Location: " + xchange.getOfferee().getLocation();
+        counterpartyContactInfoTextView.setText(counterpartyContactInfo);
     }
 }

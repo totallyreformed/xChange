@@ -219,6 +219,9 @@ public class UserRepository {
                 // Update xChange entry
                 xChangeDao.updateXChange(newXChange);
 
+                // Remove the item from the database
+                itemDao.deleteItem(request.getRequestedItem());
+
                 // 4. Notify success via callback with the xChangeId
                 callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
             } catch (Exception e) {
