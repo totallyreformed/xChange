@@ -1,5 +1,3 @@
-// File: Category.java
-
 package com.example.xchange;
 
 /**
@@ -54,5 +52,17 @@ public enum Category {
     @Override
     public String toString() {
         return displayName;
+    }
+
+    /**
+     * Returns the total number of defined categories, excluding ALL.
+     *
+     * @return The count of actual categories.
+     */
+    public static int getTotalCategories() {
+        // Exclude the ALL category if it's a placeholder
+        return (int) java.util.Arrays.stream(Category.values())
+                .filter(category -> category != ALL)
+                .count();
     }
 }

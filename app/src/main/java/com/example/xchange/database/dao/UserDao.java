@@ -17,10 +17,10 @@ public interface UserDao {
     @Insert
     void insertUser(User user);
 
-    @Query("SELECT COUNT(*) FROM items WHERE xchanger = :username")
+    @Query("SELECT COUNT() FROM items WHERE xchanger = :username")
     int getItemCountByUsername(String username);
 
-    @Query("SELECT * FROM items WHERE xchanger = :username")
+    @Query("SELECT FROM items WHERE xchanger = :username")
     List<Item> getItemsByUsername(String username);
 
     @Query("SELECT * FROM users WHERE user_type = 'xChanger'")
@@ -39,13 +39,13 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     User findByUsername_initial(String username);
 
-    @Query("SELECT COUNT(*) FROM requests")
+    @Query("SELECT COUNT() FROM requests")
     int getTotalRequests();
 
-    @Query("SELECT COUNT(*) FROM requests WHERE active = 0")
+    @Query("SELECT COUNT() FROM requests WHERE active = 0")
     int getTotalExchanges();
 
-    @Query("SELECT COUNT(*) FROM items")
+    @Query("SELECT COUNT() FROM items")
     int getTotalItems();
 
     // Modify the getTotalCategories query to use the correct column name 'itemCategory'
@@ -54,4 +54,7 @@ public interface UserDao {
 
     @Update
     void updateUser(User user);
+
+    @Query("SELECT COUNT() FROM users")
+    int getTotalUsers();
 }
