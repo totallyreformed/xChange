@@ -104,7 +104,7 @@ public class UserRepository {
 
     // Interface for AcceptRequest Callback
     public interface AcceptRequestCallback {
-        void onSuccess();
+        void onSuccess(long xChangeId);
         void onFailure(String message);
     }
 
@@ -219,14 +219,15 @@ public class UserRepository {
                 // Update xChange entry
                 xChangeDao.updateXChange(newXChange);
 
-                // 4. Notify success via callback
-                callback.onSuccess();
+                // 4. Notify success via callback with the xChangeId
+                callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
             }
         });
     }
+
 
 
 
@@ -263,11 +264,11 @@ public class UserRepository {
         });
     }
 
-    public void storeNotification(String username, String message, OperationCallback callback) {
+    public void storeNotification(String username, String message, long xChangeId, OperationCallback callback) {
         executor.execute(() -> {
             try {
                 // Create a notification object (or use a simple database table)
-                Notification notification = new Notification(username, message, SimpleCalendar.today());
+                Notification notification = new Notification(username, message, SimpleCalendar.today(), xChangeId);
                 AppDatabase.getNotificationDao().insertNotification(notification);
                 callback.onSuccess();
             } catch (Exception e) {

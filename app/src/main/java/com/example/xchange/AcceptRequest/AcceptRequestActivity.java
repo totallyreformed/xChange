@@ -139,12 +139,13 @@ public class AcceptRequestActivity extends AppCompatActivity {
 
         viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(long xChangeId) {
                 // Create a notification for the requester
                 Notification notification = new Notification(
                         request.getRequester().getUsername(),
                         "Your request has been accepted by " + currentUser.getUsername(),
-                        SimpleCalendar.today()
+                        SimpleCalendar.today(),
+                        xChangeId
                 );
 
                 UserRepository userRepository = new UserRepository(getApplication());
@@ -167,7 +168,8 @@ public class AcceptRequestActivity extends AppCompatActivity {
                         .setPositiveButton("Proceed", (dialog, which) -> {
                             Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
                             intent.putExtra("REQUEST", request);
-                            intent.putExtra("USER", currentUser);
+                            intent.putExtra("USER", xchanger);
+                            intent.putExtra("XCHANGE_ID", xChangeId); // Pass the xChangeId
                             startActivity(intent);
                             finish();
                         })
