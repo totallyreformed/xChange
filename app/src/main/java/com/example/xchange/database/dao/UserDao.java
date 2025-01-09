@@ -20,7 +20,7 @@ public interface UserDao {
     @Query("SELECT COUNT() FROM items WHERE xchanger = :username")
     int getItemCountByUsername(String username);
 
-    @Query("SELECT FROM items WHERE xchanger = :username")
+    @Query("SELECT * FROM items WHERE xchanger = :username")
     List<Item> getItemsByUsername(String username);
 
     @Query("SELECT * FROM users WHERE user_type = 'xChanger'")
