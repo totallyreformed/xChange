@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XChange">
         <activity
+            android:name=".Admin.AdminXChangesActivity"
+            android:exported="false" />
+        <activity
             android:name=".ItemDetail.SeerequestsCounteroffersActivity"
             android:exported="false" />
         <activity
@@ -58,9 +61,9 @@
         <activity android:name=".Admin.AdminItemsActivity" />
         <activity android:name=".Admin.AdminReceivedRequestsActivity" />
         <activity android:name=".Admin.AdminSentRequestsActivity" />
-        <activity android:name=".AcceptRequest.AcceptRequestActivity"/>
-        <activity android:name=".AcceptRequest.xChangeConfirmationActivity"/>
-        <activity android:name=".RejectRequest.RejectRequestActivity"/>
+        <activity android:name=".AcceptRequest.AcceptRequestActivity" />
+        <activity android:name=".AcceptRequest.xChangeConfirmationActivity" />
+        <activity android:name=".RejectRequest.RejectRequestActivity" />
         <activity android:name=".ProfileData.xChangesActivity" />
     </application>
 
