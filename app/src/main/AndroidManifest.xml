@@ -59,12 +59,9 @@
         <activity android:name=".Admin.AdminReceivedRequestsActivity" />
         <activity android:name=".Admin.AdminSentRequestsActivity" />
         <activity android:name=".AcceptRequest.AcceptRequestActivity"/>
-
-        <!-- Declare ExchangeConfirmationActivity -->
         <activity android:name=".AcceptRequest.xChangeConfirmationActivity"/>
-
-        <!-- Declare RejectRequestActivity -->
         <activity android:name=".RejectRequest.RejectRequestActivity"/>
+        <activity android:name=".ProfileData.xChangesActivity" />
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
+import com.example.xchange.xChange;
 
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     private final MutableLiveData<Integer> counterOffersReceivedCount = new MutableLiveData<>();
     private final MutableLiveData<List<Counteroffer>> sentCounterOffers = new MutableLiveData<>();
     private final MutableLiveData<List<Counteroffer>> receivedCounterOffers = new MutableLiveData<>();
+    private final MutableLiveData<List<xChange>> userXChanges = new MutableLiveData<>();
+    private final MutableLiveData<Integer> totalExchangesCount = new MutableLiveData<>();
+
 
     public ProfileViewModel(@NonNull Application application, User user) {
         super(application);
@@ -76,6 +80,8 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     public LiveData<Integer> getCounterOffersReceivedCount() {
         return counterOffersReceivedCount;
     }
+    public LiveData<List<xChange>> getUserXChanges() { return userXChanges; }
+    public LiveData<Integer> getTotalExchangesCount() { return totalExchangesCount; }
 
     // Loading Data
     public void loadProfileData() {
@@ -90,6 +96,12 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
         presenter.loadSentRequests();
         presenter.loadReceivedRequests();
     }
+
+    public void loadUserXChanges() {
+        presenter.loadUserXChanges();
+    }
+
+    public void loadTotalExchanges() { presenter.loadTotalExchanges();}
 
     public void loadRequestsCount() {
         presenter.loadRequestsCount();
@@ -110,6 +122,19 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     public void onProfileDataFailed(String message) {
         error.postValue(message);
     }
+
+    @Override
+    public void onXChangesLoaded(List<xChange> xChanges) { userXChanges.postValue(xChanges); }
+    @Override
+    public void onXChangesFailed(String message) {
+        error.postValue(message);
+    }
+
+    @Override
+    public void onTotalExchangesLoaded(int count) { totalExchangesCount.postValue(count); }
+
+    @Override
+    public void onTotalExchangesFailed(String message) { error.postValue(message); }
 
     @Override
     public void onUserItemsLoaded(List<Item> items) {

@@ -128,6 +128,12 @@ public class UserRepository {
         void onFailure(String message);
     }
 
+    public interface UserXChangesCallback {
+        void onSuccess(List<xChange> xChanges);
+        void onFailure(String message);
+    }
+
+
     public void loginUser(String username, String password, LoginCallback callback) {
         executor.execute(() -> {
             User user = userDao.loginUser(username, password);
@@ -635,6 +641,33 @@ public class UserRepository {
             }
         });
     }
+
+    // Retrieve the total exchanges count for a user
+    public void getTotalExchangesCount(String username, UserRequestsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalExchanges = xChangeDao.getUserXChanges(username);
+                callback.onSuccess(totalExchanges);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching total exchanges count", e);
+                callback.onFailure("Failed to fetch total exchanges count.");
+            }
+        });
+    }
+
+    // Retrieve all xChanges for a user
+    public void getUserXChanges(String username, UserXChangesCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<xChange> xChanges = xChangeDao.getXChangerByUser(username); // Fetch all xChanges where the user is either offerer or offeree
+                callback.onSuccess(xChanges);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching xChanges for user", e);
+                callback.onFailure("Failed to fetch xChanges.");
+            }
+        });
+    }
+
 
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
