@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         uploadFab = findViewById(R.id.uploadFab);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
 
         currentUser = intent.getParcelableExtra("USER");
         List<Notification> notifications = getIntent().getParcelableArrayListExtra("NOTIFICATIONS");
@@ -82,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new AdminHomeFragment())
                         .commit();
+                uploadFab.setVisibility(View.GONE);
+                bottomNavigationView.setVisibility(View.GONE);
             } else if ("xChanger".equalsIgnoreCase(userType)) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new XChangerHomeFragment())
@@ -129,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // BottomNavigationView setup
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_browse) {

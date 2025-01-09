@@ -135,12 +135,12 @@
                     android:layout_marginEnd="16dp" />
             </LinearLayout>
 
-            <!-- Requests Sent Section -->
+            <!-- Requests Section -->
             <TextView
-                android:id="@+id/adminRequestsSentHeaderTextView"
+                android:id="@+id/adminRequestsHeaderTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Requests Sent"
+                android:text="Requests"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/secondary_text"
@@ -148,7 +148,7 @@
                 android:layout_marginBottom="8dp" />
 
             <LinearLayout
-                android:id="@+id/adminRequestsSentLayout"
+                android:id="@+id/adminRequestsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -156,59 +156,19 @@
                 android:layout_marginBottom="16dp">
 
                 <TextView
-                    android:id="@+id/adminRequestsSentCountTextView"
+                    android:id="@+id/adminRequestsCountTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 Requests Sent"
+                    android:text="0 Requests"
                     android:textSize="16sp"
                     android:textColor="@color/secondary_text"
                     android:layout_marginEnd="16dp" />
 
                 <Button
-                    android:id="@+id/adminViewRequestsSentButton"
+                    android:id="@+id/adminViewRequestsButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View Sent Requests"
-                    android:textSize="14sp"
-                    android:backgroundTint="@color/primary"
-                    android:textColor="@color/white"
-                    android:elevation="2dp" />
-            </LinearLayout>
-
-            <!-- Requests Received Section -->
-            <TextView
-                android:id="@+id/adminRequestsReceivedHeaderTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Requests Received"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/secondary_text"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:id="@+id/adminRequestsReceivedLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/adminRequestsReceivedCountTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 Requests Received"
-                    android:textSize="16sp"
-                    android:textColor="@color/secondary_text"
-                    android:layout_marginEnd="16dp" />
-
-                <Button
-                    android:id="@+id/adminViewRequestsReceivedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="View Received Requests"
+                    android:text="View Requests"
                     android:textSize="14sp"
                     android:backgroundTint="@color/primary"
                     android:textColor="@color/white"
@@ -254,8 +214,23 @@
                     android:textColor="@color/white"
                     android:elevation="2dp" />
             </LinearLayout>
+            <Button
+                android:id="@+id/adminLogoutButton"
+                android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:text="Logout"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/Red"
+            android:textColor="@color/white"
+            android:padding="15dp"
+            android:elevation="4dp"
+            />
 
         </LinearLayout>
+
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

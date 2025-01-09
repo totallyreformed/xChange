@@ -518,6 +518,8 @@ public class UserRepository {
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
             try {
+//                AppDatabase.getCounterofferDao().deleteAll();
+//                AppDatabase.getRequestDao().deleteAllRequests();
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
                 for (Request req : requests) {
@@ -634,7 +636,7 @@ public class UserRepository {
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
-                int totalItems = userDao.getTotalItems();
+                int totalItems = itemDao.getTotalItems();
                 String stats = "Total Items: " + totalItems;
                 callback.onSuccess(stats);
             } catch (Exception e) {

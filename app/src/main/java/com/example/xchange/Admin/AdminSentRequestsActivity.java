@@ -37,6 +37,7 @@ public class AdminSentRequestsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false); // Hides the title text
         }
 
         // Initialize RecyclerView

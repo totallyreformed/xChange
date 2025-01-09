@@ -1,7 +1,6 @@
 package com.example.xchange.MainActivity;
 
 import com.example.xchange.Admin.AdminItemsActivity;
-import com.example.xchange.Admin.AdminReceivedRequestsActivity;
 import com.example.xchange.Admin.AdminSentRequestsActivity;
 
 import android.content.Intent;
@@ -19,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.xchange.Login.LoginActivity;
 import com.example.xchange.R;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
@@ -29,16 +29,13 @@ public class AdminHomeFragment extends Fragment {
     private TextView adminWelcomeTextView;
     private TextView adminTotalItemsTextView;
     private Button adminViewItemsButton;
-    private TextView adminRequestsSentCountTextView;
-    private Button adminViewRequestsSentButton;
-    private TextView adminRequestsReceivedCountTextView;
-    private Button adminViewRequestsReceivedButton;
+    private TextView adminRequestsCountTextView;
+    private Button adminViewRequestsButton;
     private TextView totalUsersTextView;
     private TextView totalCategoriesTextView;
 
     private UserRepository userRepository;
     private User currentUser;
-    private MainActivityViewModel viewModel;
 
     @Nullable
     @Override
@@ -46,15 +43,22 @@ public class AdminHomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         // Inflate the updated admin_home layout
         View view = inflater.inflate(R.layout.admin_home, container, false);
+        Button adminLogoutButton = view.findViewById(R.id.adminLogoutButton);
+
+        // Handle Logout Button
+        adminLogoutButton.setOnClickListener(v -> {
+            Intent logoutIntent = new Intent(getActivity(), LoginActivity.class); // Replace with your login activity
+            logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(logoutIntent);
+            requireActivity().finish();
+        });
 
         // Initialize Views
         adminWelcomeTextView = view.findViewById(R.id.adminWelcomeTextView);
         adminTotalItemsTextView = view.findViewById(R.id.adminTotalItemsTextView);
         adminViewItemsButton = view.findViewById(R.id.adminViewItemsButton);
-        adminRequestsSentCountTextView = view.findViewById(R.id.adminRequestsSentCountTextView);
-        adminViewRequestsSentButton = view.findViewById(R.id.adminViewRequestsSentButton);
-        adminRequestsReceivedCountTextView = view.findViewById(R.id.adminRequestsReceivedCountTextView);
-        adminViewRequestsReceivedButton = view.findViewById(R.id.adminViewRequestsReceivedButton);
+        adminRequestsCountTextView = view.findViewById(R.id.adminRequestsCountTextView);
+        adminViewRequestsButton = view.findViewById(R.id.adminViewRequestsButton);
         totalUsersTextView = view.findViewById(R.id.adminTotalUsersTextView);
         totalCategoriesTextView = view.findViewById(R.id.adminTotalCategoriesTextView);
 
@@ -66,81 +70,12 @@ public class AdminHomeFragment extends Fragment {
             currentUser = ((MainActivity) getActivity()).getCurrentUser();
         }
 
-        // Initialize ViewModel
-        viewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-
         if (currentUser != null) {
             // Set Welcome Text
             adminWelcomeTextView.setText("Welcome " + currentUser.getUsername() + "!");
 
-            // Fetch and observe all statistics
-            viewModel.fetchAllStatistics();
-
-            // Observe Total Items
-            viewModel.getTotalItemsLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer totalItems) {
-                    if (totalItems != null) {
-                        adminTotalItemsTextView.setText("Total Items: " + totalItems);
-                    } else {
-                        adminTotalItemsTextView.setText("Total Items: 0");
-                    }
-                }
-            });
-
-            // Observe Requests Sent
-            userRepository.getSentRequestsCount().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer requestsSent) {
-                    if (requestsSent != null) {
-                        adminRequestsSentCountTextView.setText("Requests Sent: " + requestsSent);
-                    } else {
-                        adminRequestsSentCountTextView.setText("Requests Sent: 0");
-                    }
-                }
-            });
-
-            // Observe Requests Received
-            userRepository.getReceivedRequestsCount().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer requestsReceived) {
-                    if (requestsReceived != null) {
-                        adminRequestsReceivedCountTextView.setText("Requests Received: " + requestsReceived);
-                    } else {
-                        adminRequestsReceivedCountTextView.setText("Requests Received: 0");
-                    }
-                }
-            });
-
-            // Observe Total Users
-            userRepository.getTotalUsers(new UserRepository.UserStatisticsCallback() {
-                @Override
-                public void onSuccess(String stats) {
-                    requireActivity().runOnUiThread(() -> totalUsersTextView.setText(stats));
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                    );
-                }
-            });
-
-            // Observe Total Categories
-            userRepository.getTotalCategories(new UserRepository.UserStatisticsCallback() {
-                @Override
-                public void onSuccess(String stats) {
-                    requireActivity().runOnUiThread(() -> totalCategoriesTextView.setText(stats));
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                    );
-                }
-            });
+            // Fetch and display statistics
+            fetchStatistics();
         } else {
             Toast.makeText(getContext(), "Current user is null", Toast.LENGTH_SHORT).show();
         }
@@ -151,16 +86,70 @@ public class AdminHomeFragment extends Fragment {
             startActivity(intent);
         });
 
-        adminViewRequestsSentButton.setOnClickListener(v -> {
+        adminViewRequestsButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), AdminSentRequestsActivity.class);
             startActivity(intent);
         });
 
-        adminViewRequestsReceivedButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), AdminReceivedRequestsActivity.class);
-            startActivity(intent);
+        return view;
+    }
+
+    private void fetchStatistics() {
+        // Fetch Total Items
+        userRepository.getTotalItems(new UserRepository.UserStatisticsCallback() {
+            @Override
+            public void onSuccess(String stats) {
+                requireActivity().runOnUiThread(() -> adminTotalItemsTextView.setText(stats));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                );
+            }
         });
 
-        return view;
+        // Fetch Requests Count
+        userRepository.getSentRequestsCount().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer requestsCount) {
+                if (requestsCount != null) {
+                    adminRequestsCountTextView.setText("Requests: " + requestsCount);
+                } else {
+                    adminRequestsCountTextView.setText("Requests: 0");
+                }
+            }
+        });
+
+        // Fetch Total Users
+        userRepository.getTotalUsers(new UserRepository.UserStatisticsCallback() {
+            @Override
+            public void onSuccess(String stats) {
+                requireActivity().runOnUiThread(() -> totalUsersTextView.setText(stats));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+
+        // Fetch Total Categories
+        userRepository.getTotalCategories(new UserRepository.UserStatisticsCallback() {
+            @Override
+            public void onSuccess(String stats) {
+                requireActivity().runOnUiThread(() -> totalCategoriesTextView.setText(stats));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
     }
 }
