@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.xchange.AcceptRequest.AcceptRequestActivity;
 import com.example.xchange.ItemDetail.ItemDetailActivity;
 import com.example.xchange.R;
 import com.example.xchange.Request;
+import com.example.xchange.RequestsAdapter;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 
@@ -44,17 +46,19 @@ public class AdminSentRequestsActivity extends AppCompatActivity {
 
         // Initialize Adapter with empty list and currentUser
         currentUser = getAdminUser(); // Implement this method based on your app's logic
-        requestsAdapter = new RequestsAdapter(new ArrayList<>(), currentUser);
+        requestsAdapter = new RequestsAdapter(
+                new ArrayList<>(),
+                currentUser,
+                request -> {
+                    // Navigate to AcceptRequestActivity
+                    Intent intent = new Intent(AdminSentRequestsActivity.this, AcceptRequestActivity.class);
+                    intent.putExtra("REQUEST", request);
+                    intent.putExtra("USER", currentUser);
+                    startActivity(intent);
+                },
+                this
+        );
         adminSentRequestsRecyclerView.setAdapter(requestsAdapter);
-
-        // Set OnItemClickListener
-        requestsAdapter.setOnItemClickListener(requestId -> {
-            // Navigate to RequestDetailActivity (implement if needed)
-            Intent intent = new Intent(AdminSentRequestsActivity.this, ItemDetailActivity.class); // Replace with actual RequestDetailActivity
-            intent.putExtra("REQUEST_ID", requestId);
-            intent.putExtra("USER", currentUser); // Pass Admin user if needed
-            startActivity(intent);
-        });
 
         // Initialize UserRepository
         userRepository = new UserRepository(this);
@@ -88,7 +92,7 @@ public class AdminSentRequestsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }

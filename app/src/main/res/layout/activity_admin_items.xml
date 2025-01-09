@@ -10,7 +10,6 @@
         android:id="@+id/adminItemsToolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:title="All Items"
         android:titleTextColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent"

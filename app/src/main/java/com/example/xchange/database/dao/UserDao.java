@@ -54,4 +54,7 @@ public interface UserDao {
 
     @Update
     void updateUser(User user);
+
+    @Query("SELECT COUNT(*) FROM users")
+    int getTotalUsers();
 }

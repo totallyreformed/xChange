@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.xchange.Item;
 import com.example.xchange.User;
-
 import com.example.xchange.database.UserRepository;
 
 import java.util.List;
@@ -33,27 +32,22 @@ public class MainActivityViewModel extends AndroidViewModel {
         userRepository = new UserRepository(application.getApplicationContext());
     }
 
-    // Getter for username LiveData
     public LiveData<String> getUsername() {
         return usernameLiveData;
     }
 
-    // Getter for items LiveData
     public LiveData<List<Item>> getItemsList() {
         return itemsLiveData;
     }
 
-    // Method to load user
     public void loadUser(User user) {
         presenter.loadUser(user);
     }
 
-    // Called by the Presenter to update username
     public void updateUsername(String username) {
         usernameLiveData.setValue(username);
     }
 
-    // Getters for LiveData
     public LiveData<Integer> getTotalRequestsLiveData() {
         return totalRequestsLiveData;
     }
@@ -70,7 +64,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         return totalCategoriesLiveData;
     }
 
-    // Methods to fetch statistics
     public void fetchTotalRequests() {
         userRepository.getTotalRequests(new UserRepository.UserStatisticsCallback() {
             @Override
@@ -147,7 +140,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         });
     }
 
-    // Method to fetch all statistics at once
     public void fetchAllStatistics() {
         fetchTotalRequests();
         fetchTotalExchanges();

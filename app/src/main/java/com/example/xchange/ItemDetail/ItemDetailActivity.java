@@ -86,7 +86,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Delete button functionality
         deleteButton.setOnClickListener(v -> {
             viewModel.deleteItemById(itemId);
             Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
@@ -98,14 +97,11 @@ public class ItemDetailActivity extends AppCompatActivity {
             finish();
         });
 
-        // Edit button functionality
         editButton.setOnClickListener(v -> {
             Intent editIntent = new Intent(this, EditItemActivity.class);
             editIntent.putExtra("ITEM_ID", itemId);
             startActivity(editIntent);
         });
-
-
 
         viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), (success, request) -> {
             runOnUiThread(() -> {

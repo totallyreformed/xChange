@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-// Import Button
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,8 +33,8 @@ public class AdminHomeFragment extends Fragment {
     private Button adminViewRequestsSentButton;
     private TextView adminRequestsReceivedCountTextView;
     private Button adminViewRequestsReceivedButton;
-    private TextView totalCategoriesTextView; // LATER
-
+    private TextView totalUsersTextView;
+    private TextView totalCategoriesTextView;
 
     private UserRepository userRepository;
     private User currentUser;
@@ -56,7 +55,8 @@ public class AdminHomeFragment extends Fragment {
         adminViewRequestsSentButton = view.findViewById(R.id.adminViewRequestsSentButton);
         adminRequestsReceivedCountTextView = view.findViewById(R.id.adminRequestsReceivedCountTextView);
         adminViewRequestsReceivedButton = view.findViewById(R.id.adminViewRequestsReceivedButton);
-        // Initialize additional views here
+        totalUsersTextView = view.findViewById(R.id.adminTotalUsersTextView);
+        totalCategoriesTextView = view.findViewById(R.id.adminTotalCategoriesTextView);
 
         // Initialize UserRepository
         userRepository = new UserRepository(getContext());
@@ -77,7 +77,7 @@ public class AdminHomeFragment extends Fragment {
             viewModel.fetchAllStatistics();
 
             // Observe Total Items
-            userRepository.getItemCount().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            viewModel.getTotalItemsLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer totalItems) {
                     if (totalItems != null) {
@@ -112,21 +112,33 @@ public class AdminHomeFragment extends Fragment {
                 }
             });
 
-            // Observe Total Exchanges (Assuming it's similar to Requests Received)
-            viewModel.getTotalExchangesLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            // Observe Total Users
+            userRepository.getTotalUsers(new UserRepository.UserStatisticsCallback() {
                 @Override
-                public void onChanged(Integer count) {
-                    adminRequestsReceivedCountTextView.setText(count + " Requests Received");
+                public void onSuccess(String stats) {
+                    requireActivity().runOnUiThread(() -> totalUsersTextView.setText(stats));
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                    );
                 }
             });
 
-            // Observe Total Categories (If needed)
-            viewModel.getTotalCategoriesLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            // Observe Total Categories
+            userRepository.getTotalCategories(new UserRepository.UserStatisticsCallback() {
                 @Override
-                public void onChanged(Integer count) {
-                    // If you have a TextView for total categories, set it here
-                    // Example:
-                    // adminTotalCategoriesTextView.setText("Total Categories: " + count);
+                public void onSuccess(String stats) {
+                    requireActivity().runOnUiThread(() -> totalCategoriesTextView.setText(stats));
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                    );
                 }
             });
         } else {
@@ -134,32 +146,21 @@ public class AdminHomeFragment extends Fragment {
         }
 
         // Set Button Click Listeners
-
-        // View Items Button
         adminViewItemsButton.setOnClickListener(v -> {
-            // Navigate to Items List Activity or Fragment
-            // Example:
             Intent intent = new Intent(getActivity(), AdminItemsActivity.class);
             startActivity(intent);
         });
 
-        // View Requests Sent Button
         adminViewRequestsSentButton.setOnClickListener(v -> {
-            // Navigate to Sent Requests Activity or Fragment
             Intent intent = new Intent(getActivity(), AdminSentRequestsActivity.class);
             startActivity(intent);
         });
 
-        // View Requests Received Button
         adminViewRequestsReceivedButton.setOnClickListener(v -> {
-            // Navigate to Received Requests Activity or Fragment
             Intent intent = new Intent(getActivity(), AdminReceivedRequestsActivity.class);
             startActivity(intent);
         });
 
-        // Set listeners for additional buttons as needed
-
         return view;
     }
-
 }

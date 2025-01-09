@@ -39,6 +39,7 @@ public class AdminItemsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false); // Hides the title text
         }
 
         // Initialize RecyclerView

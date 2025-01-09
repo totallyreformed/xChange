@@ -14,7 +14,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -31,10 +31,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Welcome Admin!"
-                android:textSize="18sp"
-                android:layout_margin="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_margin="16dp" />
+
             <!-- Items Section -->
             <TextView
                 android:id="@+id/adminItemsHeaderTextView"
@@ -73,6 +73,66 @@
                     android:backgroundTint="@color/primary"
                     android:textColor="@color/white"
                     android:elevation="2dp" />
+            </LinearLayout>
+
+            <!-- Users Section -->
+            <TextView
+                android:id="@+id/adminUsersHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Users"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/adminUsersLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/adminTotalUsersTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Users: 0"
+                    android:textSize="16sp"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginEnd="16dp" />
+            </LinearLayout>
+
+            <!-- Categories Section -->
+            <TextView
+                android:id="@+id/adminCategoriesHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Categories"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/adminCategoriesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/adminTotalCategoriesTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Categories: 0"
+                    android:textSize="16sp"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginEnd="16dp" />
             </LinearLayout>
 
             <!-- Requests Sent Section -->
@@ -155,22 +215,47 @@
                     android:elevation="2dp" />
             </LinearLayout>
 
+            <!-- xChanges Finalized Section -->
+            <TextView
+                android:id="@+id/adminXChangesHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="xChanges Finalized"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
 
-            <!-- Additional Global Statistics Sections -->
-            <!-- Repeat similar blocks for other statistics as needed -->
+            <LinearLayout
+                android:id="@+id/adminXChangesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/adminXChangesCountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 xChanges Finalized"
+                    android:textSize="16sp"
+                    android:textColor="@color/secondary_text"
+                    android:layout_marginEnd="16dp" />
+
+                <Button
+                    android:id="@+id/adminViewXChangesButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View xChanges"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/primary"
+                    android:textColor="@color/white"
+                    android:elevation="2dp" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-
-    <!-- BottomNavigationView -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
-        app:labelVisibilityMode="labeled" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

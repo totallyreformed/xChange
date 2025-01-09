@@ -500,6 +500,8 @@ public class UserRepository {
     public void getRequestsReceived(String username, UserRequestsReceivedCallback callback) {
         executor.execute(() -> {
             try {
+//                AppDatabase.getRequestDao().deleteAllRequests();
+//                AppDatabase.getCounterofferDao().deleteAll();
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> receivedRequests = new ArrayList<>();
                 for (Request req : requests) {
@@ -662,8 +664,21 @@ public class UserRepository {
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
-                int totalCategories = userDao.getTotalCategories();
+                // Use the static method from the Category enum to get the total number of categories
+                int totalCategories = Category.getTotalCategories();
                 String stats = "Total Categories: " + totalCategories;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total categories");
+            }
+        });
+    }
+
+    public void getTotalUsers(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalUsers = userDao.getTotalUsers();
+                String stats = "Total Users: " + totalUsers;
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
@@ -776,8 +791,6 @@ public class UserRepository {
     }
     public void getSentCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
-//            AppDatabase.getRequestDao().deleteAllRequests();
-//            AppDatabase.getCounterofferDao().deleteAll();
             try {
                 List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                 List<Counteroffer> sentCounterOffers = new ArrayList<>();
