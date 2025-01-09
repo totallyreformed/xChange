@@ -1,24 +1,28 @@
 package com.example.xchange.database;
 
 import android.content.Context;
-import android.media.browse.MediaBrowser;
-import android.net.DnsResolver;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
-import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
+import com.example.xchange.database.dao.xChangeDao;
+import com.example.xchange.xChange;
+import com.example.xchange.xChanger;
+import com.example.xchange.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +35,27 @@ public class UserRepository {
     private final UserDao userDao;
     private final ItemDao itemDao;
     private final RequestDao requestDao;
+    private final CounterofferDao counterofferDao;
+    private final xChangeDao xChangeDao;
     private final ExecutorService executor;
-
+    
     public UserRepository(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
         userDao = db.userDao();
         itemDao = db.itemDao();
         requestDao = db.requestDao();
+        counterofferDao = db.getCounterofferDao();
+        xChangeDao = db.xChangeDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
     public interface LoginCallback {
         void onSuccess(User user);
+        void onFailure(String message);
+    }
+
+    public interface NotificationCallback {
+        void onSuccess(List<Notification> notifications);
         void onFailure(String message);
     }
     public interface UserCounterOffersCallback {
@@ -89,7 +102,26 @@ public class UserRepository {
         void onResult(boolean success);
     }
 
+    // Interface for AcceptRequest Callback
+    public interface AcceptRequestCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
 
+    public interface RejectRequestCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
+
+    public interface InsertXChangeCallback {
+        void onSuccess(long xChangeId);
+        void onFailure(String message);
+    }
+
+    public interface OperationCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
 
     public interface RequestItemsCallback {
         void onSuccess(List<Request> requests);
@@ -150,6 +182,188 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Accepts a trade request by marking it as inactive, creating an xChange entry,
+     * and updating both the requester and requestee's data accordingly.
+     *
+     * @param request  The Request object to be accepted.
+     * @param rating   The rating value provided by the user.
+     * @param callback Callback to handle success or failure.
+     */
+    public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // 1. Mark the request as inactive
+                request.make_unactive();
+                requestDao.deleteRequest(request); // Delete request from the database
+
+                // 2. Finalize acceptance for both requester and requestee
+                xChanger requester = request.getRequester();
+                xChanger requestee = request.getRequestee();
+
+                // Update requestee's rating and finalize the request
+                requestee.acceptRequest(request, rating);
+                userDao.updateUser(requestee);
+
+                // Update requester's data (e.g., successful exchange count)
+                requester.plusOneSucceedDeal();
+                userDao.updateUser(requester);
+
+                // 3. Create and finalize a new xChange entry
+                SimpleCalendar today = SimpleCalendar.today();
+                xChange newXChange = new xChange(request, null, today);
+                newXChange.acceptOffer(rating);
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId);
+
+                // Update xChange entry
+                xChangeDao.updateXChange(newXChange);
+
+                // 4. Notify success via callback
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error accepting request", e);
+                callback.onFailure("Failed to accept request.");
+            }
+        });
+    }
+
+
+
+    /**
+     * Rejects a trade request by marking it as inactive and updating both users' data.
+     *
+     * @param request  The Request object to be rejected.
+     * @param callback Callback to handle success or failure.
+     */
+    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // 1. Mark the request as inactive
+                xchanger.rejectRequest(request, 0);
+                requestDao.deleteRequest(request);
+
+                // 2. Retrieve the requester and requestee from the request
+                xChanger requester = request.getRequester();
+                xChanger requestee = request.getRequestee();
+
+                // 3. Update users in the database
+                userDao.updateUser(requester);
+                userDao.updateUser(requestee);
+
+                // 4. Optionally, handle any additional logic upon rejection
+                // For example, you might want to notify the requester about the rejection
+
+                // 5. Notify success via callback
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error rejecting request", e);
+                callback.onFailure("Failed to reject request.");
+            }
+        });
+    }
+
+    public void storeNotification(String username, String message, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Create a notification object (or use a simple database table)
+                Notification notification = new Notification(username, message, SimpleCalendar.today());
+                AppDatabase.getNotificationDao().insertNotification(notification);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error storing notification", e);
+                callback.onFailure("Failed to store notification.");
+            }
+        });
+    }
+
+
+    public void addNotification(Notification notification, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                AppDatabase.getNotificationDao().insertNotification(notification);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error adding notification", e);
+                callback.onFailure("Failed to add notification.");
+            }
+        });
+    }
+
+    public void getNotificationsForUser(String username, UserRepository.NotificationCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<Notification> notifications = AppDatabase.getNotificationDao().getNotificationsForUser(username);
+                callback.onSuccess(notifications);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error retrieving notifications", e);
+                callback.onFailure("Failed to retrieve notifications.");
+            }
+        });
+    }
+
+    public void deleteNotificationsForUser(String username, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                AppDatabase.getNotificationDao().deleteNotificationsForUser(username);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error deleting notifications", e);
+                callback.onFailure("Failed to delete notifications.");
+            }
+        });
+    }
+
+
+    /**
+     * Example: Insert xChange (Additional Methods)
+     * Allows inserting a new xChange and receiving a callback with the generated ID.
+     *
+     * @param xchange  The xChange object to be inserted.
+     * @param callback Callback to handle success or failure.
+     */
+    public void insertXChange(xChange xchange, InsertXChangeCallback callback) {
+        executor.execute(() -> {
+            try {
+                long id = xChangeDao.insertXChange(xchange);
+                xchange.setXChangeId(id);
+                xChangeDao.updateXChange(xchange);
+                callback.onSuccess(id);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error inserting xChange", e);
+                callback.onFailure("Failed to insert xChange.");
+            }
+        });
+    }
+
+    // Example: Retrieve xChange by ID
+    public LiveData<xChange> getXChangeById(long id) {
+        return xChangeDao.getXChangeById(id);
+    }
+
+    // Example: Retrieve xChanger by username
+    public List<xChange> getXChangerByUser(String username) {
+        return xChangeDao.getXChangerByUser(username);
+    }
+
+    // Example: Retrieve all xChanges
+    public LiveData<List<xChange>> getAllXChanges() {
+        return xChangeDao.getAllXChanges();
+    }
+
+    // Example: Mark xChange as Inactive
+    public void markXChangeAsInactive(long id, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                xChangeDao.markXChangeAsInactive(id);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error marking xChange as inactive", e);
+                callback.onFailure("Failed to mark xChange as inactive.");
+            }
+        });
+    }
+
     // Get All Items (For Admin)
     public LiveData<List<Item>> getAllItems() {
         return itemDao.getAllItems();
@@ -169,6 +383,11 @@ public class UserRepository {
     public LiveData<Integer> getReceivedRequestsCount() {
         return requestDao.getRequestsReceivedCount();
     }
+
+    public List<Request> getRequestsByUsername(String username) {
+        return requestDao.findRequestsByUsername(username);
+    }
+
 
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {
@@ -254,7 +473,7 @@ public class UserRepository {
     public void getSentRequests(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
-                List<Request> requests = requestDao.getAllSentRequests();
+                List<Request> requests = requestDao.getAllSentRequestsAdmin();
                 callback.onSuccess(requests);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve sent requests.");
@@ -311,13 +530,74 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves active received requests for a specific user.
+     *
+     * @param username The username of the user.
+     * @param callback Callback to handle the list of active received requests.
+     */
+    public void getActiveReceivedRequests(String username, UserRepository.RequestItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                LiveData<List<Request>> liveData = requestDao.getAllReceivedRequests(username);
+                // Define the observer
+                Observer<List<Request>> observer = new Observer<List<Request>>() {
+                    @Override
+                    public void onChanged(List<Request> requests) {
+                        onRequestReceived(requests, callback);
+                        liveData.removeObserver(this); // Remove observer after receiving data
+                    }
+                };
+                // Observe LiveData on the main thread
+                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(observer));
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch received requests: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Retrieves the count of active requests for a specific item.
+     *
+     * @param itemId The ID of the item.
+     * @return The count of active requests.
+     */
+    public int getActiveRequestCountForItem(long itemId) {
+        return requestDao.countActiveRequestsForItem(itemId);
+    }
+
+    /**
+     * Handles the received requests by invoking the callback.
+     *
+     * @param requests The list of received requests.
+     * @param callback The callback to handle success.
+     */
+    private void onRequestReceived(List<Request> requests, UserRepository.RequestItemsCallback callback) {
+        callback.onSuccess(requests);
+    }
+
+    // New Method: Get Active Sent Requests
+    public void getActiveSentRequests(String username, UserRepository.RequestItemsCallback callback) {
+        executor.execute(() -> {
+            try {
+                LiveData<List<Request>> liveData = requestDao.getAllSentRequests(username);
+                // Observe LiveData on the main thread
+                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(requests -> {
+                    callback.onSuccess(requests);
+                }));
+            } catch (Exception e) {
+                callback.onFailure("Failed to fetch sent requests: " + e.getMessage());
+            }
+        });
+    }
+
 
 
     // Get Received Requests (For Admin)
-    public void getReceivedRequests(RequestItemsCallback callback) {
+    public void getReceivedRequestsAdmin(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
-                List<Request> requests = requestDao.getAllReceivedRequests(); // Implement this in RequestDao
+                List<Request> requests = requestDao.getAllReceivedRequestsAdmin();
                 callback.onSuccess(requests);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve received requests.");
@@ -361,6 +641,24 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Deletes an item from the database by its ID with callbacks.
+     *
+     * @param itemId   The ID of the item to delete.
+     * @param callback The callback to handle success or failure.
+     */
+    public void deleteItemById(long itemId, OperationCallback callback) {
+        executor.execute(() -> {
+            try {
+                itemDao.deleteItemById(itemId);
+                Log.d("UserRepository", "Item deleted successfully: ID " + itemId);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error deleting item: " + itemId, e);
+                callback.onFailure("Failed to delete item.");
+            }
+        });
+    }
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {

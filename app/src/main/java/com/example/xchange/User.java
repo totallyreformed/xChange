@@ -55,6 +55,7 @@ public class User implements Parcelable {
         }
     };
 
+    // Getters and Setters
     public Long getUser_id() {
         return user_id;
     }

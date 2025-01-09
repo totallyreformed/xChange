@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 public class Rating implements Parcelable {
     private float rating;
-    private final xChanger rater;
-    private final xChanger ratee;
+    private transient xChanger rater; // Excluded from parceling
+    private transient xChanger ratee; // Excluded from parceling
     private Request request;
     private xChange xChange;
 
@@ -22,10 +22,11 @@ public class Rating implements Parcelable {
     // Parcelable Constructor
     protected Rating(Parcel in) {
         rating = in.readFloat();
-        rater = in.readParcelable(xChanger.class.getClassLoader());
-        ratee = in.readParcelable(xChanger.class.getClassLoader());
         request = in.readParcelable(Request.class.getClassLoader());
         xChange = in.readParcelable(xChange.class.getClassLoader());
+        // Excluded: rater and ratee
+        this.rater = null;
+        this.ratee = null;
     }
 
     public static final Creator<Rating> CREATOR = new Creator<Rating>() {
@@ -43,10 +44,9 @@ public class Rating implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeFloat(rating);
-        dest.writeParcelable(rater, flags);
-        dest.writeParcelable(ratee, flags);
         dest.writeParcelable(request, flags);
         dest.writeParcelable(xChange, flags);
+        // Excluded: rater and ratee
     }
 
     @Override
@@ -54,12 +54,12 @@ public class Rating implements Parcelable {
         return 0;
     }
 
-    // Getter for rating
+    // Getters and Setters
+
     public float getRating() {
         return rating;
     }
 
-    // Setter for rating
     public void setRating(float rating) {
         if (rating >= 0 && rating <= 5) { // Assuming ratings are between 0 and 5
             this.rating = rating;
@@ -68,45 +68,39 @@ public class Rating implements Parcelable {
         }
     }
 
-    // Getter for rater
     public xChanger getRater() {
         return rater;
     }
 
-    // Getter for ratee
     public xChanger getRatee() {
         return ratee;
     }
 
-    // Getter for request
     public Request getRequest() {
         return request;
     }
 
-    // Setter for request
     public void setRequest(Request request) {
         this.request = request;
     }
 
-    // Getter for xChange
     public xChange getXChange() {
         return xChange;
     }
 
-    // Setter for xChange
     public void setXChange(xChange xChange) {
         this.xChange = xChange;
     }
 
-    // Method to display the rating details
+    // toString method for better debugging
     @Override
     public String toString() {
         return "Rating{" +
                 "rating=" + rating +
-                ", rater=" + rater +
-                ", ratee=" + ratee +
-                ", request=" + request +
-                ", xChange=" + xChange +
+                ", rater=" + (rater != null ? rater.getUsername() : "null") +
+                ", ratee=" + (ratee != null ? ratee.getUsername() : "null") +
+                ", request=" + (request != null ? request.getRequestId() : "null") +
+                ", xChange=" + (xChange != null ? xChange.getFinalizedId() : "null") +
                 '}';
     }
 }

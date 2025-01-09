@@ -15,6 +15,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.xchange.AcceptRequest.AcceptRequestActivity;
 import com.example.xchange.CounterOffer.CounterofferActivity;
 import com.example.xchange.EditItem.EditItemActivity;
 import com.example.xchange.Item;
@@ -24,6 +25,7 @@ import com.example.xchange.Request;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.request.RequestActivity;
+import com.example.xchange.RejectRequest.RejectRequestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,12 +118,32 @@ public class ItemDetailActivity extends AppCompatActivity {
                 Button requestItemButton = findViewById(R.id.requestItemButton);
                 Button cancelRequestButton = findViewById(R.id.cancelRequestButton);
 
-                if (success && request != null) {
+                if (success && request != null && request.isActive()) {
                     requestToSend = request;
                     acceptButton.setVisibility(View.VISIBLE);
                     rejectButton.setVisibility(View.VISIBLE);
                     counterofferButton.setVisibility(View.VISIBLE);
+                    seeExtraButton.setVisibility(View.VISIBLE);
                     editButton1.setVisibility(View.GONE);
+                    requestStatusTextView.setVisibility(View.GONE);
+                    requestItemButton.setVisibility(View.GONE);
+                    cancelRequestButton.setVisibility(View.GONE);
+
+                    // Set Accept Button Click Listener
+                    acceptButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(ItemDetailActivity.this, AcceptRequestActivity.class);
+                        intent.putExtra("REQUEST", requestToSend);
+                        intent.putExtra("USER", user);
+                        startActivity(intent);
+                    });
+
+                    // Set Reject Button Click Listener
+                    rejectButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(ItemDetailActivity.this, RejectRequestActivity.class);
+                        intent.putExtra("REQUEST", requestToSend);
+                        intent.putExtra("USER", user);
+                        startActivity(intent);
+                    });
 
                     viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), counteroffer  -> {
                         runOnUiThread(() -> {
@@ -152,6 +174,16 @@ public class ItemDetailActivity extends AppCompatActivity {
                             }
                         });
                     });
+                } else {
+                    // Request is inactive; hide action buttons
+                    acceptButton.setVisibility(View.GONE);
+                    rejectButton.setVisibility(View.GONE);
+                    counterofferButton.setVisibility(View.GONE);
+                    seeExtraButton.setVisibility(View.GONE); // Hide "See Request" button
+                    editButton1.setVisibility(View.GONE);
+                    requestStatusTextView.setVisibility(View.GONE);
+                    requestItemButton.setVisibility(View.GONE);
+                    cancelRequestButton.setVisibility(View.GONE);
                 }
 
                 viewModel.checkRequestToDisplay(itemId, user.getUsername(), result -> {
@@ -184,6 +216,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     });
                 });
             });
+
             viewModel.checkIfRequesterWithCounterofferee(itemId,user.getUsername(), counteroffer  -> {
                 runOnUiThread(() -> {
                     Button seeExtraButton=findViewById(R.id.seeRequestCounterofferButton);
@@ -206,7 +239,6 @@ public class ItemDetailActivity extends AppCompatActivity {
                 });
             });
         });
-
 
         // Handle Counteroffer Button
         Button counterButton = findViewById(R.id.counterofferButton);
@@ -232,6 +264,116 @@ public class ItemDetailActivity extends AppCompatActivity {
                     });
                 }
             });
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Get item ID and user data from Intent
+        long itemId = getIntent().getLongExtra("ITEM_ID", -1);
+        if (itemId == -1) {
+            Toast.makeText(this, "Invalid Item ID", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        User user = getIntent().getParcelableExtra("USER");
+        if (user == null) {
+            Toast.makeText(this, "User data not available", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Re-check the request status to update UI accordingly
+        viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), (success, request) -> {
+            runOnUiThread(() -> {
+                Button acceptButton = findViewById(R.id.acceptButton);
+                Button rejectButton = findViewById(R.id.rejectButton);
+                Button counterofferButton = findViewById(R.id.counterofferButton);
+                Button seeExtraButton = findViewById(R.id.seeRequestCounterofferButton);
+                Button editButton1 = findViewById(R.id.editItemButton);
+                TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
+                Button requestItemButton = findViewById(R.id.requestItemButton);
+                Button cancelRequestButton = findViewById(R.id.cancelRequestButton);
+
+                if (success && request != null && request.isActive()) {
+                    // Request is active; show action buttons
+                    requestToSend = request;
+                    acceptButton.setVisibility(View.VISIBLE);
+                    rejectButton.setVisibility(View.VISIBLE);
+                    counterofferButton.setVisibility(View.VISIBLE);
+                    editButton1.setVisibility(View.GONE);
+                    seeExtraButton.setVisibility(View.VISIBLE);
+                    requestStatusTextView.setVisibility(View.GONE);
+                    requestItemButton.setVisibility(View.GONE);
+                    cancelRequestButton.setVisibility(View.GONE);
+
+                    // Set Accept Button Click Listener
+                    acceptButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(ItemDetailActivity.this, AcceptRequestActivity.class);
+                        intent.putExtra("REQUEST", requestToSend);
+                        intent.putExtra("USER", user);
+                        startActivity(intent);
+                    });
+
+                    // Set Reject Button Click Listener
+                    rejectButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(ItemDetailActivity.this, RejectRequestActivity.class);
+                        intent.putExtra("REQUEST", requestToSend);
+                        intent.putExtra("USER", user);
+                        startActivity(intent);
+                    });
+
+                    // Existing seeExtraButton logic...
+                    viewModel.checkIfRequesteeWithCounteroffer(itemId, user.getUsername(), counteroffer -> {
+                        runOnUiThread(() -> {
+                            if (counteroffer != null) {
+                                seeExtraButton.setText("See Counteroffer");
+                                seeExtraButton.setVisibility(View.VISIBLE);
+
+                                // On button click, navigate to CounterofferActivity
+                                seeExtraButton.setOnClickListener(view -> {
+                                    Intent intent = new Intent(this, SeerequestsCounteroffersActivity.class);
+                                    intent.putExtra("COUNTEROFFER", counteroffer);
+                                    intent.putExtra("HAS_COUNTEROFFER", true); // Indicates presence of counteroffer
+                                    startActivity(intent);
+                                });
+                            } else {
+                                seeExtraButton.setText("See Request");
+                                seeExtraButton.setVisibility(View.VISIBLE);
+                                seeExtraButton.setOnClickListener(view -> {
+                                    Intent intent = new Intent(this, SeerequestsCounteroffersActivity.class);
+                                    intent.putExtra("REQUEST", requestToSend);
+                                    intent.putExtra("HAS_COUNTEROFFER", false); // No counteroffer
+                                    startActivity(intent);
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    // Request is inactive; hide action buttons
+                    acceptButton.setVisibility(View.GONE);
+                    rejectButton.setVisibility(View.GONE);
+                    counterofferButton.setVisibility(View.GONE);
+                    editButton1.setVisibility(View.GONE);
+                    seeExtraButton.setVisibility(View.GONE); // Optionally hide if not needed
+                    requestStatusTextView.setVisibility(View.GONE);
+                    requestItemButton.setVisibility(View.GONE);
+                    cancelRequestButton.setVisibility(View.GONE);
+                }
+            });
+        });
+
+        // Optionally, re-fetch the item details to ensure UI consistency
+        viewModel.getItemById(itemId).observe(this, item -> {
+            if (item != null) {
+                displayItemDetails(item, user);
+            } else {
+                Toast.makeText(this, "Item not found", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         });
     }
 

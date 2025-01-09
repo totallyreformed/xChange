@@ -2,6 +2,7 @@ package com.example.xchange;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.Calendar;
 
 public class SimpleCalendar implements Parcelable {
     private int year;
@@ -15,10 +16,44 @@ public class SimpleCalendar implements Parcelable {
         this.day = day;
     }
 
+    public int getYear() {
+        return year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    // Static helper method to get today's date
+    public static SimpleCalendar today() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH); // January is 0!
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return new SimpleCalendar(year, month, day);
+    }
+
+    // Parcelable Implementation
     protected SimpleCalendar(Parcel in) {
         year = in.readInt();
         month = in.readInt();
         day = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(year);
+        dest.writeInt(month);
+        dest.writeInt(day);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<SimpleCalendar> CREATOR = new Creator<SimpleCalendar>() {
@@ -33,27 +68,26 @@ public class SimpleCalendar implements Parcelable {
         }
     };
 
-    public int getYear() {
-        return year;
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public int getDay() {
-        return day;
-    }
-
+    // Optional: Override toString() for better readability
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return year + "-" + (month + 1) + "-" + day;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(year);
-        dest.writeInt(month);
-        dest.writeInt(day);
+    // Static method to convert from String to SimpleCalendar (if needed)
+    public static SimpleCalendar fromString(String dateString) {
+        // Implement parsing logic based on the toString() format
+        // Example implementation:
+        try {
+            String[] dateParts = dateString.split("-");
+            int year = Integer.parseInt(dateParts[0]);
+            int month = Integer.parseInt(dateParts[1]) - 1; // Months are 0-based in Calendar
+            int day = Integer.parseInt(dateParts[2]);
+
+            return new SimpleCalendar(year, month, day);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

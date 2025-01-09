@@ -1,13 +1,17 @@
 package com.example.xchange;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.xchange.AcceptRequest.AcceptRequestActivity;
 
 import java.util.List;
 
@@ -16,15 +20,17 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
     private List<Request> requests;
     private User currentUser;
     private final OnRequestClickListener clickListener;
+    private Context context;
 
     public interface OnRequestClickListener {
         void onRequestClicked(Request request);
     }
 
-    public RequestsAdapter(List<Request> requests, User currentUser, OnRequestClickListener clickListener) {
+    public RequestsAdapter(List<Request> requests, User currentUser, OnRequestClickListener clickListener, Context context) {
         this.requests = requests;
         this.currentUser = currentUser;
         this.clickListener = clickListener;
+        this.context = context;
     }
 
     public void setRequests(List<Request> newRequests) {
@@ -52,7 +58,14 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
         holder.offeredItemTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
 
         // Set the click listener for the entire itemView
-        holder.itemView.setOnClickListener(v -> clickListener.onRequestClicked(request));
+        // Set the click listener for the entire itemView
+        holder.itemView.setOnClickListener(v -> {
+            // Start AcceptRequestActivity
+            Intent intent = new Intent(context, AcceptRequestActivity.class);
+            intent.putExtra("REQUEST", request);
+            intent.putExtra("USER", currentUser);
+            context.startActivity(intent);
+        });
     }
 
     @Override

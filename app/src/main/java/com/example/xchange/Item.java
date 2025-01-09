@@ -190,18 +190,21 @@ public class Item implements Parcelable {
             return new Item[size];
         }
     };
+
     public Image getFirstImage() {
         if (itemImages != null && !itemImages.isEmpty()) {
             return itemImages.get(0);
         }
         return null;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Item item = (Item) o;
-        return itemId == item.itemId; // Compare using unique ID
+        return Objects.equals(itemId, item.itemId); // Compare using unique ID
     }
 
     @Override

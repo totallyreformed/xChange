@@ -1,6 +1,5 @@
 package com.example.xchange;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -12,15 +11,16 @@ import java.util.ArrayList;
 public class xChanger extends User implements Parcelable {
     private float averageRating;
     private int totalRatings;
-    private ArrayList<Rating> ratings;
-    private ArrayList<String> reports;
-    private ArrayList<Item> items;
-    private ArrayList<Request> requests;
-    private ArrayList<Counteroffer> counterOffers;
-    private ArrayList<xChange> finalized;
+    private transient ArrayList<Rating> ratings;       // Excluded from parceling
+    private transient ArrayList<String> reports;        // Excluded from parceling
+    private transient ArrayList<Item> items;            // Excluded from parceling
+    private transient ArrayList<Request> requests;      // Excluded from parceling
+    private transient ArrayList<Counteroffer> counterOffers; // Excluded from parceling
+    private transient ArrayList<xChange> finalized;      // Excluded from parceling
     private int succeedDeals;
     private int failedDeals;
 
+    // Constructor
     public xChanger(String username, String email, SimpleCalendar join_date, String password, String location) {
         super(username, email, join_date, password, location, "xChanger");
         this.averageRating = 0;
@@ -35,17 +35,18 @@ public class xChanger extends User implements Parcelable {
         this.failedDeals = 0;
     }
 
-    // Parcelable Implementation
+    // Parcelable Constructor
     protected xChanger(Parcel in) {
         super(in); // Call the User's Parcelable constructor
         averageRating = in.readFloat();
         totalRatings = in.readInt();
-        ratings = in.createTypedArrayList(Rating.CREATOR);
-        reports = in.createStringArrayList();
-        items = in.createTypedArrayList(Item.CREATOR);
-        requests = in.createTypedArrayList(Request.CREATOR);
-        counterOffers = in.createTypedArrayList(Counteroffer.CREATOR);
-        finalized = in.createTypedArrayList(xChange.CREATOR);
+        // Initialize transient fields as empty lists
+        this.ratings = new ArrayList<>();
+        this.reports = new ArrayList<>();
+        this.items = new ArrayList<>();
+        this.requests = new ArrayList<>();
+        this.counterOffers = new ArrayList<>();
+        this.finalized = new ArrayList<>();
         succeedDeals = in.readInt();
         failedDeals = in.readInt();
     }
@@ -67,12 +68,7 @@ public class xChanger extends User implements Parcelable {
         super.writeToParcel(dest, flags); // Write User's Parcelable data
         dest.writeFloat(averageRating);
         dest.writeInt(totalRatings);
-        dest.writeTypedList(ratings);
-        dest.writeStringList(reports);
-        dest.writeTypedList(items);
-        dest.writeTypedList(requests);
-        dest.writeTypedList(counterOffers);
-        dest.writeTypedList(finalized);
+        // Do not write lists to avoid cyclic dependencies
         dest.writeInt(succeedDeals);
         dest.writeInt(failedDeals);
     }
@@ -137,7 +133,7 @@ public class xChanger extends User implements Parcelable {
     }
 
     public void report(xChanger xchanger, String message, xChange finalized) {
-        if (finalized.getStatus() != null) {
+        if (finalized.getDealStatus() != null) {
             message = "User " + this.getUsername() + " reported user " + xchanger.getUsername();
         }
         this.reports.add(message);
@@ -181,10 +177,11 @@ public class xChanger extends User implements Parcelable {
         if (item == null || request == null) {
             throw new IllegalArgumentException("Item, message, or request cannot be null.");
         }
-        Counteroffer counterOffer = new Counteroffer(request, item);
+        // Pass usernames instead of full xChanger objects
+        Counteroffer counterOffer = new Counteroffer(request, item, request.getRequestee(), request.getRequester());
         new Thread(() -> {
             try {
-                long id=AppDatabase.getCounterofferDao().insertCounteroffer(counterOffer);
+                long id = AppDatabase.getCounterofferDao().insertCounteroffer(counterOffer);
                 Log.d("TEST", String.valueOf(id));
             } catch (Exception e) {
                 Log.e("xChanger", "Error saving counteroffer", e);
@@ -193,20 +190,34 @@ public class xChanger extends User implements Parcelable {
         this.counterOffers.add(counterOffer);
     }
 
-    public void acceptRequest(Request request,float rating){
-        xChange xChange=new xChange(request,null);
+    public void acceptRequest(Request request, float rating){
+        xChange xChange = new xChange(request, null, null);
         xChange.acceptOffer(rating);
     }
-    public void rejectRequest(Request request,float rating){
-        xChange xChange=new xChange(request,null);
+
+    public void rejectRequest(Request request, float rating){
+        xChange xChange = new xChange(request, null, null);
         xChange.rejectOffer(rating);
     }
-    public void acceptCounteroffer(Counteroffer counteroffer,float rating){
-        xChange xChange=new xChange(counteroffer.getRequest(),counteroffer,null);
+
+    public void acceptCounteroffer(Counteroffer counteroffer, float rating){
+        xChange xChange = new xChange(counteroffer.getRequest(), counteroffer, null);
         xChange.acceptOffer(rating);
     }
-    public void rejectCounteroffer(Counteroffer counteroffer,float rating){
-        xChange xChange=new xChange(counteroffer.getRequest(),counteroffer,null);
+
+    public void rejectCounteroffer(Counteroffer counteroffer, float rating){
+        xChange xChange = new xChange(counteroffer.getRequest(), counteroffer, null);
         xChange.rejectOffer(rating);
+    }
+
+    // toString method for better debugging
+    @Override
+    public String toString() {
+        return "xChanger{" +
+                "averageRating=" + averageRating +
+                ", totalRatings=" + totalRatings +
+                ", succeedDeals=" + succeedDeals +
+                ", failedDeals=" + failedDeals +
+                '}';
     }
 }

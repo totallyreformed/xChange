@@ -13,6 +13,7 @@ import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Image;
 import com.example.xchange.Item;
+import com.example.xchange.Notification;
 import com.example.xchange.Request;
 import com.example.xchange.R;
 import com.example.xchange.SimpleCalendar;
@@ -20,15 +21,18 @@ import com.example.xchange.User;
 
 import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
+import com.example.xchange.database.dao.NotificationDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
+import com.example.xchange.database.dao.xChangeDao;
+import com.example.xchange.xChange;
 import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Item.class, Request.class, Counteroffer.class}, version = 2, exportSchema = false)
-@TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class, RequestConverter.class})
+@Database(entities = {User.class, Item.class, Request.class, Counteroffer.class, xChange.class, Notification.class}, version = 2, exportSchema = false)
+@TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class, RequestConverter.class, CounterofferConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
@@ -37,6 +41,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ItemDao itemDao();
     public abstract RequestDao requestDao();
     public abstract CounterofferDao CounteofferDao();
+    public abstract xChangeDao xChangeDao();
+    public abstract NotificationDao notificationDao();
 
 
     public static AppDatabase getInstance(final Context context) {
@@ -44,7 +50,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v7.db")
+                                    AppDatabase.class, "xchange_database_v10.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
@@ -108,8 +114,11 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE.userDao();
     }
 
+    public static xChangeDao getxChangeDao() { return INSTANCE.xChangeDao(); }
+
     public static RequestDao getRequestDao() {
         return INSTANCE.requestDao();
     }
     public static CounterofferDao getCounterofferDao(){return INSTANCE.CounteofferDao();}
+    public static NotificationDao getNotificationDao() { return INSTANCE.notificationDao(); }
 }

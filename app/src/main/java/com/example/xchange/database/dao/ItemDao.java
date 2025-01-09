@@ -36,6 +36,9 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")
     LiveData<Item> getItemById(long itemId);
 
+    @Update
+    void update(Item item);
+
     @Query("SELECT * FROM items WHERE itemId = :itemId")
     Item getItemByIdSync(long itemId);
 

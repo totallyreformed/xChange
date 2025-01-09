@@ -22,11 +22,11 @@ public class Request implements Parcelable {
 
     @ColumnInfo(name = "requester")
     @TypeConverters(XChangerConverter.class)
-    private xChanger requester;
+    private transient xChanger requester;
 
     @ColumnInfo(name = "requestee")
     @TypeConverters(XChangerConverter.class)
-    private xChanger requestee;
+    private transient xChanger requestee;
 
     @ColumnInfo(name = "offered_item")
     @TypeConverters(ItemConverter.class)
@@ -88,17 +88,14 @@ public class Request implements Parcelable {
     public void setOfferedItem(Item offeredItem) {
         this.offeredItem = offeredItem;
     }
+
     public void make_unactive(){
-        this.active=false;
-    }
-    public String getStatus(){
-        if (this.active){
-            return "Active";
-        }else{
-            return "Inactive";
-        }
+        this.active = false;
     }
 
+    public String getStatus(){
+        return this.active ? "Active" : "Inactive";
+    }
 
     public Item getRequestedItem() {
         return requestedItem;
@@ -124,48 +121,48 @@ public class Request implements Parcelable {
         this.active = active;
     }
 
+    // Parcelable Implementation
     protected Request(Parcel in) {
+        // Read requestId
         if (in.readByte() == 0) {
             requestId = null;
         } else {
             requestId = in.readLong();
         }
+
+        // Read Parcelable objects
         requester = in.readParcelable(xChanger.class.getClassLoader());
         requestee = in.readParcelable(xChanger.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
 
-        // Manually read the SimpleCalendar from a String
-        String calendarString = in.readString();
-        if (calendarString != null) {
-            dateInitiated = CalendarConverter.toSimpleCalendar(calendarString);
-        } else {
-            dateInitiated = null;
-        }
+        // Read SimpleCalendar directly if it's Parcelable
+        dateInitiated = in.readParcelable(SimpleCalendar.class.getClassLoader());
 
+        // Read active flag
         active = in.readByte() != 0;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        // Write requestId
         if (requestId == null) {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
             dest.writeLong(requestId);
         }
+
+        // Write Parcelable objects
         dest.writeParcelable(requester, flags);
         dest.writeParcelable(requestee, flags);
         dest.writeParcelable(offeredItem, flags);
         dest.writeParcelable(requestedItem, flags);
 
-        // Manually write the SimpleCalendar as a String
-        if (dateInitiated == null) {
-            dest.writeString(null);
-        } else {
-            dest.writeString(dateInitiated.toString());
-        }
+        // Write SimpleCalendar directly if it's Parcelable
+        dest.writeParcelable(dateInitiated, flags);
 
+        // Write active flag
         dest.writeByte((byte) (active ? 1 : 0));
     }
 
@@ -188,14 +185,16 @@ public class Request implements Parcelable {
 
     @Override
     public String toString() {
-        return "Request ID: " + requestId+" "+
-                "Requester: " + requester.getUsername()+" "+
-                "Requestee: " + requestee.getUsername()+" ";
+        return "Request ID: " + requestId + " " +
+                "Requester: " + requester.getUsername() + " " +
+                "Requestee: " + requestee.getUsername() + " ";
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Request request = (Request) o;
         return Objects.equals(requestId, request.requestId); // Compare based on unique identifier
     }
@@ -204,5 +203,4 @@ public class Request implements Parcelable {
     public int hashCode() {
         return Objects.hash(requestId);
     }
-
 }

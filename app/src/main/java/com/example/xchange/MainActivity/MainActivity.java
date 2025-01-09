@@ -1,6 +1,7 @@
 package com.example.xchange.MainActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +10,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.xchange.AcceptRequest.xChangeConfirmationActivity;
 import com.example.xchange.ItemDetail.ItemDetailActivity;
+import com.example.xchange.Notification;
+import com.example.xchange.Request;
 import com.example.xchange.Upload.UploadActivity;
 import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.UserRepository;
+import com.example.xchange.xChange;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +35,7 @@ import com.example.xchange.MainActivity.XChangerHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,18 +43,27 @@ public class MainActivity extends AppCompatActivity {
     private ItemsAdapter itemsAdapter;
     private FloatingActionButton uploadFab;
     private User currentUser;
+    private UserRepository userRepository;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AppDatabase appDatabase=AppDatabase.getInstance(this);
+        AppDatabase appDatabase = AppDatabase.getInstance(this);
+        userRepository = new UserRepository(this);
 
         Intent intent = getIntent();
         uploadFab = findViewById(R.id.uploadFab);
 
         currentUser = intent.getParcelableExtra("USER");
+        List<Notification> notifications = getIntent().getParcelableArrayListExtra("NOTIFICATIONS");
+
+        // Show notifications after MainActivity is fully loaded
+        if (notifications != null && !notifications.isEmpty()) {
+            showNotificationDialogsSequentially(notifications);
+        }
+
             int requestedItemId = -1; // Default value if parsing fails
             String requestedItemIdString = intent.getStringExtra("REQUESTED_ITEM_ID");
             if (requestedItemIdString != null) {
@@ -133,6 +151,37 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void showNotificationDialogsSequentially(List<Notification> notifications) {
+        if (notifications.isEmpty()) {
+            // Clear notifications from the database after showing all dialogs
+            userRepository.deleteNotificationsForUser(currentUser.getUsername(), new UserRepository.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Notifications cleared.", Toast.LENGTH_SHORT).show());
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to clear notifications.", Toast.LENGTH_SHORT).show());
+                }
+            });
+            return;
+        }
+
+        // Show the first notification
+        Notification currentNotification = notifications.remove(0);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Notification")
+                .setMessage(currentNotification.getMessage())
+                .setCancelable(false)
+                .setNegativeButton("Dismiss", (dialog, which) -> {
+                    dialog.dismiss();
+                    showNotificationDialogsSequentially(notifications); // Show next notification
+                })
+                .show();
     }
 
     public User getCurrentUser() {

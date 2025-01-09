@@ -14,7 +14,7 @@ public class Image implements Parcelable {
     }
 
     // Parcelable constructor
-    public Image(Parcel in) {
+    protected Image(Parcel in) {
         filePath = in.readString();
         description = in.readString();
     }
