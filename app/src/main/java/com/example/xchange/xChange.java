@@ -42,11 +42,11 @@ public class xChange implements Parcelable {
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "offerer")
-    private transient xChanger offerer; // Excluded from parceling
+    private  xChanger offerer; // Excluded from parceling
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "offeree")
-    private transient xChanger offeree; // Excluded from parceling
+    private  xChanger offeree; // Excluded from parceling
 
     @TypeConverters(ItemConverter.class)
     @ColumnInfo(name = "offered_item")
@@ -191,9 +191,8 @@ public class xChange implements Parcelable {
             finalizedId = in.readLong();
         }
         dateFinalized = in.readParcelable(SimpleCalendar.class.getClassLoader());
-        // Excluded: offerer and offeree
-        this.offerer = null;
-        this.offeree = null;
+        offerer = in.readParcelable(xChanger.class.getClassLoader());
+        offeree = in.readParcelable(xChanger.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
     }
@@ -228,10 +227,10 @@ public class xChange implements Parcelable {
             dest.writeLong(finalizedId);
         }
         dest.writeParcelable(dateFinalized, flags);
-        // Excluded: offerer and offeree
+        dest.writeParcelable(offerer, flags); // Include offerer in parceling
+        dest.writeParcelable(offeree, flags); // Include offeree in parceling
         dest.writeParcelable(offeredItem, flags);
-        dest.writeParcelable(requestedItem, flags);
-    }
+        dest.writeParcelable(requestedItem, flags);}
 
     @Override
     public int describeContents() {

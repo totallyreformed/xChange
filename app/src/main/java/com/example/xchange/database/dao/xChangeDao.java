@@ -53,6 +53,7 @@ public interface xChangeDao {
     @Query("SELECT * FROM xchanges")
     LiveData<List<xChange>> getAllXChanges();
 
+
     @Query("SELECT COUNT(*) FROM xchanges WHERE offerer = :username OR offeree = :username")
     int getUserXChanges(String username);
 

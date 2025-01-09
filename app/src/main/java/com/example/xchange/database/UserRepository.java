@@ -199,18 +199,13 @@ public class UserRepository {
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
-
-                requestDao.deleteRequest(request); // Delete request from the database
-
                 xChanger requestee = request.getRequestee();
-                Log.d("TEST",requestee.getUsername());
-
                 requestee.acceptRequest(request, rating);
                 userDao.updateUser(requestee);
 
-                // 3. Create and finalize a new xChange entry
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
+                requestDao.deleteRequest(request);
                 newXChange.acceptOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
@@ -658,8 +653,8 @@ public class UserRepository {
         executor.execute(() -> {
             try {
 //                xChangeDao.deleteAll();
-//                List<xChange> xChanges = xChangeDao.getXChangerByUser(username);
-                List<xChange> xChanges=xChangeDao.getAllXChangesSync();
+                List<xChange> xChanges = xChangeDao.getXChangerByUser(username);
+//                List<xChange> xChanges=xChangeDao.getAllXChangesSync();
                 callback.onSuccess(xChanges);
             } catch (Exception e) {
                 Log.e("UserRepository", "Error fetching xChanges for user", e);
