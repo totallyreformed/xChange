@@ -500,6 +500,9 @@ public class UserRepository {
     public void getRequestsReceived(String username, UserRequestsReceivedCallback callback) {
         executor.execute(() -> {
             try {
+//                AppDatabase.getRequestDao().deleteAllRequests();
+//                AppDatabase.getCounterofferDao().deleteAll();
+
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> receivedRequests = new ArrayList<>();
                 for (Request req : requests) {
