@@ -7,6 +7,7 @@ import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
+import com.example.xchange.xChange;
 
 import java.util.List;
 
@@ -31,6 +32,11 @@ public class ProfilePresenter {
         void onReceivedCounterOffersLoaded(List<Counteroffer> counterOffers);
 
         void onCounterOffersFailed(String message);
+        void onTotalExchangesLoaded(int count);
+        void onTotalExchangesFailed(String message);
+        void onXChangesLoaded(List<xChange> xChanges);
+        void onXChangesFailed(String message);
+
 
     }
 
@@ -179,4 +185,31 @@ public class ProfilePresenter {
         });
     }
 
+    public void loadUserXChanges() {
+        userRepository.getUserXChanges(user.getUsername(), new UserRepository.UserXChangesCallback() {
+            @Override
+            public void onSuccess(List<xChange> xChanges) {
+                view.onXChangesLoaded(xChanges);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onXChangesFailed(message);
+            }
+        });
+    }
+
+    public void loadTotalExchanges() {
+        userRepository.getTotalExchangesCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
+            @Override
+            public void onSuccess(int count) {
+                view.onTotalExchangesLoaded(count);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onTotalExchangesFailed(message);
+            }
+        });
+    }
 }

@@ -232,29 +232,22 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/XChangesTextView"
-                android:layout_width="107dp"
+                android:id="@+id/totalExchangesTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center"
                 android:text="0 xChanges"
-                android:textColor="@color/secondary_text"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center" />
 
             <Button
-                android:id="@+id/XChnagesButton"
+                android:id="@+id/xChangesButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="xChanges"
-                android:textSize="16sp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/primary"
-                android:textColor="@color/white"
-                android:elevation="2dp" />
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center" />
         </LinearLayout>
 
     </ScrollView>

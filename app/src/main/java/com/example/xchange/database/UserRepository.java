@@ -104,7 +104,7 @@ public class UserRepository {
 
     // Interface for AcceptRequest Callback
     public interface AcceptRequestCallback {
-        void onSuccess();
+        void onSuccess(long xChangeId);
         void onFailure(String message);
     }
 
@@ -127,6 +127,12 @@ public class UserRepository {
         void onSuccess(List<Request> requests);
         void onFailure(String message);
     }
+
+    public interface UserXChangesCallback {
+        void onSuccess(List<xChange> xChanges);
+        void onFailure(String message);
+    }
+
 
     public void loginUser(String username, String password, LoginCallback callback) {
         executor.execute(() -> {
@@ -219,14 +225,18 @@ public class UserRepository {
                 // Update xChange entry
                 xChangeDao.updateXChange(newXChange);
 
-                // 4. Notify success via callback
-                callback.onSuccess();
+                // Remove the item from the database
+                itemDao.deleteItem(request.getRequestedItem());
+
+                // 4. Notify success via callback with the xChangeId
+                callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
             }
         });
     }
+
 
 
 
@@ -263,11 +273,11 @@ public class UserRepository {
         });
     }
 
-    public void storeNotification(String username, String message, OperationCallback callback) {
+    public void storeNotification(String username, String message, long xChangeId, OperationCallback callback) {
         executor.execute(() -> {
             try {
                 // Create a notification object (or use a simple database table)
-                Notification notification = new Notification(username, message, SimpleCalendar.today());
+                Notification notification = new Notification(username, message, SimpleCalendar.today(), xChangeId);
                 AppDatabase.getNotificationDao().insertNotification(notification);
                 callback.onSuccess();
             } catch (Exception e) {
@@ -502,6 +512,7 @@ public class UserRepository {
             try {
 //                AppDatabase.getRequestDao().deleteAllRequests();
 //                AppDatabase.getCounterofferDao().deleteAll();
+
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> receivedRequests = new ArrayList<>();
                 for (Request req : requests) {
@@ -518,8 +529,6 @@ public class UserRepository {
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
             try {
-//                AppDatabase.getCounterofferDao().deleteAll();
-//                AppDatabase.getRequestDao().deleteAllRequests();
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
                 for (Request req : requests) {
@@ -633,10 +642,37 @@ public class UserRepository {
         });
     }
 
+    // Retrieve the total exchanges count for a user
+    public void getTotalExchangesCount(String username, UserRequestsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalExchanges = xChangeDao.getUserXChanges(username);
+                callback.onSuccess(totalExchanges);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching total exchanges count", e);
+                callback.onFailure("Failed to fetch total exchanges count.");
+            }
+        });
+    }
+
+    // Retrieve all xChanges for a user
+    public void getUserXChanges(String username, UserXChangesCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<xChange> xChanges = xChangeDao.getXChangerByUser(username); // Fetch all xChanges where the user is either offerer or offeree
+                callback.onSuccess(xChanges);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching xChanges for user", e);
+                callback.onFailure("Failed to fetch xChanges.");
+            }
+        });
+    }
+
+
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
-                int totalItems = itemDao.getTotalItems();
+                int totalItems = userDao.getTotalItems();
                 String stats = "Total Items: " + totalItems;
                 callback.onSuccess(stats);
             } catch (Exception e) {
@@ -666,21 +702,8 @@ public class UserRepository {
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
-                // Use the static method from the Category enum to get the total number of categories
-                int totalCategories = Category.getTotalCategories();
+                int totalCategories = userDao.getTotalCategories();
                 String stats = "Total Categories: " + totalCategories;
-                callback.onSuccess(stats);
-            } catch (Exception e) {
-                callback.onFailure("Failed to retrieve total categories");
-            }
-        });
-    }
-
-    public void getTotalUsers(UserStatisticsCallback callback) {
-        executor.execute(() -> {
-            try {
-                int totalUsers = userDao.getTotalUsers();
-                String stats = "Total Users: " + totalUsers;
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
@@ -793,6 +816,8 @@ public class UserRepository {
     }
     public void getSentCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
+//            AppDatabase.getRequestDao().deleteAllRequests();
+//            AppDatabase.getCounterofferDao().deleteAll();
             try {
                 List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                 List<Counteroffer> sentCounterOffers = new ArrayList<>();

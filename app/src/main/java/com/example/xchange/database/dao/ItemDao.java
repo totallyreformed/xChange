@@ -22,13 +22,13 @@ public interface ItemDao {
     @Query("SELECT * FROM items")
     LiveData<List<Item>> getAllItems();
 
-    @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%'  LOWER(:query)  '%'")
+    @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%'")
     List<Item> searchItemsByName(String query);
 
     @Query("SELECT * FROM items WHERE item_category = :category")
     List<Item> filterItemsByCategory(Category category);
 
-    @Query("SELECT * FROM items WHERE (:query IS NULL OR LOWER(item_name) LIKE '%'  LOWER(:query)  '%') AND item_category = :category")
+    @Query("SELECT * FROM items WHERE (:query IS NULL OR LOWER(item_name) LIKE '%' || LOWER(:query) || '%') AND item_category = :category")
     List<Item> searchItemsByNameAndCategory(String query, Category category);
 
 
@@ -43,7 +43,7 @@ public interface ItemDao {
     Item getItemByIdSync(long itemId);
 
 
-    @Query("SELECT COUNT() from items")
+    @Query("SELECT COUNT(*) from items")
     LiveData<Integer> getItemCount();
 
     // Update an existing item
@@ -53,14 +53,16 @@ public interface ItemDao {
     // Delete an item
     @Query("DELETE FROM items WHERE itemId = :itemId")
     void deleteItemById(long itemId);
-    @Query("SELECT FROM items WHERE xChanger = :xChangerUsername")
+
+    // Delete an item object
+    @Delete
+    void deleteItem(Item item);
+
+    @Query("SELECT * FROM items WHERE xChanger = :xChangerUsername")
     List<Item> getItemsByXChanger(String xChangerUsername);
 
 
     // Delete all items
     @Query("DELETE FROM items")
     void deleteAllItems();
-
-    @Query("SELECT COUNT(*) FROM items")
-    int getTotalItems();
 }

@@ -19,8 +19,8 @@ public class AcceptRequestViewModel extends ViewModel {
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         repository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
             @Override
-            public void onSuccess() {
-                callback.onSuccess();
+            public void onSuccess(long xChangeId) {
+                callback.onSuccess(xChangeId);
             }
 
             @Override
@@ -31,7 +31,7 @@ public class AcceptRequestViewModel extends ViewModel {
     }
 
     public interface AcceptRequestCallback {
-        void onSuccess();
+        void onSuccess(long xChangeId);
 
         void onFailure(String message);
     }

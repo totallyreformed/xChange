@@ -127,7 +127,8 @@ public class RejectRequestActivity extends AppCompatActivity {
                 Notification notification = new Notification(
                         requestToReject.getRequester().getUsername(),
                         "Your request has been rejected by " + currentUser.getUsername(),
-                        SimpleCalendar.today()
+                        SimpleCalendar.today(),
+                        (long) -1
                 );
 
                 UserRepository userRepository = new UserRepository(getApplication());
@@ -164,6 +165,6 @@ public class RejectRequestActivity extends AppCompatActivity {
     private void storeRejectionNotification(Request request) {
         String notificationMessage = "Your request for \"" + request.getRequestedItem().getItemName() +
                 "\" has been rejected.";
-        viewModel.storeNotificationForUser(request.getRequester().getUsername(), notificationMessage);
+        viewModel.storeNotificationForUser(request.getRequester().getUsername(), notificationMessage, -1);
     }
 }

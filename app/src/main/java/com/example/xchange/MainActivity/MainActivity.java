@@ -18,6 +18,7 @@ import com.example.xchange.Upload.UploadActivity;
 import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChange;
+import com.example.xchange.xChanger;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.lifecycle.LiveData;
@@ -173,16 +174,57 @@ public class MainActivity extends AppCompatActivity {
         // Show the first notification
         Notification currentNotification = notifications.remove(0);
 
-        new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Notification")
                 .setMessage(currentNotification.getMessage())
-                .setCancelable(false)
-                .setNegativeButton("Dismiss", (dialog, which) -> {
-                    dialog.dismiss();
-                    showNotificationDialogsSequentially(notifications); // Show next notification
-                })
-                .show();
+                .setCancelable(false);
+
+        // Check if the notification is related to xChange acceptance
+        if (currentNotification.getMessage().contains("accepted")) {
+            builder.setPositiveButton("View xChange Details", (dialog, which) -> {
+                dialog.dismiss();
+
+                xChanger xchanger = new xChanger(
+                        currentUser.getUsername(),
+                        currentUser.getEmail(),
+                        currentUser.getJoin_Date(),
+                        currentUser.getPassword(),
+                        currentUser.getLocation()
+                );
+
+                // Retrieve the xChange details
+                Long xChangeId = currentNotification.getXChangeId(); // Assuming metadata contains xChangeId
+                if (xChangeId != null) {
+                    // Fetch the xChange details from the database
+                    LiveData<xChange> xChangeLiveData = userRepository.getXChangeById(xChangeId);
+
+                    xChangeLiveData.observe(MainActivity.this, xChange -> {
+                        if (xChange != null) {
+                            Intent intent = new Intent(MainActivity.this, xChangeConfirmationActivity.class);
+                            intent.putExtra("XCHANGE_ID", xChangeId);
+                            intent.putExtra("USER", xchanger); // Ensure `currentUser` is a `xChanger`
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(this, "Error loading xChange details. Please try again later.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "xChange ID not found in notification metadata.", Toast.LENGTH_SHORT).show();
+                }
+
+                showNotificationDialogsSequentially(notifications); // Continue with the next notification
+            });
+        }
+
+        builder.setNegativeButton("Dismiss", (dialog, which) -> {
+            dialog.dismiss();
+            showNotificationDialogsSequentially(notifications); // Show next notification
+        });
+
+        runOnUiThread(builder::show);
     }
+
+
 
     public User getCurrentUser() {
         return currentUser;

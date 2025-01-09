@@ -34,7 +34,7 @@ public class AcceptRequestPresenter {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         userRepository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(long xChangeId) {
                 result.postValue(true);
             }
 
