@@ -196,25 +196,92 @@ public class UserRepository {
      * @param rating   The rating value provided by the user.
      * @param callback Callback to handle success or failure.
      */
-    public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
+    public void acceptRequest(Request request, Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
-                xChanger requestee = request.getRequestee();
-                requestee.acceptRequest(request, rating);
-                userDao.updateUser(requestee);
+                // Handle regular requests
+                if (counteroffer == null) {
+                    xChanger requestee = request.getRequestee();
+                    requestee.acceptRequest(request, rating);
+                    userDao.updateUser(requestee);
 
-                SimpleCalendar today = SimpleCalendar.today();
-                xChange newXChange = new xChange(request, null, today);
-                requestDao.deleteRequest(request);
-                newXChange.acceptOffer(rating);
-                long xChangeId = xChangeDao.insertXChange(newXChange);
-                newXChange.setXChangeId(xChangeId);
+                    SimpleCalendar today = SimpleCalendar.today();
+                    xChange newXChange = new xChange(request, today);
+                    requestDao.deleteRequest(request);
+                    newXChange.acceptOffer(rating);
+                    long xChangeId = xChangeDao.insertXChange(newXChange);
+                    newXChange.setXChangeId(xChangeId);
 
-                xChangeDao.updateXChange(newXChange);
-                callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
+                    xChangeDao.updateXChange(newXChange);
+                    callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
+                } else {
+                    // Handle counteroffers
+                    xChanger counterofferee = counteroffer.getCounterofferee();
+                    counterofferee.acceptCounteroffer(counteroffer, rating);
+                    userDao.updateUser(counterofferee);
+
+                    SimpleCalendar today = SimpleCalendar.today();
+                    xChange newXChange = new xChange(counteroffer, today);
+                    counterofferDao.deleteCounteroffer(counteroffer);
+                    long xChangeId = xChangeDao.insertXChange(newXChange);
+                    newXChange.setXChangeId(xChangeId);
+
+                    xChangeDao.updateXChange(newXChange);
+                    callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
+                }
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
+            }
+        });
+    }
+
+    /**
+     * Rejects a trade request by marking it as inactive and updating both users' data.
+     *
+     * @param request  The Request object to be rejected.
+     * @param callback Callback to handle success or failure.
+     */
+    public void rejectRequest(Request request,  @Nullable Counteroffer counteroffer, float rating, RejectRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // Handle regular requests
+                if (counteroffer == null) {
+                    // 1. Mark the request as inactive
+                    xChanger requestee = request.getRequestee();
+                    requestee.rejectRequest(request, rating);
+                    userDao.updateUser(requestee);
+
+                    SimpleCalendar today = SimpleCalendar.today();
+                    xChange newXChange = new xChange(request, today);
+                    newXChange.rejectOffer(rating);
+
+                    // Delete request from the database
+                    requestDao.deleteRequest(request);
+
+                    // 4. Notify success via callback
+                    callback.onSuccess();
+                } else {
+                    // Handle counteroffers
+                    // 1. Mark the counteroffer as inactive
+                    xChanger counterofferee = counteroffer.getCounterofferee();
+                    counterofferee.rejectCounteroffer(counteroffer, rating);
+                    userDao.updateUser(counterofferee);
+
+                    SimpleCalendar today = SimpleCalendar.today();
+                    xChange newXChange = new xChange(counteroffer, today);
+                    newXChange.rejectOffer(rating);
+
+                    // Delete counteroffer from the database
+                    counterofferDao.deleteCounteroffer(counteroffer);
+
+                    // 4. Notify success via callback
+                    callback.onSuccess();
+                }
+
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error rejecting request", e);
+                callback.onFailure("Failed to reject request.");
             }
         });
     }
@@ -227,40 +294,6 @@ public class UserRepository {
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
-            }
-        });
-    }
-
-
-    /**
-     * Rejects a trade request by marking it as inactive and updating both users' data.
-     *
-     * @param request  The Request object to be rejected.
-     * @param callback Callback to handle success or failure.
-     */
-    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
-        executor.execute(() -> {
-            try {
-                // 1. Mark the request as inactive
-                xchanger.rejectRequest(request, 0);
-                requestDao.deleteRequest(request);
-
-                // 2. Retrieve the requester and requestee from the request
-                xChanger requester = request.getRequester();
-                xChanger requestee = request.getRequestee();
-
-                // 3. Update users in the database
-                userDao.updateUser(requester);
-                userDao.updateUser(requestee);
-
-                // 4. Optionally, handle any additional logic upon rejection
-                // For example, you might want to notify the requester about the rejection
-
-                // 5. Notify success via callback
-                callback.onSuccess();
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error rejecting request", e);
-                callback.onFailure("Failed to reject request.");
             }
         });
     }

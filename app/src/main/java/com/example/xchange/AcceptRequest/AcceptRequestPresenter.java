@@ -5,9 +5,11 @@ package com.example.xchange.AcceptRequest;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Request;
 import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.UserRepository;
@@ -30,9 +32,9 @@ public class AcceptRequestPresenter {
      * @param rating  The rating provided by the user.
      * @return LiveData<Boolean> indicating success or failure.
      */
-    public LiveData<Boolean> acceptRequest(Request request, float rating) {
+    public LiveData<Boolean> acceptRequest(Request request, @Nullable Counteroffer counteroffer, float rating) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
-        userRepository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
+        userRepository.acceptRequest(request, counteroffer, rating, new UserRepository.AcceptRequestCallback() {
             @Override
             public void onSuccess(long xChangeId) {
                 result.postValue(true);

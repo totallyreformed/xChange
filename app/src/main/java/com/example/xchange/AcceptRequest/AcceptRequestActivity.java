@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
@@ -27,6 +28,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
 
     private AcceptRequestViewModel viewModel;
     private Request request;
+    private Counteroffer counteroffer;
     private User currentUser;
     private TextView requesterTextView, requesteeTextView, requestStatusTextView;
     private TextView offeredItemTextView, requestedItemTextView;
@@ -53,6 +55,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
 
         // Retrieve data from Intent
         request = getIntent().getParcelableExtra("REQUEST");
+        counteroffer = getIntent().getParcelableExtra("COUNTEROFFER");
         currentUser = getIntent().getParcelableExtra("USER");
 
         if (request == null || currentUser == null) {
@@ -61,7 +64,6 @@ public class AcceptRequestActivity extends AppCompatActivity {
             return;
         }
 
-        // Convert currentUser to xChanger
         xChanger xchanger = new xChanger(
                 currentUser.getUsername(),
                 currentUser.getEmail(),
@@ -137,7 +139,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 currentUser.getLocation()
         );
 
-        viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
+        viewModel.acceptRequest(request, counteroffer, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
             @Override
             public void onSuccess(long xChangeId) {
                 // Create a notification for the requester
@@ -184,20 +186,5 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 );
             }
         });
-    }
-
-    private void notifyOtherUserOfAcceptance() {
-        runOnUiThread(() -> new AlertDialog.Builder(this)
-                .setTitle("Request Accepted")
-                .setMessage("The requester has been notified, and they will be redirected to the xChange confirmation.")
-                .setPositiveButton("Proceed", (dialog, which) -> {
-                    Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
-                    intent.putExtra("REQUEST", request);
-                    intent.putExtra("USER", currentUser);
-                    startActivity(intent);
-                    finish();
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .show());
     }
 }
