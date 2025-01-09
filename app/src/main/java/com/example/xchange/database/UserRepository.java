@@ -602,7 +602,7 @@ public class UserRepository {
                 List<xChange> tosend=new ArrayList<>();
                 for(xChange xchange:xchanges){
                     if(xchange.getOfferee().getUsername().equals(username) ||
-                    xchange.getOfferer().getUsername().equals(username)){
+                            xchange.getOfferer().getUsername().equals(username)){
                         tosend.add(xchange);
                     }
                 }
