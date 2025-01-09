@@ -245,18 +245,10 @@ public class UserRepository {
                 xchanger.rejectRequest(request, 0);
                 requestDao.deleteRequest(request);
 
-                // 2. Retrieve the requester and requestee from the request
                 xChanger requester = request.getRequester();
                 xChanger requestee = request.getRequestee();
-
-                // 3. Update users in the database
                 userDao.updateUser(requester);
                 userDao.updateUser(requestee);
-
-                // 4. Optionally, handle any additional logic upon rejection
-                // For example, you might want to notify the requester about the rejection
-
-                // 5. Notify success via callback
                 callback.onSuccess();
             } catch (Exception e) {
                 Log.e("UserRepository", "Error rejecting request", e);
@@ -381,16 +373,6 @@ public class UserRepository {
         return requestDao.getRequestsSentCount();
     }
 
-    // Get Total Request Received Count (For Admin)
-    public LiveData<Integer> getReceivedRequestsCount() {
-        return requestDao.getRequestsReceivedCount();
-    }
-
-    public List<Request> getRequestsByUsername(String username) {
-        return requestDao.findRequestsByUsername(username);
-    }
-
-
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -402,16 +384,6 @@ public class UserRepository {
         });
     }
 
-    public void filterItemsByCategory(Category category, UserItemsCallback callback) {
-        executor.execute(() -> {
-            try {
-                List<Item> items = itemDao.filterItemsByCategory(category);
-                callback.onSuccess(items);
-            } catch (Exception e) {
-                callback.onFailure("Error filtering items by category.");
-            }
-        });
-    }
 
     public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
         new Thread(() -> {
@@ -440,8 +412,6 @@ public class UserRepository {
             }
         });
     }
-
-
     public void shutdownExecutor() {
         executor.shutdown();
         try {
@@ -502,9 +472,6 @@ public class UserRepository {
     public void getRequestsReceived(String username, UserRequestsReceivedCallback callback) {
         executor.execute(() -> {
             try {
-//                AppDatabase.getRequestDao().deleteAllRequests();
-//                AppDatabase.getCounterofferDao().deleteAll();
-
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> receivedRequests = new ArrayList<>();
                 for (Request req : requests) {
@@ -580,35 +547,6 @@ public class UserRepository {
      */
     private void onRequestReceived(List<Request> requests, UserRepository.RequestItemsCallback callback) {
         callback.onSuccess(requests);
-    }
-
-    // New Method: Get Active Sent Requests
-    public void getActiveSentRequests(String username, UserRepository.RequestItemsCallback callback) {
-        executor.execute(() -> {
-            try {
-                LiveData<List<Request>> liveData = requestDao.getAllSentRequests(username);
-                // Observe LiveData on the main thread
-                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(requests -> {
-                    callback.onSuccess(requests);
-                }));
-            } catch (Exception e) {
-                callback.onFailure("Failed to fetch sent requests: " + e.getMessage());
-            }
-        });
-    }
-
-
-
-    // Get Received Requests (For Admin)
-    public void getReceivedRequestsAdmin(RequestItemsCallback callback) {
-        executor.execute(() -> {
-            try {
-                List<Request> requests = requestDao.getAllReceivedRequestsAdmin();
-                callback.onSuccess(requests);
-            } catch (Exception e) {
-                callback.onFailure("Failed to retrieve received requests.");
-            }
-        });
     }
 
     public void getTotalRequests(UserStatisticsCallback callback) {
@@ -692,24 +630,6 @@ public class UserRepository {
         });
     }
 
-    /**
-     * Deletes an item from the database by its ID with callbacks.
-     *
-     * @param itemId   The ID of the item to delete.
-     * @param callback The callback to handle success or failure.
-     */
-    public void deleteItemById(long itemId, OperationCallback callback) {
-        executor.execute(() -> {
-            try {
-                itemDao.deleteItemById(itemId);
-                Log.d("UserRepository", "Item deleted successfully: ID " + itemId);
-                callback.onSuccess();
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error deleting item: " + itemId, e);
-                callback.onFailure("Failed to delete item.");
-            }
-        });
-    }
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -920,7 +840,16 @@ public class UserRepository {
         }
         return null; // Return null if no match found
     }
-
-
+    public void getAllXChanges(UserXChangesCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<xChange> xChanges = xChangeDao.getAllXChangesSync();
+                callback.onSuccess(xChanges);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching all xChanges", e);
+                callback.onFailure("Failed to fetch xChanges.");
+            }
+        });
+    }
 
 }
