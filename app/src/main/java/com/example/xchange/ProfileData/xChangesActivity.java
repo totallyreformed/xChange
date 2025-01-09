@@ -2,6 +2,7 @@ package com.example.xchange.ProfileData;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.xchange.R;
 import com.example.xchange.User;
+import com.example.xchange.database.AppDatabase;
 import com.example.xchange.xChange;
 import com.example.xchange.xChangesAdapter;
 
@@ -32,7 +34,6 @@ public class xChangesActivity extends AppCompatActivity {
         Intent intent = getIntent();
         currentUser = intent.getParcelableExtra("USER");
         xChangesList = intent.getParcelableArrayListExtra("XCHANGES");
-
         if (currentUser == null || xChangesList == null) {
             Toast.makeText(this, "Error loading xChanges data.", Toast.LENGTH_SHORT).show();
             finish();

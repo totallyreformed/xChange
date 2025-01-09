@@ -47,6 +47,8 @@ public interface xChangeDao {
     @Query("SELECT * FROM xchanges WHERE request = :request")
     LiveData<List<xChange>> getXChangesByRequest(Request request);
 
+
+
     // Retrieve all xChanges
     @Query("SELECT * FROM xchanges")
     LiveData<List<xChange>> getAllXChanges();

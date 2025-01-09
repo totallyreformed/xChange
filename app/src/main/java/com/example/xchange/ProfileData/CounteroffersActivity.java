@@ -2,6 +2,7 @@ package com.example.xchange.ProfileData;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +39,8 @@ public class CounteroffersActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Button backButton = findViewById(R.id.backToProfileButton);
+        backButton.setOnClickListener(v -> finish());
 
         recyclerView = findViewById(R.id.requestsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

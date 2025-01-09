@@ -2,6 +2,7 @@ package com.example.xchange.Profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,9 +20,11 @@ import com.example.xchange.R;
 import com.example.xchange.Request;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
+import com.example.xchange.xChange;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -196,23 +199,24 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(showCounterOffersReceived);
         });
 
-        // Handle xChanges Button Click
         Button xChangesButton = findViewById(R.id.xChangesButton);
+
         xChangesButton.setOnClickListener(v -> {
+            // Ensure the user is loaded and viewModel is properly initialized
+            if (user == null || viewModel == null) {
+                Toast.makeText(ProfileActivity.this, "User data is missing.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            viewModel.loadUserXChanges();
             viewModel.getUserXChanges().observe(this, xChanges -> {
-                if (xChanges != null) {
                     Intent xChangesIntent = new Intent(ProfileActivity.this, xChangesActivity.class);
                     xChangesIntent.putExtra("USER", user);
                     xChangesIntent.putParcelableArrayListExtra("XCHANGES", new ArrayList<>(xChanges));
                     startActivity(xChangesIntent);
-                } else {
-                    Toast.makeText(ProfileActivity.this, "No xChanges available.", Toast.LENGTH_SHORT).show();
-                }
-            });
 
-            // Trigger loading xChanges from the repository
-            viewModel.loadUserXChanges();
+            });
         });
+
 
 
         viewModel.loadProfileData();

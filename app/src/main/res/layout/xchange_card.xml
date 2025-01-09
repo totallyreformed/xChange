@@ -1,18 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:elevation="4dp"
-    android:padding="12dp">
+    card_view:cardCornerRadius="8dp"
+    card_view:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/exchangeDetailsTextView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Exchange Details"
-        android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <!-- Exchange Details -->
+        <TextView
+            android:id="@+id/exchangeDetailsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exchange Details"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+
+        <!-- Requester -->
+        <TextView
+            android:id="@+id/requesterTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Requester: JohnDoe"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Requestee -->
+        <TextView
+            android:id="@+id/requesteeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Requestee: JaneSmith"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/statusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Pending"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Requested Item -->
+        <TextView
+            android:id="@+id/requestedItemTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Requested Item: Laptop"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Offered Item -->
+        <TextView
+            android:id="@+id/offeredItemTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Offered Item: Phone"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

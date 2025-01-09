@@ -199,21 +199,14 @@ public class UserRepository {
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
-                // 1. Mark the request as inactive
-                request.make_unactive();
+
                 requestDao.deleteRequest(request); // Delete request from the database
 
-                // 2. Finalize acceptance for both requester and requestee
-                xChanger requester = request.getRequester();
                 xChanger requestee = request.getRequestee();
+                Log.d("TEST",requestee.getUsername());
 
-                // Update requestee's rating and finalize the request
                 requestee.acceptRequest(request, rating);
                 userDao.updateUser(requestee);
-
-                // Update requester's data (e.g., successful exchange count)
-                requester.plusOneSucceedDeal();
-                userDao.updateUser(requester);
 
                 // 3. Create and finalize a new xChange entry
                 SimpleCalendar today = SimpleCalendar.today();
@@ -222,14 +215,7 @@ public class UserRepository {
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
 
-                // Update xChange entry
                 xChangeDao.updateXChange(newXChange);
-
-                // Remove both items from the database
-                itemDao.deleteItem(request.getRequestedItem());
-                itemDao.deleteItem(request.getOfferedItem());
-
-                // 4. Notify success via callback with the xChangeId
                 callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
@@ -539,8 +525,7 @@ public class UserRepository {
     }
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
-//            AppDatabase.getRequestDao().deleteAllRequests();
-//            AppDatabase.getCounterofferDao().deleteAll();
+            List<xChange> lists=AppDatabase.getxChangeDao().getAllXChangesSync();
             try {
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
@@ -646,7 +631,7 @@ public class UserRepository {
     public void getTotalExchanges(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
-                int totalExchanges = userDao.getTotalExchanges();
+                int totalExchanges = xChangeDao.getAllXChangesSync().size();
                 String stats = "Total Exchanges: " + totalExchanges;
                 callback.onSuccess(stats);
             } catch (Exception e) {
@@ -672,7 +657,9 @@ public class UserRepository {
     public void getUserXChanges(String username, UserXChangesCallback callback) {
         executor.execute(() -> {
             try {
-                List<xChange> xChanges = xChangeDao.getXChangerByUser(username); // Fetch all xChanges where the user is either offerer or offeree
+//                xChangeDao.deleteAll();
+//                List<xChange> xChanges = xChangeDao.getXChangerByUser(username);
+                List<xChange> xChanges=xChangeDao.getAllXChangesSync();
                 callback.onSuccess(xChanges);
             } catch (Exception e) {
                 Log.e("UserRepository", "Error fetching xChanges for user", e);
@@ -680,6 +667,7 @@ public class UserRepository {
             }
         });
     }
+
 
 
     public void getTotalItems(UserStatisticsCallback callback) {
