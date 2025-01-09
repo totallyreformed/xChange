@@ -86,7 +86,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Delete button functionality
         deleteButton.setOnClickListener(v -> {
             viewModel.deleteItemById(itemId);
             Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
@@ -98,14 +97,11 @@ public class ItemDetailActivity extends AppCompatActivity {
             finish();
         });
 
-        // Edit button functionality
         editButton.setOnClickListener(v -> {
             Intent editIntent = new Intent(this, EditItemActivity.class);
             editIntent.putExtra("ITEM_ID", itemId);
             startActivity(editIntent);
         });
-
-
 
         viewModel.checkToDisplayAcceptReject(itemId, user.getUsername(), (success, request) -> {
             runOnUiThread(() -> {
@@ -156,12 +152,10 @@ public class ItemDetailActivity extends AppCompatActivity {
                                 acceptButton.setVisibility(View.GONE);
                                 rejectButton.setVisibility(View.GONE);
                                 counterofferButton.setVisibility(View.GONE);
-
-                                // On button click, send the counteroffer
                                 seeExtraButton.setOnClickListener(view -> {
                                     Intent intent = new Intent(this, SeerequestsCounteroffersActivity.class);
                                     intent.putExtra("COUNTEROFFER", counteroffer);
-                                    intent.putExtra("HAS_COUNTEROFFER", true);// Pass extra data for counteroffer
+                                    intent.putExtra("HAS_COUNTEROFFER", true);
                                     startActivity(intent);
                                 });
                             } else {

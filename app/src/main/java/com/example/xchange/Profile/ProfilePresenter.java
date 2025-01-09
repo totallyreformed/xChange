@@ -199,6 +199,7 @@ public class ProfilePresenter {
         });
     }
 
+
     public void loadTotalExchanges() {
         userRepository.getTotalExchangesCount(user.getUsername(), new UserRepository.UserRequestsCallback() {
             @Override

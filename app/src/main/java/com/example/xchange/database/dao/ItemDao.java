@@ -65,4 +65,7 @@ public interface ItemDao {
     // Delete all items
     @Query("DELETE FROM items")
     void deleteAllItems();
+
+    @Query("SELECT COUNT(*) FROM items")
+    int getTotalItems();
 }
