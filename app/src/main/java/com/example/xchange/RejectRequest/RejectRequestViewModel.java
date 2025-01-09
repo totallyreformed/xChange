@@ -32,8 +32,8 @@ public class RejectRequestViewModel extends AndroidViewModel {
         });
     }
 
-    public void storeNotificationForUser(String username, String message) {
-        repository.storeNotification(username, message, new UserRepository.OperationCallback() {
+    public void storeNotificationForUser(String username, String message, long xChangeId) {
+        repository.storeNotification(username, message, xChangeId, new UserRepository.OperationCallback() {
             @Override
             public void onSuccess() {
                 Log.d("RejectRequestViewModel", "Notification stored successfully for user: " + username);

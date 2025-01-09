@@ -53,6 +53,11 @@ public interface ItemDao {
     // Delete an item
     @Query("DELETE FROM items WHERE itemId = :itemId")
     void deleteItemById(long itemId);
+
+    // Delete an item object
+    @Delete
+    void deleteItem(Item item);
+
     @Query("SELECT * FROM items WHERE xChanger = :xChangerUsername")
     List<Item> getItemsByXChanger(String xChangerUsername);
 

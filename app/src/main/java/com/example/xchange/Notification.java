@@ -7,8 +7,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 
-import com.example.xchange.xChange;
-
 @Entity(tableName = "notifications")
 public class Notification implements Parcelable {
     @PrimaryKey(autoGenerate = true)
@@ -23,10 +21,14 @@ public class Notification implements Parcelable {
     @ColumnInfo(name = "timestamp")
     private SimpleCalendar timestamp;
 
-    public Notification(String username, String message, SimpleCalendar timestamp) {
+    @ColumnInfo(name = "xchange_id") // New field to store the associated xChange ID
+    private Long xChangeId;
+
+    public Notification(String username, String message, SimpleCalendar timestamp, Long xChangeId) {
         this.username = username;
         this.message = message;
         this.timestamp = timestamp;
+        this.xChangeId = xChangeId;
     }
 
     // Getters and setters
@@ -63,12 +65,25 @@ public class Notification implements Parcelable {
         this.timestamp = timestamp;
     }
 
+    public Long getXChangeId() {
+        return xChangeId;
+    }
+
+    public void setXChangeId(Long xChangeId) {
+        this.xChangeId = xChangeId;
+    }
+
     // Parcelable implementation
     protected Notification(Parcel in) {
         id = in.readLong();
         username = in.readString();
         message = in.readString();
         timestamp = in.readParcelable(SimpleCalendar.class.getClassLoader());
+        if (in.readByte() == 0) {
+            xChangeId = null;
+        } else {
+            xChangeId = in.readLong();
+        }
     }
 
     public static final Creator<Notification> CREATOR = new Creator<Notification>() {
@@ -89,6 +104,12 @@ public class Notification implements Parcelable {
         dest.writeString(username);
         dest.writeString(message);
         dest.writeParcelable(timestamp, flags);
+        if (xChangeId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(xChangeId);
+        }
     }
 
     @Override

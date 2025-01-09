@@ -14,6 +14,7 @@ import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.ProfileData.AllItemsActivity;
 import com.example.xchange.ProfileData.CounteroffersActivity;
 import com.example.xchange.ProfileData.RequestsActivity;
+import com.example.xchange.ProfileData.xChangesActivity;
 import com.example.xchange.R;
 import com.example.xchange.Request;
 import com.example.xchange.Search.SearchActivity;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView, requestsSentCountTextView, requestsReceivedCountTextView, counterOffersSentCountTextView, counterOffersReceivedCountTextView;
+    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView, requestsSentCountTextView, requestsReceivedCountTextView, counterOffersSentCountTextView, counterOffersReceivedCountTextView, totalExchangesTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
         requestsReceivedCountTextView = findViewById(R.id.requestsReceivedCountTextView);
         counterOffersSentCountTextView = findViewById(R.id.counterOffersSentCountTextView);
         counterOffersReceivedCountTextView = findViewById(R.id.counterOffersReceivedCountTextView);
+        totalExchangesTextView = findViewById(R.id.totalExchangesTextView);
 
         // Initialize Logout Button
         Button logoutButton = findViewById(R.id.logoutButton);
@@ -105,6 +107,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         viewModel.getCounterOffersReceivedCount().observe(this, count -> {
             counterOffersReceivedCountTextView.setText(count + " Counter Offers Received");
+        });
+
+        viewModel.getTotalExchangesCount().observe(this, count -> {
+            totalExchangesTextView.setText(count + " xChanges");
         });
 
         // Navigate to AllItemsActivity
@@ -188,6 +194,24 @@ public class ProfileActivity extends AppCompatActivity {
             showCounterOffersReceived.putParcelableArrayListExtra("COUNTEROFFERS", new ArrayList<>(receivedCounterOffers));
             showCounterOffersReceived.putExtra("USER", user);
             startActivity(showCounterOffersReceived);
+        });
+
+        // Handle xChanges Button Click
+        Button xChangesButton = findViewById(R.id.xChangesButton);
+        xChangesButton.setOnClickListener(v -> {
+            viewModel.getUserXChanges().observe(this, xChanges -> {
+                if (xChanges != null) {
+                    Intent xChangesIntent = new Intent(ProfileActivity.this, xChangesActivity.class);
+                    xChangesIntent.putExtra("USER", user);
+                    xChangesIntent.putParcelableArrayListExtra("XCHANGES", new ArrayList<>(xChanges));
+                    startActivity(xChangesIntent);
+                } else {
+                    Toast.makeText(ProfileActivity.this, "No xChanges available.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // Trigger loading xChanges from the repository
+            viewModel.loadUserXChanges();
         });
 
 

@@ -1,31 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/exchangeConfirmationScrollView"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:background="#FAFAFA"
+    android:weightSum="1">
 
-    <LinearLayout
-        android:id="@+id/exchangeConfirmationLinearLayout"
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:id="@+id/exchangeConfirmationScrollView"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.9"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/exchangeConfirmationLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/exchangeTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="xChange Confirmation"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"
+                android:textColor="#000000"
+                android:gravity="center" />
+
+            <!-- Status -->
+            <TextView
+                android:id="@+id/exchangeStatusTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="xChange Accepted!"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"
+                android:textColor="#4CAF50"
+                android:gravity="center" />
+
+            <!-- Your Contact Info Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="2dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/yourContactInfoHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your Contact Information"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#000000"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/yourContactInfoTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Name: \nEmail: \nLocation:"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="#444444" />
+            </LinearLayout>
+
+            <!-- Counterparty Contact Info Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="16dp"
+                android:elevation="2dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/counterpartyContactInfoHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Counterparty's Contact Information"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#000000"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/counterpartyContactInfoTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Name: \nEmail: \nLocation:"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="#444444" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Fixed Back Button -->
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/exchangeTitleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Exchange Confirmation"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:id="@+id/contactInfoTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Contact Information"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-</ScrollView>
+        android:layout_gravity="center"
+        android:text="Back"
+        android:padding="12dp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:gravity="center" />
+</LinearLayout>
