@@ -225,8 +225,9 @@ public class UserRepository {
                 // Update xChange entry
                 xChangeDao.updateXChange(newXChange);
 
-                // Remove the item from the database
+                // Remove both items from the database
                 itemDao.deleteItem(request.getRequestedItem());
+                itemDao.deleteItem(request.getOfferedItem());
 
                 // 4. Notify success via callback with the xChangeId
                 callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
