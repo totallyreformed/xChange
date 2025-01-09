@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.xchange.Admin.AdminXChangesActivity;
 import com.example.xchange.Login.LoginActivity;
 import com.example.xchange.R;
 import com.example.xchange.User;
@@ -33,6 +34,9 @@ public class AdminHomeFragment extends Fragment {
     private Button adminViewRequestsButton;
     private TextView totalUsersTextView;
     private TextView totalCategoriesTextView;
+    private TextView adminXChangesCountTextView;
+    private Button adminViewXChangesButton;
+
 
     private UserRepository userRepository;
     private User currentUser;
@@ -53,6 +57,13 @@ public class AdminHomeFragment extends Fragment {
             requireActivity().finish();
         });
 
+        adminViewXChangesButton = view.findViewById(R.id.adminViewXChangesButton);
+
+        adminViewXChangesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AdminXChangesActivity.class);
+            startActivity(intent);
+        });
+
         // Initialize Views
         adminWelcomeTextView = view.findViewById(R.id.adminWelcomeTextView);
         adminTotalItemsTextView = view.findViewById(R.id.adminTotalItemsTextView);
@@ -61,6 +72,7 @@ public class AdminHomeFragment extends Fragment {
         adminViewRequestsButton = view.findViewById(R.id.adminViewRequestsButton);
         totalUsersTextView = view.findViewById(R.id.adminTotalUsersTextView);
         totalCategoriesTextView = view.findViewById(R.id.adminTotalCategoriesTextView);
+        adminXChangesCountTextView = view.findViewById(R.id.adminXChangesCountTextView);
 
         // Initialize UserRepository
         userRepository = new UserRepository(getContext());
@@ -95,6 +107,22 @@ public class AdminHomeFragment extends Fragment {
     }
 
     private void fetchStatistics() {
+        userRepository.getTotalExchanges(new UserRepository.UserStatisticsCallback() {
+            @Override
+            public void onSuccess(String stats) {
+                requireActivity().runOnUiThread(() -> {
+                    // Update the adminXChangesCountTextView with the result
+                    adminXChangesCountTextView.setText(stats);
+                });
+            }
+
+            @Override
+            public void onFailure(String message) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
         // Fetch Total Items
         userRepository.getTotalItems(new UserRepository.UserStatisticsCallback() {
             @Override
