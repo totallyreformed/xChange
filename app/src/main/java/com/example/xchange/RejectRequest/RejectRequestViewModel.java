@@ -45,6 +45,7 @@ public class RejectRequestViewModel extends AndroidViewModel {
      *
      * @param xchanger   The current user rejecting the counteroffer.
      * @param counteroffer The Counteroffer to be rejected.
+     * @param rating       The rating value provided by the user.
      * @param callback   Callback to handle success or failure.
      */
     public void rejectCounteroffer(xChanger xchanger, Counteroffer counteroffer, float rating, RejectRequestCallback callback) {

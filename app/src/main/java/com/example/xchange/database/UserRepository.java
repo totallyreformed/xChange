@@ -207,8 +207,10 @@ public class UserRepository {
 
                     SimpleCalendar today = SimpleCalendar.today();
                     xChange newXChange = new xChange(request, today);
+
                     requestDao.deleteRequest(request);
                     newXChange.acceptOffer(rating);
+
                     long xChangeId = xChangeDao.insertXChange(newXChange);
                     newXChange.setXChangeId(xChangeId);
 
@@ -222,7 +224,10 @@ public class UserRepository {
 
                     SimpleCalendar today = SimpleCalendar.today();
                     xChange newXChange = new xChange(counteroffer, today);
+
                     counterofferDao.deleteCounteroffer(counteroffer);
+                    newXChange.acceptOffer(rating);
+
                     long xChangeId = xChangeDao.insertXChange(newXChange);
                     newXChange.setXChangeId(xChangeId);
 
@@ -953,7 +958,4 @@ public class UserRepository {
         }
         return null; // Return null if no match found
     }
-
-
-
 }
