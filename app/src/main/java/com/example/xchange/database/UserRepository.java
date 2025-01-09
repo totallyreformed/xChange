@@ -538,6 +538,8 @@ public class UserRepository {
     }
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
+//            AppDatabase.getRequestDao().deleteAllRequests();
+//            AppDatabase.getCounterofferDao().deleteAll();
             try {
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
@@ -826,8 +828,7 @@ public class UserRepository {
     }
     public void getSentCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
-//            AppDatabase.getRequestDao().deleteAllRequests();
-//            AppDatabase.getCounterofferDao().deleteAll();
+
             try {
                 List<Counteroffer> counters = AppDatabase.getCounterofferDao().getAllCounteroffersSync();
                 List<Counteroffer> sentCounterOffers = new ArrayList<>();
@@ -919,17 +920,6 @@ public class UserRepository {
             Log.e("UserRepository", "Error fetching offered item for counteroffer: " + e.getMessage(), e);
         }
         return null; // Return null if no match found
-    }
-    public void getTotalUsers(UserStatisticsCallback callback) {
-        executor.execute(() -> {
-            try {
-                int totalUsers = userDao.getTotalUsers();
-                String stats = "Total Users: " + totalUsers;
-                callback.onSuccess(stats);
-            } catch (Exception e) {
-                callback.onFailure("Failed to retrieve total categories");
-            }
-        });
     }
 
 
