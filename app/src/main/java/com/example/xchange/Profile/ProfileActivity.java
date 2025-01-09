@@ -111,8 +111,10 @@ public class ProfileActivity extends AppCompatActivity {
         viewModel.getCounterOffersReceivedCount().observe(this, count -> {
             counterOffersReceivedCountTextView.setText(count + " Counter Offers Received");
         });
+        viewModel.loadUserXChanges();
+        viewModel.getUserXChanges().observe(this, xChanges -> {
 
-        viewModel.getTotalExchangesCount().observe(this, count -> {
+            int count=xChanges.size();
             totalExchangesTextView.setText(count + " xChanges");
         });
 
@@ -207,7 +209,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "User data is missing.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            viewModel.loadUserXChanges();
             viewModel.getUserXChanges().observe(this, xChanges -> {
                     Intent xChangesIntent = new Intent(ProfileActivity.this, xChangesActivity.class);
                     xChangesIntent.putExtra("USER", user);
@@ -216,8 +217,6 @@ public class ProfileActivity extends AppCompatActivity {
 
             });
         });
-
-
 
         viewModel.loadProfileData();
         viewModel.loadUserItems();

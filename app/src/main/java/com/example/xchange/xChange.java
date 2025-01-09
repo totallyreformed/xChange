@@ -56,6 +56,13 @@ public class xChange implements Parcelable {
     @ColumnInfo(name = "requested_item")
     private Item requestedItem;
 
+    @ColumnInfo(name = "offerer_username")
+    private String offererUsername;
+
+    @ColumnInfo(name = "offeree_username")
+    private String offereeUsername;
+
+
     // Constructors
     @Ignore
     public xChange(Request request, SimpleCalendar dateFinalized) {
@@ -70,6 +77,8 @@ public class xChange implements Parcelable {
         this.offeree = request.getRequestee();
         this.offeredItem = request.getOfferedItem();
         this.requestedItem = request.getRequestedItem();
+        this.offererUsername = offerer != null ? offerer.getUsername() : null;
+        this.offereeUsername = offeree != null ? offeree.getUsername() : null;
     }
 
     public xChange(Request request, Counteroffer counteroffer, SimpleCalendar dateFinalized) {
@@ -90,6 +99,22 @@ public class xChange implements Parcelable {
             this.requestedItem = request.getRequestedItem();
         }
     }
+    public String getOffererUsername() {
+        return offererUsername;
+    }
+
+    public void setOffererUsername(String offererUsername) {
+        this.offererUsername = offererUsername;
+    }
+
+    public String getOffereeUsername() {
+        return offereeUsername;
+    }
+
+    public void setOffereeUsername(String offereeUsername) {
+        this.offereeUsername = offereeUsername;
+    }
+
 
     // Getters and Setters
     public Long getXChangeId() {

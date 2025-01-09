@@ -50,7 +50,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v11.db")
+                                    AppDatabase.class, "xchange_database_v12.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();

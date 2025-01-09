@@ -635,33 +635,48 @@ public class UserRepository {
         });
     }
 
-    // Retrieve the total exchanges count for a user
     public void getTotalExchangesCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
+            int count = 0;
             try {
-                int totalExchanges = xChangeDao.getUserXChanges(username);
-                callback.onSuccess(totalExchanges);
+                List<xChange> xchanges = xChangeDao.getAllXChangesSync();
+                for (xChange xchange : xchanges) {
+                    if ((xchange.getOfferee() != null && username.equals(xchange.getOfferee().getUsername())) ||
+                            (xchange.getOfferer() != null && username.equals(xchange.getOfferer().getUsername()))) {
+                        count++;
+                    }
+                }
+                callback.onSuccess(count);
             } catch (Exception e) {
+                // Log and return error message via callback
                 Log.e("UserRepository", "Error fetching total exchanges count", e);
                 callback.onFailure("Failed to fetch total exchanges count.");
             }
         });
     }
 
+
     // Retrieve all xChanges for a user
     public void getUserXChanges(String username, UserXChangesCallback callback) {
         executor.execute(() -> {
             try {
-//                xChangeDao.deleteAll();
-                List<xChange> xChanges = xChangeDao.getXChangerByUser(username);
-//                List<xChange> xChanges=xChangeDao.getAllXChangesSync();
-                callback.onSuccess(xChanges);
+                List<xChange> xchanges = xChangeDao.getAllXChangesSync();
+                List<xChange> tosend=new ArrayList<>();
+                for(xChange xchange:xchanges){
+                    if(xchange.getOfferee().getUsername().equals(username) ||
+                    xchange.getOfferer().getUsername().equals(username)){
+                        tosend.add(xchange);
+                    }
+                }
+
+                callback.onSuccess(tosend);
             } catch (Exception e) {
                 Log.e("UserRepository", "Error fetching xChanges for user", e);
                 callback.onFailure("Failed to fetch xChanges.");
             }
         });
     }
+
 
 
 

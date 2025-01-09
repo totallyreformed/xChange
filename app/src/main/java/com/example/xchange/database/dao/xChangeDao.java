@@ -40,8 +40,9 @@ public interface xChangeDao {
     LiveData<xChange> getXChangeById(long id);
 
     // Retrieve xChanger by username
-    @Query("SELECT * FROM xchanges WHERE offerer = :username OR offeree = :username")
+    @Query("SELECT * FROM xchanges WHERE offerer_username = :username OR offeree_username = :username")
     List<xChange> getXChangerByUser(String username);
+
 
     // Retrieve all xChanges linked to a specific Request
     @Query("SELECT * FROM xchanges WHERE request = :request")
