@@ -237,7 +237,17 @@ public class UserRepository {
         });
     }
 
-
+    public void getTotalUsers(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalUsers = userDao.getTotalUsers();
+                String stats = "Total Users: " + totalUsers;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total categories");
+            }
+        });
+    }
 
 
     /**

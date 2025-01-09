@@ -217,17 +217,17 @@
             <Button
                 android:id="@+id/adminLogoutButton"
                 android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:text="Logout"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_margin="16dp"
-            android:backgroundTint="@color/Red"
-            android:textColor="@color/white"
-            android:padding="15dp"
-            android:elevation="4dp"
-            />
+                android:layout_height="60dp"
+                android:text="Logout"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/Red"
+                android:textColor="@color/white"
+                android:padding="15dp"
+                android:elevation="4dp"
+                />
 
         </LinearLayout>
 
