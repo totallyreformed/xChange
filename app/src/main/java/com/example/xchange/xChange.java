@@ -132,9 +132,6 @@ public class xChange implements Parcelable {
     }
 
     public void setDealStatus(String dealStatus) {
-        if (dealStatus == null || dealStatus.trim().isEmpty()) {
-            throw new IllegalArgumentException("Deal status cannot be null or empty.");
-        }
         this.dealStatus = dealStatus;
     }
 
@@ -302,9 +299,6 @@ public class xChange implements Parcelable {
 
     public void rejectOffer(float ratingValue) {
         this.setDealStatus("Rejected");
-
-        Log.d("xChange", "Rejecting offer: " + this.toString());
-
         // Finalize the exchange
         this.getOfferee().getFinalized().add(this);
         this.getOfferer().getFinalized().add(this);

@@ -206,9 +206,13 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
+                newXChange.acceptOffer(rating);
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId);
 
                 xChangeDao.updateXChange(newXChange);
-                callback.onSuccess(0); // Pass the xChangeId to the callback
+                callback.onSuccess(xChangeId);
+                // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
@@ -249,7 +253,7 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
-                newXChange.acceptOffer(0.0f);
+                newXChange.rejectOffer(0.0f);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
 
@@ -261,7 +265,7 @@ public class UserRepository {
         });
     }
 
-    public void rejectCounteroffer(xChanger xchanger, Counteroffer counteroffer, RejectRequestCallback callback) {
+    public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
                 // 1. Mark the counteroffer as inactive
@@ -274,7 +278,6 @@ public class UserRepository {
                 counterofferDao.deleteCounteroffer(counteroffer);
                 requestDao.deleteRequest(counteroffer.getRequest());
 
-                // 4. Notify success via callback
                 callback.onSuccess();
 
             }

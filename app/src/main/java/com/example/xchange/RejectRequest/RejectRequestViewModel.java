@@ -33,8 +33,8 @@ public class RejectRequestViewModel extends AndroidViewModel {
         });
     }
 
-    public void rejectCounteroffer(xChanger xchanger, Counteroffer counteroffer, RejectRequestCallback callback) {
-        repository.rejectCounteroffer(xchanger, counteroffer, new UserRepository.RejectRequestCallback() {
+    public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
+        repository.rejectCounteroffer(counteroffer, new UserRepository.RejectRequestCallback() {
             @Override
             public void onSuccess() {
                 callback.onSuccess();

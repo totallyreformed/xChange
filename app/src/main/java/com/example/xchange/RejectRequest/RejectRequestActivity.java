@@ -199,7 +199,7 @@ public class RejectRequestActivity extends AppCompatActivity {
             });
         } else if (counteroffer != null) {
             // Handle rejection of a Counteroffer
-            viewModel.rejectCounteroffer(xchanger, counteroffer, new RejectRequestViewModel.RejectRequestCallback() {
+            viewModel.rejectCounteroffer(counteroffer, new RejectRequestViewModel.RejectRequestCallback() {
                 @Override
                 public void onSuccess() {
                     sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been rejected by " + currentUser.getUsername());
