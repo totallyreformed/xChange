@@ -62,9 +62,6 @@ public class UserRepository {
         void onSuccess(List<Counteroffer> counterOffers);
         void onFailure(String message);
     }
-    public interface ItemCallback {
-        void onItemFetched(Item item);
-    }
     public interface RegisterCallback {
         void onSuccess();
         void onFailure(String message);
@@ -98,11 +95,6 @@ public class UserRepository {
         void onSuccess(List<Request> requests);
         void onFailure(String message);
     }
-    public interface CheckCounterofferCallback {
-        void onResult(boolean success);
-    }
-
-    // Interface for AcceptRequest Callback
     public interface AcceptRequestCallback {
         void onSuccess(long xChangeId);
         void onFailure(String message);
@@ -268,18 +260,19 @@ public class UserRepository {
     public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
-                // 1. Mark the counteroffer as inactive
                 xChanger counterofferee = counteroffer.getCounterofferee();
                 counterofferee.rejectCounteroffer(counteroffer, 0);
-                userDao.updateUser(counterofferee);
-
-
-                // Delete counteroffer from the database
                 counterofferDao.deleteCounteroffer(counteroffer);
                 requestDao.deleteRequest(counteroffer.getRequest());
+                userDao.updateUser(counterofferee);
+                SimpleCalendar today = SimpleCalendar.today();
+                xChange newXChange = new xChange(counteroffer.getRequest(), counteroffer, today);
+                requestDao.deleteRequest(counteroffer.getRequest());
+                newXChange.rejectOffer(0.0f);
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId);
 
                 callback.onSuccess();
-
             }
             catch (Exception e) {
                 Log.e("UserRepository", "Error rejecting request", e);
@@ -645,10 +638,6 @@ public class UserRepository {
             }
         });
     }
-
-
-
-
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -869,7 +858,7 @@ public class UserRepository {
         } catch (Exception e) {
             Log.e("UserRepository", "Error fetching offered item for counteroffer: " + e.getMessage(), e);
         }
-        return null; // Return null if no match found
+        return null;
     }
     public void getAllXChanges(UserXChangesCallback callback) {
         executor.execute(() -> {
