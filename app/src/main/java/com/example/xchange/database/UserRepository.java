@@ -202,20 +202,11 @@ public class UserRepository {
                 // Handle regular requests
                 if (counteroffer == null) {
                     xChanger requestee = request.getRequestee();
-                    requestee.acceptRequest(request, rating);
+                    xChange xchange=requestee.acceptRequest(request, rating);
                     userDao.updateUser(requestee);
 
-                    SimpleCalendar today = SimpleCalendar.today();
-                    xChange newXChange = new xChange(request, today);
-
                     requestDao.deleteRequest(request);
-                    newXChange.acceptOffer(rating);
-
-                    long xChangeId = xChangeDao.insertXChange(newXChange);
-                    newXChange.setXChangeId(xChangeId);
-
-                    xChangeDao.updateXChange(newXChange);
-                    callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
+                    callback.onSuccess(xchange.getXChangeId()); // Pass the xChangeId to the callback
                 } else {
                     // Handle counteroffers
                     xChanger counterofferee = counteroffer.getCounterofferee();

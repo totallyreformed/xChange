@@ -190,14 +190,16 @@ public class xChanger extends User implements Parcelable {
         this.counterOffers.add(counterOffer);
     }
 
-    public void acceptRequest(Request request, float rating){
+    public xChange acceptRequest(Request request, float rating){
         xChange xChange = new xChange(request, null);
         xChange.acceptOffer(rating);
+        return xChange;
     }
 
-    public void rejectRequest(Request request, float rating){
+    public xChange rejectRequest(Request request, float rating){
         xChange xChange = new xChange(request, null);
         xChange.rejectOffer(rating);
+        return xChange;
     }
 
     public void acceptCounteroffer(Counteroffer counteroffer, float rating){
