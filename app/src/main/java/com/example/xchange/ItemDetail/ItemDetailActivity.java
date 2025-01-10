@@ -346,6 +346,9 @@ public class ItemDetailActivity extends AppCompatActivity {
                             if (counteroffer != null) {
                                 seeExtraButton.setText("See Counteroffer");
                                 seeExtraButton.setVisibility(View.VISIBLE);
+                                acceptButton.setVisibility(View.GONE);
+                                rejectButton.setVisibility(View.GONE);
+                                counterofferButton.setVisibility(View.GONE);
 
                                 // On button click, navigate to CounterofferActivity
                                 seeExtraButton.setOnClickListener(view -> {

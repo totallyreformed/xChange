@@ -252,7 +252,6 @@ public class UserRepository {
             try {
                 // Handle regular requests
                 if (counteroffer == null) {
-                    // 1. Mark the request as inactive
                     xChanger requestee = request.getRequestee();
                     requestee.rejectRequest(request, rating);
                     userDao.updateUser(requestee);
@@ -260,15 +259,10 @@ public class UserRepository {
                     SimpleCalendar today = SimpleCalendar.today();
                     xChange newXChange = new xChange(request, today);
                     newXChange.rejectOffer(rating);
-
-                    // Delete request from the database
                     requestDao.deleteRequest(request);
-
-                    // 4. Notify success via callback
+                    xChangeDao.insertXChange(newXChange);
                     callback.onSuccess();
                 } else {
-                    // Handle counteroffers
-                    // 1. Mark the counteroffer as inactive
                     xChanger counterofferee = counteroffer.getCounterofferee();
                     counterofferee.rejectCounteroffer(counteroffer, rating);
                     userDao.updateUser(counterofferee);
@@ -276,11 +270,9 @@ public class UserRepository {
                     SimpleCalendar today = SimpleCalendar.today();
                     xChange newXChange = new xChange(counteroffer, today);
                     newXChange.rejectOffer(rating);
-
-                    // Delete counteroffer from the database
+                    xChangeDao.insertXChange(newXChange);
+                    requestDao.deleteRequest(counteroffer.getRequest());
                     counterofferDao.deleteCounteroffer(counteroffer);
-
-                    // 4. Notify success via callback
                     callback.onSuccess();
                 }
 
@@ -540,9 +532,6 @@ public class UserRepository {
     public void getRequestsReceived(String username, UserRequestsReceivedCallback callback) {
         executor.execute(() -> {
             try {
-//                AppDatabase.getRequestDao().deleteAllRequests();
-//                AppDatabase.getCounterofferDao().deleteAll();
-
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> receivedRequests = new ArrayList<>();
                 for (Request req : requests) {
@@ -558,7 +547,6 @@ public class UserRepository {
     }
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
-            List<xChange> lists=AppDatabase.getxChangeDao().getAllXChangesSync();
             try {
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
@@ -634,21 +622,6 @@ public class UserRepository {
             }
         });
     }
-
-
-
-    // Get Received Requests (For Admin)
-    public void getReceivedRequestsAdmin(RequestItemsCallback callback) {
-        executor.execute(() -> {
-            try {
-                List<Request> requests = requestDao.getAllReceivedRequestsAdmin();
-                callback.onSuccess(requests);
-            } catch (Exception e) {
-                callback.onFailure("Failed to retrieve received requests.");
-            }
-        });
-    }
-
     public void getTotalRequests(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -698,6 +671,7 @@ public class UserRepository {
     public void getUserXChanges(String username, UserXChangesCallback callback) {
         executor.execute(() -> {
             try {
+                Log.d("TEST", String.valueOf(AppDatabase.getxChangeDao().getAllXChangesSync().size()));
                 List<xChange> xchanges = xChangeDao.getAllXChangesSync();
                 List<xChange> tosend=new ArrayList<>();
                 for(xChange xchange:xchanges){
@@ -714,10 +688,6 @@ public class UserRepository {
             }
         });
     }
-
-
-
-
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -726,25 +696,6 @@ public class UserRepository {
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total items");
-            }
-        });
-    }
-
-    /**
-     * Deletes an item from the database by its ID with callbacks.
-     *
-     * @param itemId   The ID of the item to delete.
-     * @param callback The callback to handle success or failure.
-     */
-    public void deleteItemById(long itemId, OperationCallback callback) {
-        executor.execute(() -> {
-            try {
-                itemDao.deleteItemById(itemId);
-                Log.d("UserRepository", "Item deleted successfully: ID " + itemId);
-                callback.onSuccess();
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error deleting item: " + itemId, e);
-                callback.onFailure("Failed to delete item.");
             }
         });
     }

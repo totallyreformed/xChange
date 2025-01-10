@@ -4,11 +4,9 @@ package com.example.xchange.request;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.example.xchange.Item;
 import com.example.xchange.Request;
-import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 
