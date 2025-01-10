@@ -212,18 +212,29 @@ public class UserRepository {
         });
     }
 
-    public void getTotalUsers(UserStatisticsCallback callback) {
+    public void acceptCounteroffer(Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
-                int totalUsers = userDao.getTotalUsers();
-                String stats = "Total Users: " + totalUsers;
-                callback.onSuccess(stats);
+                xChanger counterofferee = counteroffer.getCounterofferee();
+                counterofferee.acceptCounteroffer(counteroffer, 0);
+                userDao.updateUser(counterofferee);
+
+                SimpleCalendar today = SimpleCalendar.today();
+                xChange newXChange = new xChange(counteroffer.getRequest(), counteroffer, today);
+                requestDao.deleteRequest(counteroffer.getRequest());
+                counterofferDao.deleteCounteroffer(counteroffer);
+
+                newXChange.acceptOffer(rating);
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId);
+
+                callback.onSuccess(xChangeId);
             } catch (Exception e) {
-                callback.onFailure("Failed to retrieve total categories");
+                Log.e("UserRepository", "Error accepting counteroffer", e);
+                callback.onFailure("Failed to accept counteroffer.");
             }
         });
     }
-
 
     /**
      * Rejects a trade request by marking it as inactive and updating both users' data.
@@ -277,6 +288,18 @@ public class UserRepository {
             catch (Exception e) {
                 Log.e("UserRepository", "Error rejecting request", e);
                 callback.onFailure("Failed to reject request.");
+            }
+        });
+    }
+
+    public void getTotalUsers(UserStatisticsCallback callback) {
+        executor.execute(() -> {
+            try {
+                int totalUsers = userDao.getTotalUsers();
+                String stats = "Total Users: " + totalUsers;
+                callback.onSuccess(stats);
+            } catch (Exception e) {
+                callback.onFailure("Failed to retrieve total categories");
             }
         });
     }
