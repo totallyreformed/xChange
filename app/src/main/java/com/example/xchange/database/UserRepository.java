@@ -206,12 +206,9 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
-                newXChange.acceptOffer(rating);
-                long xChangeId = xChangeDao.insertXChange(newXChange);
-                newXChange.setXChangeId(xChangeId);
 
                 xChangeDao.updateXChange(newXChange);
-                callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
+                callback.onSuccess(0); // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
@@ -258,6 +255,30 @@ public class UserRepository {
 
                 callback.onSuccess();
             } catch (Exception e) {
+                Log.e("UserRepository", "Error rejecting request", e);
+                callback.onFailure("Failed to reject request.");
+            }
+        });
+    }
+
+    public void rejectCounteroffer(xChanger xchanger, Counteroffer counteroffer, RejectRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // 1. Mark the counteroffer as inactive
+                xChanger counterofferee = counteroffer.getCounterofferee();
+                counterofferee.rejectCounteroffer(counteroffer, 0);
+                userDao.updateUser(counterofferee);
+
+
+                // Delete counteroffer from the database
+                counterofferDao.deleteCounteroffer(counteroffer);
+                requestDao.deleteRequest(counteroffer.getRequest());
+
+                // 4. Notify success via callback
+                callback.onSuccess();
+
+            }
+            catch (Exception e) {
                 Log.e("UserRepository", "Error rejecting request", e);
                 callback.onFailure("Failed to reject request.");
             }

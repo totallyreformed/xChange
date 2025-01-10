@@ -32,11 +32,11 @@ public class Counteroffer implements Parcelable {
 
     @ColumnInfo(name = "counterofferer")
     @TypeConverters(XChangerConverter.class)
-    private transient xChanger counterofferer; // Excluded from parceling
+    private xChanger counterofferer; // Excluded from parceling
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "counterofferee")
-    private transient xChanger counterofferee; // Excluded from parceling
+    private xChanger counterofferee; // Excluded from parceling
 
     private Boolean active;
 
@@ -66,9 +66,8 @@ public class Counteroffer implements Parcelable {
         request = in.readParcelable(Request.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
-        // Excluded: counterofferer and counterofferee
-        this.counterofferer = null;
-        this.counterofferee = null;
+        counterofferer = in.readParcelable(xChanger.class.getClassLoader());
+        counterofferee = in.readParcelable(xChanger.class.getClassLoader());
         active = in.readByte() != 0;
     }
 
@@ -95,7 +94,8 @@ public class Counteroffer implements Parcelable {
         dest.writeParcelable(request, flags);
         dest.writeParcelable(offeredItem, flags);
         dest.writeParcelable(requestedItem, flags);
-        // Excluded: counterofferer and counterofferee
+        dest.writeParcelable(counterofferer, flags);
+        dest.writeParcelable(counterofferee, flags);
         dest.writeByte((byte) (active != null && active ? 1 : 0));
     }
 

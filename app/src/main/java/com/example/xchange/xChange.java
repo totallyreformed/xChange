@@ -2,6 +2,7 @@ package com.example.xchange;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -84,7 +85,6 @@ public class xChange implements Parcelable {
     public xChange(Request request, Counteroffer counteroffer, SimpleCalendar dateFinalized) {
         this.counteroffer = counteroffer;
         this.request = request;
-        this.finalizedId = request.getRequestId();
         this.dateFinalized = dateFinalized;
         this.dealStatus = null;
         if (counteroffer != null) {
@@ -92,11 +92,13 @@ public class xChange implements Parcelable {
             this.offeree = counteroffer.getCounterofferee();
             this.offeredItem = counteroffer.getOfferedItem();
             this.requestedItem = counteroffer.getRequestedItem();
+            this.finalizedId = counteroffer.getCounterofferId();
         } else {
             this.offerer = request.getRequester();
             this.offeree = request.getRequestee();
             this.offeredItem = request.getOfferedItem();
             this.requestedItem = request.getRequestedItem();
+            this.finalizedId = request.getRequestId();
         }
     }
     public String getOffererUsername() {
@@ -220,7 +222,10 @@ public class xChange implements Parcelable {
         offeree = in.readParcelable(xChanger.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
+        offererUsername = in.readString();
+        offereeUsername = in.readString();
     }
+
 
     public static final Creator<xChange> CREATOR = new Creator<xChange>() {
         @Override
@@ -252,10 +257,14 @@ public class xChange implements Parcelable {
             dest.writeLong(finalizedId);
         }
         dest.writeParcelable(dateFinalized, flags);
-        dest.writeParcelable(offerer, flags); // Include offerer in parceling
-        dest.writeParcelable(offeree, flags); // Include offeree in parceling
+        dest.writeParcelable(offerer, flags);
+        dest.writeParcelable(offeree, flags);
         dest.writeParcelable(offeredItem, flags);
-        dest.writeParcelable(requestedItem, flags);}
+        dest.writeParcelable(requestedItem, flags);
+        dest.writeString(offererUsername);
+        dest.writeString(offereeUsername);
+    }
+
 
     @Override
     public int describeContents() {
@@ -293,6 +302,8 @@ public class xChange implements Parcelable {
 
     public void rejectOffer(float ratingValue) {
         this.setDealStatus("Rejected");
+
+        Log.d("xChange", "Rejecting offer: " + this.toString());
 
         // Finalize the exchange
         this.getOfferee().getFinalized().add(this);
