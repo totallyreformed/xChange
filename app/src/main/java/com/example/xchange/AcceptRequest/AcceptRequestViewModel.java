@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.lifecycle.ViewModel;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Request;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
@@ -18,6 +19,20 @@ public class AcceptRequestViewModel extends ViewModel {
 
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         repository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
+            @Override
+            public void onSuccess(long xChangeId) {
+                callback.onSuccess(xChangeId);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                callback.onFailure(message);
+            }
+        });
+    }
+
+    public void acceptCounteroffer(Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
+        repository.acceptCounteroffer(counteroffer, rating, new UserRepository.AcceptRequestCallback() {
             @Override
             public void onSuccess(long xChangeId) {
                 callback.onSuccess(xChangeId);
