@@ -154,7 +154,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
             viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
                 @Override
                 public void onSuccess(long xChangeId) {
-                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername());
+                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername(), xChangeId);
                 }
 
                 @Override
@@ -166,7 +166,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
             viewModel.acceptCounteroffer(counteroffer, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
                 @Override
                 public void onSuccess(long xChangeId) {
-                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername());
+                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername(), xChangeId);
                 }
 
                 @Override
@@ -177,12 +177,12 @@ public class AcceptRequestActivity extends AppCompatActivity {
         }
     }
 
-    private void sendNotification(String username, String message) {
+    private void sendNotification(String username, String message, long xChangeId) {
         Notification notification = new Notification(
                 username,
                 message,
                 SimpleCalendar.today(),
-                (long) -1
+                xChangeId
         );
 
         UserRepository userRepository = new UserRepository(getApplication());
@@ -199,12 +199,19 @@ public class AcceptRequestActivity extends AppCompatActivity {
         });
 
         runOnUiThread(() -> new AlertDialog.Builder(AcceptRequestActivity.this)
-                .setTitle("Acceptance Successful")
-                .setMessage("The requester has been notified of the acceptance. Proceed to view the xChange Confirmation.")
+                .setTitle("Request Accepted")
+                .setMessage("The requester has been notified. Proceed to view the xChange confirmation.")
                 .setPositiveButton("Proceed", (dialog, which) -> {
-                    dialog.dismiss();
+                    Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
+                    intent.putExtra("REQUEST", request);
+                    intent.putExtra("COUNTEROFFER", counteroffer);
+                    intent.putExtra("USER", currentUser);
+                    intent.putExtra("XCHANGE_ID", xChangeId); // Pass the xChangeId
+                    startActivity(intent);
                     finish();
                 })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show());
+
     }
 }

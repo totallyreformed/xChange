@@ -188,35 +188,35 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("View xChange Details", (dialog, which) -> {
                 dialog.dismiss();
 
-                xChanger xchanger = new xChanger(
-                        currentUser.getUsername(),
-                        currentUser.getEmail(),
-                        currentUser.getJoin_Date(),
-                        currentUser.getPassword(),
-                        currentUser.getLocation()
-                );
+                Long xChangeId = currentNotification.getXChangeId();
+                Log.d("MainActivity", "Notification xChangeId: " + xChangeId);
 
-                // Retrieve the xChange details
-                Long xChangeId = currentNotification.getXChangeId(); // Assuming metadata contains xChangeId
                 if (xChangeId != null) {
-                    // Fetch the xChange details from the database
-                    LiveData<xChange> xChangeLiveData = userRepository.getXChangeById(xChangeId);
+                    xChanger xchanger = new xChanger(
+                            currentUser.getUsername(),
+                            currentUser.getEmail(),
+                            currentUser.getJoin_Date(),
+                            currentUser.getPassword(),
+                            currentUser.getLocation()
+                    );
 
-                    xChangeLiveData.observe(MainActivity.this, xChange -> {
+                    // Fetch the xChange details
+                    userRepository.getXChangeById(xChangeId).observe(MainActivity.this, xChange -> {
                         if (xChange != null) {
                             Intent intent = new Intent(MainActivity.this, xChangeConfirmationActivity.class);
                             intent.putExtra("XCHANGE_ID", xChangeId);
-                            intent.putExtra("USER", xchanger); // Ensure `currentUser` is a `xChanger`
+                            intent.putExtra("USER", xchanger);
                             startActivity(intent);
                         } else {
-                            Toast.makeText(this, "Error loading xChange details. Please try again later.", Toast.LENGTH_SHORT).show();
+                            Log.e("MainActivity", "xChange not found for ID: " + xChangeId);
+                            Toast.makeText(this, "Error loading xChange details.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
                     Toast.makeText(this, "xChange ID not found in notification metadata.", Toast.LENGTH_SHORT).show();
                 }
 
-                showNotificationDialogsSequentially(notifications); // Continue with the next notification
+                showNotificationDialogsSequentially(notifications); // Continue with next notification
             });
         }
 
