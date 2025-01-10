@@ -191,12 +191,12 @@ public class xChanger extends User implements Parcelable {
     }
 
     public void acceptRequest(Request request, float rating){
-        xChange xChange = new xChange(request, null, null);
+        xChange xChange = new xChange(request, null);
         xChange.acceptOffer(rating);
     }
 
     public void rejectRequest(Request request, float rating){
-        xChange xChange = new xChange(request, null, null);
+        xChange xChange = new xChange(request, null);
         xChange.rejectOffer(rating);
     }
 
