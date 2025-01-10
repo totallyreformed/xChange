@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -17,9 +16,8 @@ import java.util.List;
 public interface xChangeDao {
 
     // Insert a single xChange
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertXChange(xChange xChange);
-
+    @Insert
+    long insertXChange(xChange xchange);
 
     // Insert multiple xChanges
     @Insert

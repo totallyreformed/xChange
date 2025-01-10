@@ -63,7 +63,7 @@ public class xChange implements Parcelable {
     private String offereeUsername;
 
 
-    // Constructor for handling Request without Counteroffer
+    // Constructors
     @Ignore
     public xChange(Request request, SimpleCalendar dateFinalized) {
         if (request == null) {
@@ -81,27 +81,24 @@ public class xChange implements Parcelable {
         this.offereeUsername = offeree != null ? offeree.getUsername() : null;
     }
 
-    // Constructor for handling Counteroffer with Request
-    public xChange(Counteroffer counteroffer, SimpleCalendar dateFinalized) {
-        if (counteroffer == null) {
-            throw new IllegalArgumentException("Counteroffer cannot be null.");
-        }
+    public xChange(Request request, Counteroffer counteroffer, SimpleCalendar dateFinalized) {
         this.counteroffer = counteroffer;
-        this.request = counteroffer.getRequest();
-        if (this.request == null) {
-            throw new IllegalArgumentException("Counteroffer's Request cannot be null.");
-        }
-        this.finalizedId = counteroffer.getCounterofferId();
+        this.request = request;
+        this.finalizedId = request.getRequestId();
         this.dateFinalized = dateFinalized;
         this.dealStatus = null;
-        this.offerer = counteroffer.getCounterofferer();
-        this.offeree = counteroffer.getCounterofferee();
-        this.offeredItem = counteroffer.getOfferedItem();
-        this.requestedItem = counteroffer.getRequestedItem();
-        this.offererUsername = offerer != null ? offerer.getUsername() : null;
-        this.offereeUsername = offeree != null ? offeree.getUsername() : null;
+        if (counteroffer != null) {
+            this.offerer = counteroffer.getCounterofferer();
+            this.offeree = counteroffer.getCounterofferee();
+            this.offeredItem = counteroffer.getOfferedItem();
+            this.requestedItem = counteroffer.getRequestedItem();
+        } else {
+            this.offerer = request.getRequester();
+            this.offeree = request.getRequestee();
+            this.offeredItem = request.getOfferedItem();
+            this.requestedItem = request.getRequestedItem();
+        }
     }
-
     public String getOffererUsername() {
         return offererUsername;
     }
@@ -203,7 +200,7 @@ public class xChange implements Parcelable {
         this.requestedItem = requestedItem;
     }
 
-    // Parcelable Constructor
+    // Parcelable Implementation
     protected xChange(Parcel in) {
         if (in.readByte() == 0) {
             xChangeId = null;
@@ -223,8 +220,6 @@ public class xChange implements Parcelable {
         offeree = in.readParcelable(xChanger.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
-        offererUsername = in.readString();
-        offereeUsername = in.readString();
     }
 
     public static final Creator<xChange> CREATOR = new Creator<xChange>() {
@@ -257,13 +252,10 @@ public class xChange implements Parcelable {
             dest.writeLong(finalizedId);
         }
         dest.writeParcelable(dateFinalized, flags);
-        dest.writeParcelable(offerer, flags);
-        dest.writeParcelable(offeree, flags);
+        dest.writeParcelable(offerer, flags); // Include offerer in parceling
+        dest.writeParcelable(offeree, flags); // Include offeree in parceling
         dest.writeParcelable(offeredItem, flags);
-        dest.writeParcelable(requestedItem, flags);
-        dest.writeString(offererUsername);
-        dest.writeString(offereeUsername);
-    }
+        dest.writeParcelable(requestedItem, flags);}
 
     @Override
     public int describeContents() {

@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(detailIntent);
         });
 
+        assert currentUser != null;
+
         viewModel.getItemsList().observe(this, items -> {
             if (items != null && !items.isEmpty()) {
                 itemsAdapter.setItems(items);

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 @Database(entities = {User.class, Item.class, Request.class, Counteroffer.class, xChange.class, Notification.class}, version = 2, exportSchema = false)
-@TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class, RequestConverter.class, CounterofferConverter.class, xChangeConverter.class, XChangerConverter.class})
+@TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class, RequestConverter.class, CounterofferConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
@@ -50,7 +50,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v15.db")
+                                    AppDatabase.class, "xchange_database_v12.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();

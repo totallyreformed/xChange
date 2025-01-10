@@ -196,80 +196,25 @@ public class UserRepository {
      * @param rating   The rating value provided by the user.
      * @param callback Callback to handle success or failure.
      */
-    public void acceptRequest(Request request, Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
+    public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
-                // Handle regular requests
-                if (counteroffer == null) {
-                    xChanger requestee = request.getRequestee();
-                    xChange xchange=requestee.acceptRequest(request, rating);
-                    userDao.updateUser(requestee);
+                xChanger requestee = request.getRequestee();
+                requestee.acceptRequest(request, rating);
+                userDao.updateUser(requestee);
 
-                    requestDao.deleteRequest(request);
-                    callback.onSuccess(xchange.getXChangeId()); // Pass the xChangeId to the callback
-                } else {
-                    // Handle counteroffers
-                    xChanger counterofferee = counteroffer.getCounterofferee();
-                    counterofferee.acceptCounteroffer(counteroffer, rating);
-                    userDao.updateUser(counterofferee);
+                SimpleCalendar today = SimpleCalendar.today();
+                xChange newXChange = new xChange(request, null, today);
+                requestDao.deleteRequest(request);
+                newXChange.acceptOffer(rating);
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId);
 
-                    SimpleCalendar today = SimpleCalendar.today();
-                    xChange newXChange = new xChange(counteroffer, today);
-
-                    counterofferDao.deleteCounteroffer(counteroffer);
-                    newXChange.acceptOffer(rating);
-
-                    long xChangeId = xChangeDao.insertXChange(newXChange);
-                    newXChange.setXChangeId(xChangeId);
-
-                    xChangeDao.updateXChange(newXChange);
-                    callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
-                }
+                xChangeDao.updateXChange(newXChange);
+                callback.onSuccess(xChangeId); // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
-            }
-        });
-    }
-
-    /**
-     * Rejects a trade request by marking it as inactive and updating both users' data.
-     *
-     * @param request  The Request object to be rejected.
-     * @param callback Callback to handle success or failure.
-     */
-    public void rejectRequest(Request request,  @Nullable Counteroffer counteroffer, float rating, RejectRequestCallback callback) {
-        executor.execute(() -> {
-            try {
-                // Handle regular requests
-                if (counteroffer == null) {
-                    xChanger requestee = request.getRequestee();
-                    requestee.rejectRequest(request, rating);
-                    userDao.updateUser(requestee);
-
-                    SimpleCalendar today = SimpleCalendar.today();
-                    xChange newXChange = new xChange(request, today);
-                    newXChange.rejectOffer(rating);
-                    requestDao.deleteRequest(request);
-                    xChangeDao.insertXChange(newXChange);
-                    callback.onSuccess();
-                } else {
-                    xChanger counterofferee = counteroffer.getCounterofferee();
-                    counterofferee.rejectCounteroffer(counteroffer, rating);
-                    userDao.updateUser(counterofferee);
-
-                    SimpleCalendar today = SimpleCalendar.today();
-                    xChange newXChange = new xChange(counteroffer, today);
-                    newXChange.rejectOffer(rating);
-                    xChangeDao.insertXChange(newXChange);
-                    requestDao.deleteRequest(counteroffer.getRequest());
-                    counterofferDao.deleteCounteroffer(counteroffer);
-                    callback.onSuccess();
-                }
-
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error rejecting request", e);
-                callback.onFailure("Failed to reject request.");
             }
         });
     }
@@ -282,6 +227,32 @@ public class UserRepository {
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
+            }
+        });
+    }
+
+
+    /**
+     * Rejects a trade request by marking it as inactive and updating both users' data.
+     *
+     * @param request  The Request object to be rejected.
+     * @param callback Callback to handle success or failure.
+     */
+    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
+        executor.execute(() -> {
+            try {
+                // 1. Mark the request as inactive
+                xchanger.rejectRequest(request, 0);
+                requestDao.deleteRequest(request);
+
+                xChanger requester = request.getRequester();
+                xChanger requestee = request.getRequestee();
+                userDao.updateUser(requester);
+                userDao.updateUser(requestee);
+                callback.onSuccess();
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error rejecting request", e);
+                callback.onFailure("Failed to reject request.");
             }
         });
     }
@@ -402,16 +373,6 @@ public class UserRepository {
         return requestDao.getRequestsSentCount();
     }
 
-    // Get Total Request Received Count (For Admin)
-    public LiveData<Integer> getReceivedRequestsCount() {
-        return requestDao.getRequestsReceivedCount();
-    }
-
-    public List<Request> getRequestsByUsername(String username) {
-        return requestDao.findRequestsByUsername(username);
-    }
-
-
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -423,16 +384,6 @@ public class UserRepository {
         });
     }
 
-    public void filterItemsByCategory(Category category, UserItemsCallback callback) {
-        executor.execute(() -> {
-            try {
-                List<Item> items = itemDao.filterItemsByCategory(category);
-                callback.onSuccess(items);
-            } catch (Exception e) {
-                callback.onFailure("Error filtering items by category.");
-            }
-        });
-    }
 
     public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
         new Thread(() -> {
@@ -461,8 +412,6 @@ public class UserRepository {
             }
         });
     }
-
-
     public void shutdownExecutor() {
         executor.shutdown();
         try {
@@ -538,6 +487,7 @@ public class UserRepository {
     }
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
+            List<xChange> lists=AppDatabase.getxChangeDao().getAllXChangesSync();
             try {
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
@@ -599,20 +549,6 @@ public class UserRepository {
         callback.onSuccess(requests);
     }
 
-    // New Method: Get Active Sent Requests
-    public void getActiveSentRequests(String username, UserRepository.RequestItemsCallback callback) {
-        executor.execute(() -> {
-            try {
-                LiveData<List<Request>> liveData = requestDao.getAllSentRequests(username);
-                // Observe LiveData on the main thread
-                new Handler(Looper.getMainLooper()).post(() -> liveData.observeForever(requests -> {
-                    callback.onSuccess(requests);
-                }));
-            } catch (Exception e) {
-                callback.onFailure("Failed to fetch sent requests: " + e.getMessage());
-            }
-        });
-    }
     public void getTotalRequests(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -662,12 +598,11 @@ public class UserRepository {
     public void getUserXChanges(String username, UserXChangesCallback callback) {
         executor.execute(() -> {
             try {
-                Log.d("TEST", String.valueOf(AppDatabase.getxChangeDao().getAllXChangesSync().size()));
                 List<xChange> xchanges = xChangeDao.getAllXChangesSync();
                 List<xChange> tosend=new ArrayList<>();
                 for(xChange xchange:xchanges){
                     if(xchange.getOfferee().getUsername().equals(username) ||
-                    xchange.getOfferer().getUsername().equals(username)){
+                            xchange.getOfferer().getUsername().equals(username)){
                         tosend.add(xchange);
                     }
                 }
@@ -679,6 +614,10 @@ public class UserRepository {
             }
         });
     }
+
+
+
+
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -690,6 +629,7 @@ public class UserRepository {
             }
         });
     }
+
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -900,4 +840,16 @@ public class UserRepository {
         }
         return null; // Return null if no match found
     }
+    public void getAllXChanges(UserXChangesCallback callback) {
+        executor.execute(() -> {
+            try {
+                List<xChange> xChanges = xChangeDao.getAllXChangesSync();
+                callback.onSuccess(xChanges);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error fetching all xChanges", e);
+                callback.onFailure("Failed to fetch xChanges.");
+            }
+        });
+    }
+
 }

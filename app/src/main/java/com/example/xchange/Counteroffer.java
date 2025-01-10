@@ -32,11 +32,11 @@ public class Counteroffer implements Parcelable {
 
     @ColumnInfo(name = "counterofferer")
     @TypeConverters(XChangerConverter.class)
-    private xChanger counterofferer; // Included in parceling
+    private transient xChanger counterofferer; // Excluded from parceling
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "counterofferee")
-    private xChanger counterofferee; // Included in parceling
+    private transient xChanger counterofferee; // Excluded from parceling
 
     private Boolean active;
 
@@ -47,9 +47,6 @@ public class Counteroffer implements Parcelable {
         }
         if (offeredItem == null) {
             throw new IllegalArgumentException("Offered item cannot be null.");
-        }
-        if (counterofferer == null || counterofferee == null) {
-            throw new IllegalArgumentException("Counterofferer and Counterofferee cannot be null.");
         }
         this.request = request;
         this.offeredItem = offeredItem;
@@ -69,10 +66,10 @@ public class Counteroffer implements Parcelable {
         request = in.readParcelable(Request.class.getClassLoader());
         offeredItem = in.readParcelable(Item.class.getClassLoader());
         requestedItem = in.readParcelable(Item.class.getClassLoader());
-        counterofferer = in.readParcelable(xChanger.class.getClassLoader());
-        counterofferee = in.readParcelable(xChanger.class.getClassLoader());
-        byte activeByte = in.readByte();
-        active = activeByte == 1;
+        // Excluded: counterofferer and counterofferee
+        this.counterofferer = null;
+        this.counterofferee = null;
+        active = in.readByte() != 0;
     }
 
     public static final Creator<Counteroffer> CREATOR = new Creator<Counteroffer>() {
@@ -98,8 +95,7 @@ public class Counteroffer implements Parcelable {
         dest.writeParcelable(request, flags);
         dest.writeParcelable(offeredItem, flags);
         dest.writeParcelable(requestedItem, flags);
-        dest.writeParcelable(counterofferer, flags); // Included in parceling
-        dest.writeParcelable(counterofferee, flags); // Included in parceling
+        // Excluded: counterofferer and counterofferee
         dest.writeByte((byte) (active != null && active ? 1 : 0));
     }
 

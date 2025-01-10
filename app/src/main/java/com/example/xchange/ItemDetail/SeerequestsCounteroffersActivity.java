@@ -1,6 +1,5 @@
 package com.example.xchange.ItemDetail;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,10 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
-import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.R;
 import com.example.xchange.Request;
-import com.example.xchange.User;
 
 public class SeerequestsCounteroffersActivity extends AppCompatActivity {
 
@@ -40,7 +37,7 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
 
         // Retrieve the HAS_COUNTEROFFER flag
         boolean hasCounteroffer = getIntent().getBooleanExtra("HAS_COUNTEROFFER", false);
-        User user = getIntent().getParcelableExtra("USER");
+
         if (hasCounteroffer) {
             // Handle Counteroffer
             Counteroffer counteroffer = getIntent().getParcelableExtra("COUNTEROFFER");
@@ -62,13 +59,7 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         }
 
         // Handle Back button
-        backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("USER",user);
-            startActivity(intent);
-            finish();
-        });
-
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void displayRequestDetails(Request request) {

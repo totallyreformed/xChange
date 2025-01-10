@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.example.xchange.Counteroffer;
 import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
@@ -27,19 +25,8 @@ public class RejectRequestActivity extends AppCompatActivity {
 
     private RejectRequestViewModel viewModel;
     private ImageView offeredItemImageView, requestedItemImageView;
-    private Request request;
-    private Counteroffer counteroffer;
+    private Request requestToReject;
     private User currentUser;
-
-    // UI Components
-    private TextView requesterTextView;
-    private TextView offeredItemHeaderTextView;
-    private TextView requestedItemHeaderTextView;
-    private TextView requestStatusTextView;
-    private Button rejectButton;
-    private Button backButton;
-    private RatingBar requestRatingBar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,93 +34,49 @@ public class RejectRequestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reject_request);
 
         // Initialize views
-        requesterTextView = findViewById(R.id.requesterTextView);
-        offeredItemHeaderTextView = findViewById(R.id.offeredItemHeaderTextView);
-        offeredItemImageView = findViewById(R.id.offeredItemImageView);
-        requestedItemHeaderTextView = findViewById(R.id.requestedItemHeaderTextView);
-        requestedItemImageView = findViewById(R.id.requestedItemImageView);
-        requestStatusTextView = findViewById(R.id.requestStatusTextView);
-        rejectButton = findViewById(R.id.rejectButton);
-        backButton = findViewById(R.id.backButton);
-        requestRatingBar = findViewById(R.id.requestRatingBar);
-
+        TextView requesterTextView = findViewById(R.id.requesterTextView);
+        TextView offeredItemHeaderTextView = findViewById(R.id.offeredItemHeaderTextView);
+        ImageView offeredItemImageView = findViewById(R.id.offeredItemImageView);
+        TextView requestedItemHeaderTextView = findViewById(R.id.requestedItemHeaderTextView);
+        ImageView requestedItemImageView = findViewById(R.id.requestedItemImageView);
+        TextView requestStatusTextView = findViewById(R.id.requestStatusTextView);
+        Button rejectButton = findViewById(R.id.rejectButton);
+        Button backButton = findViewById(R.id.backButton);
 
         // Retrieve data from intent
-        request = getIntent().getParcelableExtra("REQUEST");
-        counteroffer = getIntent().getParcelableExtra("COUNTEROFFER");
+        requestToReject = getIntent().getParcelableExtra("REQUEST");
         currentUser = getIntent().getParcelableExtra("USER");
 
-        // Validate received data
-        if ((request == null && counteroffer == null) || currentUser == null) {
+        if (requestToReject == null || currentUser == null) {
             Toast.makeText(this, "Invalid request or user data.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
+        xChanger xchanger = new xChanger(currentUser.getUsername(),currentUser.getEmail(),currentUser.getJoin_Date(),currentUser.getPassword(),currentUser.getLocation());
+
+
         // Initialize ViewModel
         RejectRequestViewModelFactory factory = new RejectRequestViewModelFactory(getApplication());
         viewModel = new ViewModelProvider(this, factory).get(RejectRequestViewModel.class);
 
-        // Determine whether it's a Request or Counteroffer and populate UI accordingly
-        if (request != null) {
-            populateRequestDetails();
-        } else {
-            populateCounterofferDetails();
-        }
-
-        // Set button click listeners
-        rejectButton.setOnClickListener(v -> showRejectConfirmationDialog());
-        backButton.setOnClickListener(v -> finish());
-    }
-
-    /**
-     * Populates the UI with Request details.
-     */
-    private void populateRequestDetails() {
-        // Check if request has a requester
-        if (request.getRequester() != null) {
-            requesterTextView.setText("Requester: " + request.getRequester().getUsername());
-        } else {
-            requesterTextView.setText("Requester: Unknown");
-            Log.e("RejectRequestActivity", "Request has null requester.");
-        }
-
-        offeredItemHeaderTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
-        requestedItemHeaderTextView.setText("Requested Item: " + request.getRequestedItem().getItemName());
+        // Populate views with request details
+        requesterTextView.setText("Requester: " + requestToReject.getRequester().getUsername());
+        offeredItemHeaderTextView.setText("Offered Item: " + requestToReject.getOfferedItem().getItemName());
+        requestedItemHeaderTextView.setText("Requested Item: " + requestToReject.getRequestedItem().getItemName());
         requestStatusTextView.setText("Request Status: Pending");
 
         // Load images for offered and requested items
-        loadItemImage(request.getOfferedItem(), offeredItemImageView);
-        loadItemImage(request.getRequestedItem(), requestedItemImageView);
+        loadItemImage(requestToReject.getOfferedItem(), offeredItemImageView);
+        loadItemImage(requestToReject.getRequestedItem(), requestedItemImageView);
+
+        // Reject button functionality
+        rejectButton.setOnClickListener(v -> showRejectConfirmationDialog());
+
+        // Back button functionality
+        backButton.setOnClickListener(v -> finish());
     }
 
-    /**
-     * Populates the UI with Counteroffer details.
-     */
-    private void populateCounterofferDetails() {
-        // Check if counteroffer has a requester
-        if (counteroffer.getCounterofferer() != null) {
-            requesterTextView.setText("Requester: " + counteroffer.getCounterofferer().getUsername());
-        } else {
-            requesterTextView.setText("Requester: Unknown");
-            Log.e("RejectRequestActivity", "Counteroffer has null requester.");
-        }
-
-        offeredItemHeaderTextView.setText("Offered Item: " + counteroffer.getOfferedItem().getItemName());
-        requestedItemHeaderTextView.setText("Requested Item: " + counteroffer.getRequestedItem().getItemName());
-        requestStatusTextView.setText("Counteroffer Status: Pending");
-
-        // Load images for offered and requested items
-        loadItemImage(counteroffer.getOfferedItem(), offeredItemImageView);
-        loadItemImage(counteroffer.getRequestedItem(), requestedItemImageView);
-    }
-
-    /**
-     * Loads an item's image into the provided ImageView using Glide.
-     *
-     * @param item      The item whose image is to be loaded.
-     * @param imageView The ImageView where the image will be displayed.
-     */
     private void loadItemImage(Item item, ImageView imageView) {
         if (item.getFirstImage() != null) {
             String filePath = item.getFirstImage().getFilePath();
@@ -160,25 +103,16 @@ public class RejectRequestActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Displays a confirmation dialog before rejecting the request/counteroffer.
-     */
     private void showRejectConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Rejection")
-                .setMessage("Are you sure you want to reject this " + (request != null ? "request" : "counteroffer") + "?")
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    float rating = requestRatingBar != null ? requestRatingBar.getRating() : 5.0f;
-                    handleRejectRequest(rating);
-                })
+                .setMessage("Are you sure you want to reject this request?")
+                .setPositiveButton("Yes", (dialog, which) -> handleRejectRequest())
                 .setNegativeButton("No", null)
                 .show();
     }
 
-    /**
-     * Handles the rejection of a Request or Counteroffer.
-     */
-    private void handleRejectRequest(float rating) {
+    private void handleRejectRequest() {
         xChanger xchanger = new xChanger(
                 currentUser.getUsername(),
                 currentUser.getEmail(),
@@ -187,69 +121,50 @@ public class RejectRequestActivity extends AppCompatActivity {
                 currentUser.getLocation()
         );
 
-        if (request != null) {
-            // Handle rejection of a regular Request
-            viewModel.rejectRequest(request, rating, new RejectRequestViewModel.RejectRequestCallback() {
-                @Override
-                public void onSuccess() {
-                    sendNotification(request.getRequester().getUsername(), "Your request has been rejected by " + currentUser.getUsername());
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    runOnUiThread(() -> Toast.makeText(RejectRequestActivity.this, "Failed to reject request: " + message, Toast.LENGTH_SHORT).show());
-                }
-            });
-        } else if (counteroffer != null) {
-            // Handle rejection of a Counteroffer
-            viewModel.rejectCounteroffer(xchanger, counteroffer, rating, new RejectRequestViewModel.RejectRequestCallback() {
-                @Override
-                public void onSuccess() {
-                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been rejected by " + currentUser.getUsername());
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    runOnUiThread(() -> Toast.makeText(RejectRequestActivity.this, "Failed to reject counteroffer: " + message, Toast.LENGTH_SHORT).show());
-                }
-            });
-        }
-    }
-
-    /**
-     * Sends a notification to the specified user.
-     *
-     * @param username The username of the recipient.
-     * @param message  The notification message.
-     */
-    private void sendNotification(String username, String message) {
-        Notification notification = new Notification(
-                username,
-                message,
-                SimpleCalendar.today(),
-                (long) -1
-        );
-
-        UserRepository userRepository = new UserRepository(getApplication());
-        userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+        viewModel.rejectRequest(xchanger, requestToReject, new RejectRequestViewModel.RejectRequestCallback() {
             @Override
             public void onSuccess() {
-                Log.d("RejectRequestActivity", "Notification added successfully");
+                Notification notification = new Notification(
+                        requestToReject.getRequester().getUsername(),
+                        "Your request has been rejected by " + currentUser.getUsername(),
+                        SimpleCalendar.today(),
+                        (long) -1
+                );
+
+                UserRepository userRepository = new UserRepository(getApplication());
+                userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("RejectRequestActivity", "Notification added successfully");
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        Log.e("RejectRequestActivity", "Failed to add notification: " + message);
+                    }
+                });
+
+                runOnUiThread(() -> new AlertDialog.Builder(RejectRequestActivity.this)
+                        .setTitle("Request Rejected")
+                        .setMessage("The requester has been notified of the rejection.")
+                        .setPositiveButton("Proceed", (dialog, which) -> {
+                            dialog.dismiss();
+                            finish();
+                        })
+                        .show());
             }
 
             @Override
             public void onFailure(String message) {
-                Log.e("RejectRequestActivity", "Failed to add notification: " + message);
+                runOnUiThread(() -> Toast.makeText(RejectRequestActivity.this, "Failed to reject request: " + message, Toast.LENGTH_SHORT).show());
             }
         });
+    }
 
-        runOnUiThread(() -> new AlertDialog.Builder(RejectRequestActivity.this)
-                .setTitle("Rejection Successful")
-                .setMessage("The requester has been notified of the rejection.")
-                .setPositiveButton("Proceed", (dialog, which) -> {
-                    dialog.dismiss();
-                    finish();
-                })
-                .show());
+    // Store the rejection notification for the other user
+    private void storeRejectionNotification(Request request) {
+        String notificationMessage = "Your request for \"" + request.getRequestedItem().getItemName() +
+                "\" has been rejected.";
+        viewModel.storeNotificationForUser(request.getRequester().getUsername(), notificationMessage, -1);
     }
 }

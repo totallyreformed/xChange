@@ -11,12 +11,12 @@ import java.util.ArrayList;
 public class xChanger extends User implements Parcelable {
     private float averageRating;
     private int totalRatings;
-    private ArrayList<Rating> ratings;
-    private ArrayList<String> reports;
-    private ArrayList<Item> items;
-    private ArrayList<Request> requests;
-    private ArrayList<Counteroffer> counterOffers;
-    private ArrayList<xChange> finalized;
+    private transient ArrayList<Rating> ratings;       // Excluded from parceling
+    private transient ArrayList<String> reports;        // Excluded from parceling
+    private transient ArrayList<Item> items;            // Excluded from parceling
+    private transient ArrayList<Request> requests;      // Excluded from parceling
+    private transient ArrayList<Counteroffer> counterOffers; // Excluded from parceling
+    private transient ArrayList<xChange> finalized;      // Excluded from parceling
     private int succeedDeals;
     private int failedDeals;
 
@@ -190,25 +190,23 @@ public class xChanger extends User implements Parcelable {
         this.counterOffers.add(counterOffer);
     }
 
-    public xChange acceptRequest(Request request, float rating){
-        xChange xChange = new xChange(request, null);
+    public void acceptRequest(Request request, float rating){
+        xChange xChange = new xChange(request, null, null);
         xChange.acceptOffer(rating);
-        return xChange;
     }
 
-    public xChange rejectRequest(Request request, float rating){
-        xChange xChange = new xChange(request, null);
+    public void rejectRequest(Request request, float rating){
+        xChange xChange = new xChange(request, null, null);
         xChange.rejectOffer(rating);
-        return xChange;
     }
 
     public void acceptCounteroffer(Counteroffer counteroffer, float rating){
-        xChange xChange = new xChange(counteroffer, null);
+        xChange xChange = new xChange(counteroffer.getRequest(), counteroffer, null);
         xChange.acceptOffer(rating);
     }
 
     public void rejectCounteroffer(Counteroffer counteroffer, float rating){
-        xChange xChange = new xChange(counteroffer, null);
+        xChange xChange = new xChange(counteroffer.getRequest(), counteroffer, null);
         xChange.rejectOffer(rating);
     }
 
