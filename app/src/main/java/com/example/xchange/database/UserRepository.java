@@ -241,7 +241,6 @@ public class UserRepository {
     public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
-                // 1. Mark the request as inactive
                 xchanger.rejectRequest(request, 0);
                 requestDao.deleteRequest(request);
 
@@ -249,6 +248,14 @@ public class UserRepository {
                 xChanger requestee = request.getRequestee();
                 userDao.updateUser(requester);
                 userDao.updateUser(requestee);
+
+                SimpleCalendar today = SimpleCalendar.today();
+                xChange newXChange = new xChange(request, null, today);
+                requestDao.deleteRequest(request);
+                newXChange.acceptOffer(0.0f);
+                long xChangeId = xChangeDao.insertXChange(newXChange);
+                newXChange.setXChangeId(xChangeId);
+
                 callback.onSuccess();
             } catch (Exception e) {
                 Log.e("UserRepository", "Error rejecting request", e);
@@ -487,7 +494,6 @@ public class UserRepository {
     }
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
-            List<xChange> lists=AppDatabase.getxChangeDao().getAllXChangesSync();
             try {
                 List<Request> requests = AppDatabase.getRequestDao().getAllRequests();
                 List<Request> sentRequests = new ArrayList<>();
@@ -598,6 +604,7 @@ public class UserRepository {
     public void getUserXChanges(String username, UserXChangesCallback callback) {
         executor.execute(() -> {
             try {
+//                AppDatabase.getxChangeDao().deleteAll();
                 List<xChange> xchanges = xChangeDao.getAllXChangesSync();
                 List<xChange> tosend=new ArrayList<>();
                 for(xChange xchange:xchanges){
