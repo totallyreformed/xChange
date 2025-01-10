@@ -49,18 +49,18 @@ public class AdminXChangesActivity extends AppCompatActivity {
         // Initialize UserRepository
         userRepository = new UserRepository(this);
 
-        // Fetch xChanges
-        userRepository.getAllXChanges(new UserRepository.UserXChangesCallback() {
-            @Override
-            public void onSuccess(List<xChange> xChanges) {
-                runOnUiThread(() -> xChangesAdapter.setXChanges(xChanges));
-            }
-
-            @Override
-            public void onFailure(String message) {
-                runOnUiThread(() -> Toast.makeText(AdminXChangesActivity.this, message, Toast.LENGTH_SHORT).show());
-            }
-        });
+//        // Fetch xChanges
+//        userRepository.getAllXChanges(new UserRepository.UserXChangesCallback()) {
+//            @Override
+//            public void onSuccess(List<xChange> xChanges) {
+//                runOnUiThread(() -> xChangesAdapter.setXChanges(xChanges));
+//            }
+//
+//            @Override
+//            public void onFailure(String message) {
+//                runOnUiThread(() -> Toast.makeText(AdminXChangesActivity.this, message, Toast.LENGTH_SHORT).show());
+//            }
+//        });
     }
 
     @Override

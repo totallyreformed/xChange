@@ -3,6 +3,7 @@ package com.example.xchange;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -22,11 +23,11 @@ public class Request implements Parcelable {
 
     @ColumnInfo(name = "requester")
     @TypeConverters(XChangerConverter.class)
-    private transient xChanger requester;
+    private xChanger requester; // Removed transient
 
     @ColumnInfo(name = "requestee")
     @TypeConverters(XChangerConverter.class)
-    private transient xChanger requestee;
+    private xChanger requestee; // Removed transient
 
     @ColumnInfo(name = "offered_item")
     @TypeConverters(ItemConverter.class)
@@ -44,7 +45,9 @@ public class Request implements Parcelable {
     private boolean active;
 
     // Default constructor for Room
-    public Request() {}
+    public Request() {
+        this.dateInitiated = SimpleCalendar.today();
+    }
 
     // Constructor for creating objects
     public Request(xChanger requester, xChanger requestee, Item offeredItem, Item requestedItem, SimpleCalendar dateInitiated) {
@@ -70,6 +73,9 @@ public class Request implements Parcelable {
     }
 
     public void setRequester(xChanger requester) {
+        if (requester == null) {
+            throw new IllegalArgumentException("Requester cannot be null.");
+        }
         this.requester = requester;
     }
 
@@ -78,6 +84,9 @@ public class Request implements Parcelable {
     }
 
     public void setRequestee(xChanger requestee) {
+        if (requestee == null) {
+            throw new IllegalArgumentException("Requestee cannot be null.");
+        }
         this.requestee = requestee;
     }
 
@@ -86,15 +95,10 @@ public class Request implements Parcelable {
     }
 
     public void setOfferedItem(Item offeredItem) {
+        if (offeredItem == null) {
+            throw new IllegalArgumentException("Offered item cannot be null.");
+        }
         this.offeredItem = offeredItem;
-    }
-
-    public void make_unactive(){
-        this.active = false;
-    }
-
-    public String getStatus(){
-        return this.active ? "Active" : "Inactive";
     }
 
     public Item getRequestedItem() {
@@ -102,6 +106,9 @@ public class Request implements Parcelable {
     }
 
     public void setRequestedItem(Item requestedItem) {
+        if (requestedItem == null) {
+            throw new IllegalArgumentException("Requested item cannot be null.");
+        }
         this.requestedItem = requestedItem;
     }
 
@@ -119,6 +126,14 @@ public class Request implements Parcelable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void make_unactive(){
+        this.active = false;
+    }
+
+    public String getStatus(){
+        return this.active ? "Active" : "Inactive";
     }
 
     // Parcelable Implementation
@@ -183,11 +198,16 @@ public class Request implements Parcelable {
         }
     };
 
+    // toString method for better debugging
     @Override
     public String toString() {
-        return "Request ID: " + requestId + " " +
-                "Requester: " + requester.getUsername() + " " +
-                "Requestee: " + requestee.getUsername() + " ";
+        String requesterName = (requester != null) ? requester.getUsername() : "null";
+        String requesteeName = (requestee != null) ? requestee.getUsername() : "null";
+        return "Request{" +
+                "requestId=" + requestId +
+                ", requester=" + requesterName +
+                ", requestee=" + requesteeName +
+                '}';
     }
 
     @Override

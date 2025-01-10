@@ -1,3 +1,5 @@
+// File: com/example/xchange/AcceptRequest/AcceptRequestActivity.java
+
 package com.example.xchange.AcceptRequest;
 
 import android.content.Intent;
@@ -14,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.xchange.Counteroffer;
 import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
@@ -27,6 +30,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
 
     private AcceptRequestViewModel viewModel;
     private Request request;
+    private Counteroffer counteroffer;
     private User currentUser;
     private TextView requesterTextView, requesteeTextView, requestStatusTextView;
     private TextView offeredItemTextView, requestedItemTextView;
@@ -53,43 +57,94 @@ public class AcceptRequestActivity extends AppCompatActivity {
 
         // Retrieve data from Intent
         request = getIntent().getParcelableExtra("REQUEST");
+        counteroffer = getIntent().getParcelableExtra("COUNTEROFFER");
         currentUser = getIntent().getParcelableExtra("USER");
 
-        if (request == null || currentUser == null) {
-            Toast.makeText(this, "Error loading request details.", Toast.LENGTH_SHORT).show();
+        // Validate received data
+        if ((request == null && counteroffer == null) || currentUser == null) {
+            Toast.makeText(this, "Invalid request or user data.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // Convert currentUser to xChanger
-        xChanger xchanger = new xChanger(
-                currentUser.getUsername(),
-                currentUser.getEmail(),
-                currentUser.getJoin_Date(),
-                currentUser.getPassword(),
-                currentUser.getLocation()
-        );
-
-        // Display request details
-        requesterTextView.setText("Requester: " + request.getRequester().getUsername());
-        requesteeTextView.setText("Requestee: " + request.getRequestee().getUsername());
-        requestStatusTextView.setText("Status: " + request.getStatus());
-        offeredItemTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
-        requestedItemTextView.setText("Requested Item: " + request.getRequestedItem().getItemName());
-
-        // Load images using Glide
-        loadItemImage(request.getOfferedItem(), offeredItemImageView);
-        loadItemImage(request.getRequestedItem(), requestedItemImageView);
-
         // Initialize ViewModel
-        viewModel = new ViewModelProvider(this, new AcceptRequestViewModelFactory(getApplicationContext()))
-                .get(AcceptRequestViewModel.class);
+        AcceptRequestViewModelFactory factory = new AcceptRequestViewModelFactory(getApplication());
+        viewModel = new ViewModelProvider(this, factory).get(AcceptRequestViewModel.class);
+
+        // Determine whether it's a Request or Counteroffer and populate UI accordingly
+        if (request != null) {
+            populateRequestDetails();
+        } else {
+            populateCounterofferDetails();
+        }
 
         // Set button click listeners
         acceptButton.setOnClickListener(v -> showAcceptConfirmationDialog());
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Populates the UI with Request details.
+     */
+    private void populateRequestDetails() {
+        // Check if request has a requester and requestee
+        if (request.getRequester() != null) {
+            requesterTextView.setText("Requester: " + request.getRequester().getUsername());
+        } else {
+            requesterTextView.setText("Requester: Unknown");
+            Log.e("AcceptRequestActivity", "Request has null requester.");
+        }
+
+        if (request.getRequestee() != null) {
+            requesteeTextView.setText("Requestee: " + request.getRequestee().getUsername());
+        } else {
+            requesteeTextView.setText("Requestee: Unknown");
+            Log.e("AcceptRequestActivity", "Request has null requestee.");
+        }
+
+        requestStatusTextView.setText("Request Status: " + request.getStatus());
+        offeredItemTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
+        requestedItemTextView.setText("Requested Item: " + request.getRequestedItem().getItemName());
+
+        // Load images for offered and requested items
+        loadItemImage(request.getOfferedItem(), offeredItemImageView);
+        loadItemImage(request.getRequestedItem(), requestedItemImageView);
+    }
+
+    /**
+     * Populates the UI with Counteroffer details.
+     */
+    private void populateCounterofferDetails() {
+        // Check if counteroffer has a counterofferer and counterofferee
+        if (counteroffer.getCounterofferer() != null) {
+            requesterTextView.setText("Counterofferer: " + counteroffer.getCounterofferer().getUsername());
+        } else {
+            requesterTextView.setText("Counterofferer: Unknown");
+            Log.e("AcceptRequestActivity", "Counteroffer has null counterofferer.");
+        }
+
+        if (counteroffer.getCounterofferee() != null) {
+            requesteeTextView.setText("Counterofferee: " + counteroffer.getCounterofferee().getUsername());
+        } else {
+            requesteeTextView.setText("Counterofferee: Unknown");
+            Log.e("AcceptRequestActivity", "Counteroffer has null counterofferee.");
+        }
+
+        requestStatusTextView.setText("Counteroffer Status: Pending");
+        offeredItemTextView.setText("Offered Item: " + counteroffer.getOfferedItem().getItemName());
+        requestedItemTextView.setText("Requested Item: " + counteroffer.getRequestedItem().getItemName());
+
+        // Load images for offered and requested items
+        loadItemImage(counteroffer.getOfferedItem(), offeredItemImageView);
+        loadItemImage(counteroffer.getRequestedItem(), requestedItemImageView);
+    }
+
+    /**
+     * Loads an item's image into the provided ImageView using Glide.
+     *
+     * @param item      The item whose image is to be loaded.
+     * @param imageView The ImageView where the image will be displayed.
+     */
     private void loadItemImage(Item item, ImageView imageView) {
         if (item.getFirstImage() != null) {
             String filePath = item.getFirstImage().getFilePath();
@@ -116,10 +171,13 @@ public class AcceptRequestActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays a confirmation dialog before accepting the request/counteroffer.
+     */
     private void showAcceptConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Acceptance")
-                .setMessage("Are you sure you want to accept this xChange?")
+                .setMessage("Are you sure you want to accept this " + (request != null ? "request" : "counteroffer") + "?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     float rating = requestRatingBar != null ? requestRatingBar.getRating() : 5.0f;
                     handleAcceptRequest(rating);
@@ -128,6 +186,9 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Handles the acceptance of a Request or Counteroffer.
+     */
     private void handleAcceptRequest(float rating) {
         xChanger xchanger = new xChanger(
                 currentUser.getUsername(),
@@ -137,67 +198,70 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 currentUser.getLocation()
         );
 
-        viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
+        if (request != null) {
+            // Handle acceptance of a regular Request
+            viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
+                @Override
+                public void onSuccess(long xChangeId) {
+                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername(), xChangeId);
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    runOnUiThread(() -> Toast.makeText(AcceptRequestActivity.this, "Failed to accept request: " + message, Toast.LENGTH_SHORT).show());
+                }
+            });
+        } else if (counteroffer != null) {
+            // Handle acceptance of a Counteroffer
+            viewModel.acceptCounteroffer(xchanger, counteroffer, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
+                @Override
+                public void onSuccess(long xChangeId) {
+                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername(), xChangeId);
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    runOnUiThread(() -> Toast.makeText(AcceptRequestActivity.this, "Failed to accept counteroffer: " + message, Toast.LENGTH_SHORT).show());
+                }
+            });
+        }
+    }
+
+    /**
+     * Sends a notification to the specified user.
+     *
+     * @param username    The username of the recipient.
+     * @param message     The notification message.
+     * @param xChangeId   The ID of the xChange for reference.
+     */
+    private void sendNotification(String username, String message, long xChangeId) {
+        Notification notification = new Notification(
+                username,
+                message,
+                SimpleCalendar.today(),
+                xChangeId
+        );
+
+        UserRepository userRepository = new UserRepository(getApplication());
+        userRepository.addNotification(notification, new UserRepository.OperationCallback() {
             @Override
-            public void onSuccess(long xChangeId) {
-                // Create a notification for the requester
-                Notification notification = new Notification(
-                        request.getRequester().getUsername(),
-                        "Your request has been accepted by " + currentUser.getUsername(),
-                        SimpleCalendar.today(),
-                        xChangeId
-                );
-
-                UserRepository userRepository = new UserRepository(getApplication());
-                userRepository.addNotification(notification, new UserRepository.OperationCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("AcceptRequestActivity", "Notification added successfully");
-                    }
-
-                    @Override
-                    public void onFailure(String message) {
-                        Log.e("AcceptRequestActivity", "Failed to add notification: " + message);
-                    }
-                });
-
-                // Show the acceptance dialog
-                runOnUiThread(() -> new AlertDialog.Builder(AcceptRequestActivity.this)
-                        .setTitle("Request Accepted")
-                        .setMessage("The requester has been notified. Proceed to view the xChange confirmation.")
-                        .setPositiveButton("Proceed", (dialog, which) -> {
-                            Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
-                            intent.putExtra("REQUEST", request);
-                            intent.putExtra("USER", xchanger);
-                            intent.putExtra("XCHANGE_ID", xChangeId); // Pass the xChangeId
-                            startActivity(intent);
-                            finish();
-                        })
-                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                        .show());
+            public void onSuccess() {
+                Log.d("AcceptRequestActivity", "Notification added successfully");
             }
 
             @Override
             public void onFailure(String message) {
-                runOnUiThread(() ->
-                        Toast.makeText(AcceptRequestActivity.this, "Failed to accept request: " + message, Toast.LENGTH_SHORT).show()
-                );
+                Log.e("AcceptRequestActivity", "Failed to add notification: " + message);
             }
         });
-    }
 
-    private void notifyOtherUserOfAcceptance() {
-        runOnUiThread(() -> new AlertDialog.Builder(this)
-                .setTitle("Request Accepted")
-                .setMessage("The requester has been notified, and they will be redirected to the xChange confirmation.")
+        runOnUiThread(() -> new AlertDialog.Builder(AcceptRequestActivity.this)
+                .setTitle("Acceptance Successful")
+                .setMessage("The requester has been notified of the acceptance.")
                 .setPositiveButton("Proceed", (dialog, which) -> {
-                    Intent intent = new Intent(AcceptRequestActivity.this, xChangeConfirmationActivity.class);
-                    intent.putExtra("REQUEST", request);
-                    intent.putExtra("USER", currentUser);
-                    startActivity(intent);
+                    dialog.dismiss();
                     finish();
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show());
     }
 }

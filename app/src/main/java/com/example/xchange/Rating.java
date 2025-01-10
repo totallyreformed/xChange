@@ -3,10 +3,12 @@ package com.example.xchange;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class Rating implements Parcelable {
     private float rating;
-    private transient xChanger rater; // Excluded from parceling
-    private transient xChanger ratee; // Excluded from parceling
+    private xChanger rater;
+    private xChanger ratee;
     private Request request;
     private xChange xChange;
 
@@ -22,11 +24,10 @@ public class Rating implements Parcelable {
     // Parcelable Constructor
     protected Rating(Parcel in) {
         rating = in.readFloat();
+        rater = in.readParcelable(xChanger.class.getClassLoader());
+        ratee = in.readParcelable(xChanger.class.getClassLoader());
         request = in.readParcelable(Request.class.getClassLoader());
         xChange = in.readParcelable(xChange.class.getClassLoader());
-        // Excluded: rater and ratee
-        this.rater = null;
-        this.ratee = null;
     }
 
     public static final Creator<Rating> CREATOR = new Creator<Rating>() {
@@ -44,9 +45,10 @@ public class Rating implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeFloat(rating);
+        dest.writeParcelable(rater, flags);
+        dest.writeParcelable(ratee, flags);
         dest.writeParcelable(request, flags);
         dest.writeParcelable(xChange, flags);
-        // Excluded: rater and ratee
     }
 
     @Override
@@ -95,12 +97,34 @@ public class Rating implements Parcelable {
     // toString method for better debugging
     @Override
     public String toString() {
+        String raterName = (rater != null) ? rater.getUsername() : "null";
+        String rateeName = (ratee != null) ? ratee.getUsername() : "null";
+        String requestId = (request != null) ? request.getRequestId().toString() : "null";
+        String xChangeId = (xChange != null) ? xChange.getFinalizedId().toString() : "null";
         return "Rating{" +
                 "rating=" + rating +
-                ", rater=" + (rater != null ? rater.getUsername() : "null") +
-                ", ratee=" + (ratee != null ? ratee.getUsername() : "null") +
-                ", request=" + (request != null ? request.getRequestId() : "null") +
-                ", xChange=" + (xChange != null ? xChange.getFinalizedId() : "null") +
+                ", rater='" + raterName + '\'' +
+                ", ratee='" + rateeName + '\'' +
+                ", requestId=" + requestId +
+                ", xChangeId=" + xChangeId +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rating rating1 = (Rating) o;
+        return Float.compare(rating1.rating, rating) == 0 &&
+                Objects.equals(rater, rating1.rater) &&
+                Objects.equals(ratee, rating1.ratee) &&
+                Objects.equals(request, rating1.request) &&
+                Objects.equals(xChange, rating1.xChange);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rating, rater, ratee, request, xChange);
     }
 }

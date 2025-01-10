@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.example.xchange.Counteroffer;
+import com.example.xchange.Notification;
 import com.example.xchange.Request;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
@@ -18,8 +20,14 @@ public class RejectRequestViewModel extends AndroidViewModel {
         repository = new UserRepository(application);
     }
 
-    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
-        repository.rejectRequest(xchanger, request, new UserRepository.RejectRequestCallback() {
+    /**
+     * Rejects a regular Request.
+     *
+     * @param request  The Request to be rejected.
+     * @param callback Callback to handle success or failure.
+     */
+    public void rejectRequest(Request request, float rating, RejectRequestCallback callback) {
+        repository.rejectRequest(request, null, rating, new UserRepository.RejectRequestCallback() {
             @Override
             public void onSuccess() {
                 callback.onSuccess();
@@ -32,16 +40,24 @@ public class RejectRequestViewModel extends AndroidViewModel {
         });
     }
 
-    public void storeNotificationForUser(String username, String message, long xChangeId) {
-        repository.storeNotification(username, message, xChangeId, new UserRepository.OperationCallback() {
+    /**
+     * Rejects a Counteroffer.
+     *
+     * @param xchanger   The current user rejecting the counteroffer.
+     * @param counteroffer The Counteroffer to be rejected.
+     * @param rating       The rating value provided by the user.
+     * @param callback   Callback to handle success or failure.
+     */
+    public void rejectCounteroffer(xChanger xchanger, Counteroffer counteroffer, float rating, RejectRequestCallback callback) {
+        repository.rejectRequest(null, counteroffer, rating, new UserRepository.RejectRequestCallback() {
             @Override
             public void onSuccess() {
-                Log.d("RejectRequestViewModel", "Notification stored successfully for user: " + username);
+                callback.onSuccess();
             }
 
             @Override
             public void onFailure(String message) {
-                Log.e("RejectRequestViewModel", "Failed to store notification: " + message);
+                callback.onFailure(message);
             }
         });
     }

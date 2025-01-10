@@ -213,7 +213,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 });
             });
 
-            viewModel.checkIfRequesterWithCounterofferee(itemId,user.getUsername(), counteroffer  -> {
+            viewModel.checkIfRequesterWithCounterofferee(itemId, user.getUsername(), counteroffer  -> {
                 runOnUiThread(() -> {
                     Button seeExtraButton=findViewById(R.id.seeRequestCounterofferButton);
                     Button acceptButton=findViewById(R.id.acceptButton);
@@ -225,10 +225,28 @@ public class ItemDetailActivity extends AppCompatActivity {
                         acceptButton.setVisibility(View.VISIBLE);
                         rejectButton.setVisibility(View.VISIBLE);
                         iteminfo.setText("Other xChanger came back with a counteroffer");
+
+                        // Click listener for "See Counteroffer" Button
                         seeExtraButton.setOnClickListener(view -> {
                             Intent intent = new Intent(this, SeerequestsCounteroffersActivity.class);
                             intent.putExtra("COUNTEROFFER", counteroffer);
-                            intent.putExtra("HAS_COUNTEROFFER", true);
+                            intent.putExtra("IS_COUNTEROFFER", true);
+                            startActivity(intent);
+                        });
+
+                        // Click listener for Accept Button
+                        acceptButton.setOnClickListener(view -> {
+                            Intent intent = new Intent(this, AcceptRequestActivity.class);
+                            intent.putExtra("COUNTEROFFER", counteroffer);
+                            intent.putExtra("USER", user);
+                            startActivity(intent);
+                        });
+
+                        // Click Listener for Reject Button
+                        rejectButton.setOnClickListener(view -> {
+                            Intent intent = new Intent(this, RejectRequestActivity.class);
+                            intent.putExtra("COUNTEROFFER", counteroffer);
+                            intent.putExtra("USER", user);
                             startActivity(intent);
                         });
                     }
