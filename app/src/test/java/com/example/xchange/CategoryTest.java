@@ -1,12 +1,21 @@
 package com.example.xchange;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(RobolectricTestRunner.class)
 class CategoryTest {
+
+    private Category[] categories;
+
+    @BeforeEach
+    void setUp() {
+        categories = Category.values();
+    }
 
     @Test
     void testGetDisplayName() {
@@ -22,7 +31,7 @@ class CategoryTest {
 
     @Test
     void testToString() {
-        for (Category category : Category.values()) {
+        for (Category category : categories) {
             assertEquals(category.getDisplayName(), category.toString());
         }
     }
