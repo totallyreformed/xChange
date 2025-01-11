@@ -33,57 +33,79 @@ public class CounteroffersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_counteroffers);
 
-        // Adjust padding for system bars
+        initializeUI();
+        adjustSystemBars();
+        setupRecyclerView();
+        handleIntentData();
+        setupBackButton();
+    }
+
+    private void initializeUI() {
+        recyclerView = findViewById(R.id.requestsRecyclerView);
+        Button backButton = findViewById(R.id.backToProfileButton);
+        backButton.setOnClickListener(v -> finish());
+    }
+
+    private void adjustSystemBars() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Button backButton = findViewById(R.id.backToProfileButton);
-        backButton.setOnClickListener(v -> finish());
+    }
 
-        recyclerView = findViewById(R.id.requestsRecyclerView);
+    private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new CounteroffersAdapter(counterofferList, this::onCounterofferClicked);
+        recyclerView.setAdapter(adapter);
+    }
 
-        // Retrieve data from Intent
+    private void handleIntentData() {
         Intent intent = getIntent();
         currentUser = intent.getParcelableExtra("USER");
-        String counterofferType = intent.getStringExtra("REQUEST_TYPE"); // Expecting "COUNTER_OFFERS_SENT" or "COUNTER_OFFERS_RECEIVED"
+        String counterofferType = intent.getStringExtra("REQUEST_TYPE");
         ArrayList<Counteroffer> counteroffersFromIntent = intent.getParcelableArrayListExtra("COUNTEROFFERS");
 
         if (currentUser == null || counterofferType == null) {
-            Toast.makeText(this, "Invalid user or counteroffer type", Toast.LENGTH_SHORT).show();
+            showToast("Invalid user or counteroffer type");
             finish();
             return;
         }
 
-        // Initialize the adapter with click listener
-        adapter = new CounteroffersAdapter(counterofferList, this::onCounterofferClicked);
-        recyclerView.setAdapter(adapter);
+        populateCounteroffers(counteroffersFromIntent);
+        displayTypeMessage(counterofferType);
+    }
 
-        // Populate counteroffers
+    private void populateCounteroffers(ArrayList<Counteroffer> counteroffersFromIntent) {
         if (counteroffersFromIntent != null && !counteroffersFromIntent.isEmpty()) {
             counterofferList.addAll(counteroffersFromIntent);
             adapter.notifyDataSetChanged();
         } else {
-            Toast.makeText(this, "No counteroffers found", Toast.LENGTH_SHORT).show();
+            showToast("No counteroffers found");
         }
+    }
 
-        // Display appropriate message based on type
+    private void displayTypeMessage(String counterofferType) {
         if ("COUNTER_OFFERS_SENT".equals(counterofferType)) {
-            Toast.makeText(this, "Displaying sent counteroffers...", Toast.LENGTH_SHORT).show();
+            showToast("Displaying sent counteroffers...");
         } else if ("COUNTER_OFFERS_RECEIVED".equals(counterofferType)) {
-            Toast.makeText(this, "Displaying received counteroffers...", Toast.LENGTH_SHORT).show();
+            showToast("Displaying received counteroffers...");
         }
+    }
+
+    private void setupBackButton() {
+        Button backButton = findViewById(R.id.backToProfileButton);
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void onCounterofferClicked(Counteroffer counteroffer) {
         Intent intent = new Intent(this, ItemDetailActivity.class);
-
-        // Pass the required data to ItemDetailActivity
         intent.putExtra("ITEM_ID", counteroffer.getRequestedItem().getItemId());
         intent.putExtra("USER", currentUser);
-
         startActivity(intent);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

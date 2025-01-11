@@ -3,7 +3,6 @@ package com.example.xchange.ProfileData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -28,66 +27,86 @@ public class RequestsActivity extends AppCompatActivity {
     private RequestsAdapter adapter;
     private RecyclerView recyclerView;
     private List<Request> requestList = new ArrayList<>();
-    private User currentUser; // Store current user globally
-    private Context context;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
 
+        initializeUI();
+        adjustSystemBars();
+        setupRecyclerView();
+        handleIntentData();
+        setupBackButton();
+    }
+
+    private void initializeUI() {
+        recyclerView = findViewById(R.id.requestsRecyclerView);
+        Button backButton = findViewById(R.id.backToProfileButton);
+        backButton.setOnClickListener(v -> finish());
+    }
+
+    private void adjustSystemBars() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Button backButton = findViewById(R.id.backToProfileButton);
-        backButton.setOnClickListener(v -> finish());
+    }
 
-        recyclerView = findViewById(R.id.requestsRecyclerView);
+    private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new RequestsAdapter(requestList, null, this::onRequestClicked, this);
+        recyclerView.setAdapter(adapter);
+    }
 
-        // Retrieve the current user and request type from the intent
+    private void handleIntentData() {
         Intent intent = getIntent();
-        currentUser = intent.getParcelableExtra("USER"); // Assign to global variable
+        currentUser = intent.getParcelableExtra("USER");
         String requestType = intent.getStringExtra("REQUEST_TYPE");
         ArrayList<Request> requestsFromIntent = intent.getParcelableArrayListExtra("REQUESTS");
 
         if (currentUser == null || requestType == null) {
-            Toast.makeText(this, "Invalid user or request type", Toast.LENGTH_SHORT).show();
+            showToast("Invalid user or request type");
             finish();
             return;
         }
 
-        // Initialize the adapter with the click listener
-        adapter = new RequestsAdapter(requestList, currentUser, this::onRequestClicked, context);
-        recyclerView.setAdapter(adapter);
+        populateRequests(requestsFromIntent);
+        loadRequests(requestType);
+    }
 
+    private void populateRequests(ArrayList<Request> requestsFromIntent) {
         if (requestsFromIntent != null && !requestsFromIntent.isEmpty()) {
             requestList.addAll(requestsFromIntent);
             adapter.notifyDataSetChanged();
         } else {
-            Toast.makeText(this, "No requests found", Toast.LENGTH_SHORT).show();
+            showToast("No requests found");
         }
-
-        loadRequests(requestType, currentUser);
     }
 
-    private void loadRequests(String requestType, User currentUser) {
+    private void loadRequests(String requestType) {
         if ("SENT".equals(requestType)) {
-            Toast.makeText(this, "Displaying sent requests...", Toast.LENGTH_SHORT).show();
+            showToast("Displaying sent requests...");
         } else if ("RECEIVED".equals(requestType)) {
-            Toast.makeText(this, "Displaying received requests...", Toast.LENGTH_SHORT).show();
+            showToast("Displaying received requests...");
         }
     }
 
-    private void onRequestClicked(Request request) { // Only one parameter needed
+    private void setupBackButton() {
+        Button backButton = findViewById(R.id.backToProfileButton);
+        backButton.setOnClickListener(v -> finish());
+    }
+
+    private void onRequestClicked(Request request) {
         Intent intent = new Intent(this, ItemDetailActivity.class);
-
-        // Pass the required data to ItemDetailActivity
         intent.putExtra("ITEM_ID", request.getRequestedItem().getItemId());
-        intent.putExtra("USER", currentUser); // Use the global variable
-
+        intent.putExtra("USER", currentUser);
         startActivity(intent);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
