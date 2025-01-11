@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.example.xchange.EditItemViewModelFactory;
+import com.example.xchange.EditItem.EditItemViewModelFactory;
 import com.example.xchange.Image;
 import com.example.xchange.R;
 
@@ -25,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Activity for editing the details of an item in the xChange app.
+ * Allows users to update item information such as name, description, category, condition, and image.
+ */
 public class EditItemActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -35,6 +39,12 @@ public class EditItemActivity extends AppCompatActivity {
     private ImageView itemPhotoImageView;
     private String selectedImagePath; // Path of the selected image
 
+    /**
+     * Called when the activity is created.
+     * Initializes the UI components and ViewModel, and loads item data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +128,13 @@ public class EditItemActivity extends AppCompatActivity {
         });
     }
 
-    // Handle the result of the image picker
+    /**
+     * Handles the result of the image picker and updates the selected image path.
+     *
+     * @param requestCode The request code of the activity result.
+     * @param resultCode  The result code of the activity result.
+     * @param data        The intent data containing the selected image URI.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -132,7 +148,12 @@ public class EditItemActivity extends AppCompatActivity {
         }
     }
 
-    // Convert URI to real file path
+    /**
+     * Converts a URI to a real file path.
+     *
+     * @param uri The URI to convert.
+     * @return The file path corresponding to the URI.
+     */
     private String getRealPathFromURI(Uri uri) {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
@@ -146,12 +167,20 @@ public class EditItemActivity extends AppCompatActivity {
         return null;
     }
 
-    // Method for categories
+    /**
+     * Retrieves the list of categories for the category spinner.
+     *
+     * @return A list of category names.
+     */
     private List<String> getCategories() {
         return Arrays.asList("Technology", "Books", "Home Appliances", "Sports", "Fashion","Toys");
     }
 
-    // Method for conditions
+    /**
+     * Retrieves the list of conditions for the condition spinner.
+     *
+     * @return A list of condition names.
+     */
     private List<String> getConditions() {
         return Arrays.asList("New", "Like New", "Used", "Refurbished");
     }

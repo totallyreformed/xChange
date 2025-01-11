@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * The {@code ItemDetailPresenter} serves as the presenter in the MVP architecture.
+ * It interacts with the database and business logic to fetch, modify, and manage
+ * item-related data. The class also ensures UI updates are performed on the main thread.
+ */
 public class ItemDetailPresenter {
 
     private final Executor executor;
@@ -24,6 +29,11 @@ public class ItemDetailPresenter {
     private final RequestDao requestDao;
     private final UserRepository repository;
 
+    /**
+     * Constructs an instance of {@code ItemDetailPresenter} and initializes database access objects.
+     *
+     * @param context The context required to initialize the database and repository.
+     */
     public ItemDetailPresenter(Context context) {
         executor = Executors.newSingleThreadExecutor();
         mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -34,11 +44,19 @@ public class ItemDetailPresenter {
         repository = new UserRepository(context);
     }
 
-    // -------------------- Fetch an Item --------------------
+    /**
+     * Callback interface for fetching an {@link Item}.
+     */
     public interface ItemCallback {
         void onItemFetched(Item item);
     }
 
+    /**
+     * Fetches an item by its ID from the database.
+     *
+     * @param itemId   The ID of the item to fetch.
+     * @param callback The callback to return the fetched item.
+     */
     public void getItemById(long itemId, ItemCallback callback) {
         executor.execute(() -> {
             Item item = itemDao.getItemByIdSync(itemId); // Assuming synchronous call exists
@@ -46,11 +64,19 @@ public class ItemDetailPresenter {
         });
     }
 
-    // -------------------- Delete an Item --------------------
+    /**
+     * Callback interface for delete operation completion.
+     */
     public interface DeleteCallback {
         void onDeleted();
     }
 
+    /**
+     * Deletes an item by its ID along with associated requests and counteroffers.
+     *
+     * @param itemId   The ID of the item to delete.
+     * @param callback The callback to notify when the deletion is complete.
+     */
     public void deleteItemById(long itemId, DeleteCallback callback) {
         executor.execute(() -> {
             try {
@@ -78,7 +104,12 @@ public class ItemDetailPresenter {
         });
     }
 
-    // -------------------- Cancel a Request --------------------
+    /**
+     * Cancels a request for a specific item by the given user.
+     *
+     * @param itemId   The ID of the item associated with the request.
+     * @param username The username of the user cancelling the request.
+     */
     public void cancelRequest(long itemId, String username) {
         executor.execute(() -> {
             if (itemId > 0 && username != null && !username.isEmpty()) {
@@ -87,11 +118,20 @@ public class ItemDetailPresenter {
         });
     }
 
-    // -------------------- Check to Display Accept/Reject --------------------
+    /**
+     * Callback interface for fetching a request to determine accept/reject visibility.
+     */
     public interface FetchRequestCallback {
         void onResult(boolean success, Request request);
     }
 
+    /**
+     * Checks if an accept/reject UI should be displayed for a request.
+     *
+     * @param itemId   The ID of the item.
+     * @param username The username of the user.
+     * @param callback The callback to notify the result.
+     */
     public void checkToDisplayAcceptReject(long itemId, String username, FetchRequestCallback callback) {
         executor.execute(() -> {
             Item item = itemDao.getItemByIdSync(itemId);
@@ -110,11 +150,20 @@ public class ItemDetailPresenter {
         });
     }
 
-    // -------------------- Check if Request Exists --------------------
+    /**
+     * Callback interface for checking if a request exists.
+     */
     public interface FetchResultCallback {
         void onResult(boolean result);
     }
 
+    /**
+     * Checks if a request for the specified item exists for the given user.
+     *
+     * @param itemId   The ID of the item.
+     * @param username The username of the requester.
+     * @param callback The callback to notify the result.
+     */
     public void checkRequestToDisplay(long itemId, String username, FetchResultCallback callback) {
         executor.execute(() -> {
             Item item = itemDao.getItemByIdSync(itemId);
@@ -131,17 +180,34 @@ public class ItemDetailPresenter {
         });
     }
 
-    // -------------------- Find a Request --------------------
+    /**
+     * Finds a request for the specified item and user.
+     *
+     * @param itemId   The ID of the item.
+     * @param username The username of the requester.
+     * @param callback The callback to return the result.
+     */
     public void findRequest(long itemId, String username, UserRepository.FindRequestCallback callback) {
         repository.findRequest(itemId, username, callback);
     }
 
-    // -------------------- Find Items by XChanger --------------------
+    /**
+     * Finds items owned by the specified XChanger.
+     *
+     * @param xChangerUsername The username of the XChanger.
+     * @param callback         The callback to return the result.
+     */
     public void findItemsByXChanger(String xChangerUsername, UserRepository.UserItemsCallback callback) {
         repository.findItemsByXChanger(xChangerUsername, callback);
     }
 
-    // -------------------- Check Counteroffer Related --------------------
+    /**
+     * Checks if the user is the requestee with a counteroffer for a specific item.
+     *
+     * @param itemId   The ID of the item.
+     * @param username The username of the user.
+     * @param callback The callback to return the counteroffer.
+     */
     public void checkIfRequesteeWithCounteroffer(long itemId, String username, ItemDetailViewModel.CheckCounterofferCallback callback) {
         executor.execute(() -> {
             Counteroffer counteroffer = repository.checkIfRequesteeWithCounteroffer(itemId, username);
@@ -149,6 +215,13 @@ public class ItemDetailPresenter {
         });
     }
 
+    /**
+     * Checks if the user is the requester with a counterofferee for a specific item.
+     *
+     * @param itemId   The ID of the item.
+     * @param username The username of the user.
+     * @param callback The callback to return the counteroffer.
+     */
     public void checkIfRequesterWithCounterofferee(long itemId, String username, ItemDetailViewModel.CheckCounterofferCallback callback) {
         executor.execute(() -> {
             Counteroffer counteroffer = repository.checkIfRequesterWithCounterofferee(itemId, username);

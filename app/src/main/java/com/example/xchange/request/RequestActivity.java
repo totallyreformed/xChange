@@ -22,6 +22,13 @@ import com.example.xchange.xChanger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity class for handling the creation of a request in the xChange application.
+ * <p>
+ * This class displays the details of the requested item, allows the user to select one of their items to offer,
+ * and sends the request to the item's owner. It uses a ViewModel to fetch the user's items and manage the request.
+ * </p>
+ */
 public class RequestActivity extends AppCompatActivity {
 
     private RequestViewModel viewModel;
@@ -32,6 +39,11 @@ public class RequestActivity extends AppCompatActivity {
     private xChanger Requester;
     private xChanger Requestee;
 
+    /**
+     * Initializes the activity, sets up the UI components, and handles user interactions.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +59,18 @@ public class RequestActivity extends AppCompatActivity {
         setupSendRequestButton();
     }
 
+    /**
+     * Initializes UI components such as the item spinner.
+     */
     private void initializeUIComponents() {
         userItemsSpinner = findViewById(R.id.userItemsSpinner);
     }
 
+    /**
+     * Loads data from the intent and initializes the {@link xChanger} objects for the requester and requestee.
+     *
+     * @return True if the data is successfully loaded; false otherwise.
+     */
     private boolean loadIntentData() {
         requestedItem = getIntent().getParcelableExtra("REQUESTED_ITEM");
         user = getIntent().getParcelableExtra("USER");
@@ -64,11 +84,17 @@ public class RequestActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * Displays an error message and finishes the activity if the intent data is invalid.
+     */
     private void showErrorAndExit() {
         Toast.makeText(this, "Error loading request details.", Toast.LENGTH_SHORT).show();
         finish();
     }
 
+    /**
+     * Sets up the details of the requested item in the UI.
+     */
     private void setupRequestedItemDetails() {
         TextView requestedItemNameTextView = findViewById(R.id.requestedItemNameTextView);
         TextView requestedItemDescriptionTextView = findViewById(R.id.requestedItemDescriptionTextView);
@@ -84,6 +110,12 @@ public class RequestActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Loads an image into the specified {@link ImageView}.
+     *
+     * @param filePath The file path or resource ID of the image.
+     * @param imageView The ImageView where the image will be loaded.
+     */
     private void loadImage(String filePath, ImageView imageView) {
         if (filePath != null) {
             try {
@@ -105,17 +137,28 @@ public class RequestActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up the details of the requester in the UI.
+     */
     private void setupRequesterDetails() {
         TextView requesterNameTextView = findViewById(R.id.requesterNameTextView);
         requesterNameTextView.setText("Requester: " + user.getUsername());
     }
 
+    /**
+     * Initializes the ViewModel and fetches the user's items.
+     */
     private void initializeViewModel() {
         viewModel = new ViewModelProvider(this, new RequestViewModelFactory(getApplicationContext())).get(RequestViewModel.class);
         viewModel.fetchUserItems(user.getUsername());
         viewModel.getUserItems().observe(this, this::populateUserItemsSpinner);
     }
 
+    /**
+     * Populates the spinner with the user's items.
+     *
+     * @param items The list of items owned by the user.
+     */
     private void populateUserItemsSpinner(List<Item> items) {
         if (items != null && !items.isEmpty()) {
             ArrayAdapter<Item> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>(items));
@@ -126,11 +169,18 @@ public class RequestActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Sets up the send request button to handle the request submission.
+     */
     private void setupSendRequestButton() {
         Button sendRequestButton = findViewById(R.id.sendRequestButton);
         sendRequestButton.setOnClickListener(v -> handleSendRequest());
     }
 
+    /**
+     * Handles the logic for sending a request.
+     */
     private void handleSendRequest() {
         Item offeredItem = (Item) userItemsSpinner.getSelectedItem();
 
@@ -145,6 +195,9 @@ public class RequestActivity extends AppCompatActivity {
         navigateToMainActivity();
     }
 
+    /**
+     * Navigates back to the MainActivity after successfully sending the request.
+     */
     private void navigateToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("USER", user);

@@ -2,6 +2,11 @@ package com.example.xchange;
 
 /**
  * Enum representing the available categories for items.
+ * <p>
+ * Each category has a display name for user-friendly representation.
+ * The {@code Category} enum provides utility methods for retrieving the display name,
+ * mapping from display names to enum values, and calculating the total number of categories.
+ * </p>
  */
 public enum Category {
     ALL("All"),
@@ -49,6 +54,11 @@ public enum Category {
         return ALL; // Default category if no match is found
     }
 
+    /**
+     * Returns the display name of the category.
+     *
+     * @return The display name.
+     */
     @Override
     public String toString() {
         return displayName;

@@ -1,4 +1,3 @@
-// File: XChangerHomeFragment.java
 package com.example.xchange.MainActivity;
 
 import android.content.Intent;
@@ -23,6 +22,12 @@ import com.example.xchange.User;
 
 import java.util.ArrayList;
 
+/**
+ * Fragment class for the xChanger's home screen in the xChange application.
+ * <p>
+ * Displays a welcome message with the username and a list of items available for exchange.
+ * </p>
+ */
 public class XChangerHomeFragment extends Fragment {
 
     private TextView usernameTextView;
@@ -31,6 +36,14 @@ public class XChangerHomeFragment extends Fragment {
     private User currentUser;
     private MainActivityViewModel viewModel;
 
+    /**
+     * Inflates the fragment layout and initializes its components.
+     *
+     * @param inflater           The LayoutInflater used to inflate the layout.
+     * @param container          The parent ViewGroup for the fragment's UI.
+     * @param savedInstanceState The saved state of the fragment.
+     * @return The View representing the fragment's UI.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -77,6 +90,11 @@ public class XChangerHomeFragment extends Fragment {
 
     }
 
+    /**
+     * Retrieves the current user from the hosting MainActivity.
+     *
+     * @return The current logged-in user, or null if not found.
+     */
     private User getCurrentUserFromActivity() {
         if (getActivity() instanceof MainActivity) {
             return ((MainActivity) getActivity()).getCurrentUser();

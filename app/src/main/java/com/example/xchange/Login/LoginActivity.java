@@ -21,6 +21,12 @@ import com.example.xchange.database.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The {@code LoginActivity} class handles user login functionality.
+ * It provides a user interface for entering login credentials and validates them.
+ * Upon successful login, it navigates to the {@link MainActivity}.
+ * If the user does not have an account, they can navigate to the {@link RegisterActivity}.
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel viewModel;
@@ -29,6 +35,13 @@ public class LoginActivity extends AppCompatActivity {
     private String username;
     private User user;
 
+    /**
+     * Called when the activity is first created.
+     * Initializes the UI, ViewModel, and observes LiveData for login success or failure.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data most recently supplied in {@code onSaveInstanceState}.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +91,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Proceeds to the {@link MainActivity} after successful login.
+     * Retrieves notifications for the logged-in user and passes them to the next activity.
+     *
+     * @param user The successfully logged-in {@link User}.
+     */
     private void proceedToMainActivity(User user) {
         viewModel.getNotificationsForUser(user.getUsername(), new UserRepository.NotificationCallback() {
             @Override

@@ -24,12 +24,22 @@ import com.example.xchange.xChanger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity for creating a counteroffer in the xChange app.
+ * Displays request details and allows the user to select an item for the counteroffer.
+ */
 public class CounterofferActivity extends AppCompatActivity {
 
     private TextView requesterTextView, requesteeTextView, requestedItemTextView;
     private Spinner offeredItemSpinner;
     private CounterofferViewModel viewModel;
 
+    /**
+     * Called when the activity is created.
+     * Initializes the UI, ViewModel, and handles intent data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +52,9 @@ public class CounterofferActivity extends AppCompatActivity {
         setupCounterofferButton();
     }
 
+    /**
+     * Initializes the UI components of the activity.
+     */
     private void initializeUI() {
         requesterTextView = findViewById(R.id.requesterTextView);
         requesteeTextView = findViewById(R.id.requesteeTextView);
@@ -49,6 +62,9 @@ public class CounterofferActivity extends AppCompatActivity {
         offeredItemSpinner = findViewById(R.id.offeredItemSpinner);
     }
 
+    /**
+     * Initializes the ViewModel used for managing data in the activity.
+     */
     private void initializeViewModel() {
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @NonNull
@@ -59,6 +75,9 @@ public class CounterofferActivity extends AppCompatActivity {
         }).get(CounterofferViewModel.class);
     }
 
+    /**
+     * Handles the intent data passed to the activity and updates the ViewModel.
+     */
     private void handleIntentData() {
         Request request = getIntent().getParcelableExtra("REQUEST");
         ArrayList<Item> items = getIntent().getParcelableArrayListExtra("XCHANGER_ITEMS");
@@ -72,6 +91,9 @@ public class CounterofferActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Observes data in the ViewModel and updates the UI accordingly.
+     */
     private void observeViewModelData() {
         viewModel.getRequesterText().observe(this, text -> requesterTextView.setText(text));
         viewModel.getRequesteeText().observe(this, text -> requesteeTextView.setText(text));
@@ -86,6 +108,11 @@ public class CounterofferActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates the spinner with items and handles item selection events.
+     *
+     * @param items The list of items to display in the spinner.
+     */
     private void populateSpinner(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<>(
                 this,
@@ -109,11 +136,17 @@ public class CounterofferActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up the counteroffer button and its click event.
+     */
     private void setupCounterofferButton() {
         Button initializeCounterofferButton = findViewById(R.id.initializeCounterofferButton);
         initializeCounterofferButton.setOnClickListener(view -> initializeCounteroffer());
     }
 
+    /**
+     * Initializes a counteroffer using the selected item and request details.
+     */
     private void initializeCounteroffer() {
         Item selectedItem = (Item) offeredItemSpinner.getSelectedItem();
 
@@ -144,6 +177,12 @@ public class CounterofferActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Navigates to the main activity with the updated user and selected item data.
+     *
+     * @param user         The user involved in the counteroffer.
+     * @param selectedItem The item selected for the counteroffer.
+     */
     private void navigateToMainActivity(User user, Item selectedItem) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("USER", user);

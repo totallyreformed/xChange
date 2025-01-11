@@ -27,6 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Activity class for displaying and managing the user's profile in the xChange application.
+ * <p>
+ * Displays user information, statistics, and allows navigation to other activities such as requests,
+ * counter-offers, and exchanged items. Users can also log out or navigate through the app using the
+ * bottom navigation bar.
+ * </p>
+ */
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
@@ -34,6 +42,11 @@ public class ProfileActivity extends AppCompatActivity {
             requestsSentCountTextView, requestsReceivedCountTextView,
             counterOffersSentCountTextView, counterOffersReceivedCountTextView, totalExchangesTextView;
 
+    /**
+     * Initializes the activity and its components.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +64,9 @@ public class ProfileActivity extends AppCompatActivity {
         loadInitialData();
     }
 
+    /**
+     * Initializes UI components such as TextViews and buttons.
+     */
     private void initializeUI() {
         usernameTextView = findViewById(R.id.profileUsernameTextView);
         emailTextView = findViewById(R.id.profileEmailTextView);
@@ -67,11 +83,19 @@ public class ProfileActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(v -> navigateToLogin());
     }
 
+    /**
+     * Retrieves the user object passed through the intent.
+     *
+     * @return The User object, or null if not found.
+     */
     private User retrieveUserFromIntent() {
         Intent intent = getIntent();
         return intent.getParcelableExtra("USER");
     }
 
+    /**
+     * Navigates to the login activity and clears the current activity stack.
+     */
     private void navigateToLogin() {
         Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
         loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -79,11 +103,21 @@ public class ProfileActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Initializes the ViewModel for managing profile data.
+     *
+     * @param user The user for whom the profile data is managed.
+     */
     private void initializeViewModel(User user) {
         ProfileViewModelFactory factory = new ProfileViewModelFactory(getApplication(), user);
         viewModel = new ViewModelProvider(this, factory).get(ProfileViewModel.class);
     }
 
+    /**
+     * Observes LiveData from the ViewModel to update the UI based on changes.
+     *
+     * @param user The current user.
+     */
     @SuppressLint("SetTextI18n")
     private void observeViewModelData(User user) {
         viewModel.getUser().observe(this, userData -> {
@@ -115,6 +149,11 @@ public class ProfileActivity extends AppCompatActivity {
         viewModel.getUserXChanges().observe(this, xChanges -> totalExchangesTextView.setText(xChanges.size() + " xChanges"));
     }
 
+    /**
+     * Updates the user information displayed in the profile.
+     *
+     * @param user The current user.
+     */
     @SuppressLint("SetTextI18n")
     private void updateUserInfo(User user) {
         usernameTextView.setText("Username: " + user.getUsername());
@@ -123,6 +162,11 @@ public class ProfileActivity extends AppCompatActivity {
         locationTextView.setText("Location: " + user.getLocation());
     }
 
+    /**
+     * Sets up the bottom navigation bar for navigation between activities.
+     *
+     * @param user The current user.
+     */
     private void setupNavigation(User user) {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.menu_profile);
@@ -139,12 +183,23 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Navigates to the specified activity.
+     *
+     * @param targetActivity The target activity class.
+     * @param user           The current user.
+     */
     private void navigateToActivity(Class<?> targetActivity, User user) {
         Intent intent = new Intent(ProfileActivity.this, targetActivity);
         intent.putExtra("USER", user);
         startActivity(intent);
     }
 
+    /**
+     * Sets up listeners for buttons related to requests, counter-offers, and items.
+     *
+     * @param user The current user.
+     */
     private void setupButtonListeners(User user) {
         setupRequestsButtons(user);
         setupCounterOffersButtons(user);
@@ -152,6 +207,11 @@ public class ProfileActivity extends AppCompatActivity {
         setupXChangesButton(user);
     }
 
+    /**
+     * Sets up listeners for requests-related buttons.
+     *
+     * @param user The current user.
+     */
     private void setupRequestsButtons(User user) {
         Button requestsSentButton = findViewById(R.id.requestsSentButton);
         Button requestsReceivedButton = findViewById(R.id.requestsReceivedButton);
@@ -160,6 +220,13 @@ public class ProfileActivity extends AppCompatActivity {
         requestsReceivedButton.setOnClickListener(v -> navigateToRequestsActivity("RECEIVED", user, viewModel.getRequestsReceived().getValue()));
     }
 
+    /**
+     * Navigates to the RequestsActivity with the specified type of requests.
+     *
+     * @param requestType The type of requests (e.g., "SENT", "RECEIVED").
+     * @param user        The current user.
+     * @param requests    The list of requests.
+     */
     private void navigateToRequestsActivity(String requestType, User user, List<Request> requests) {
         Intent intent = new Intent(ProfileActivity.this, RequestsActivity.class);
         intent.putExtra("REQUEST_TYPE", requestType);
@@ -168,6 +235,11 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Sets up listeners for counter-offers-related buttons.
+     *
+     * @param user The current user.
+     */
     private void setupCounterOffersButtons(User user) {
         Button counterOffersSentButton = findViewById(R.id.counterOffersSentButton);
         Button counterOffersReceivedButton = findViewById(R.id.counterOffersReceivedButton);
@@ -176,6 +248,13 @@ public class ProfileActivity extends AppCompatActivity {
         counterOffersReceivedButton.setOnClickListener(v -> navigateToCounterOffersActivity("COUNTER_OFFERS_RECEIVED", user, viewModel.getCounterOffersReceived().getValue()));
     }
 
+    /**
+     * Navigates to the CounteroffersActivity with the specified type of counter-offers.
+     *
+     * @param requestType   The type of counter-offers (e.g., "COUNTER_OFFERS_SENT", "COUNTER_OFFERS_RECEIVED").
+     * @param user          The current user.
+     * @param counterOffers The list of counter-offers.
+     */
     private void navigateToCounterOffersActivity(String requestType, User user, List<Counteroffer> counterOffers) {
         Intent intent = new Intent(ProfileActivity.this, CounteroffersActivity.class);
         intent.putExtra("REQUEST_TYPE", requestType);
@@ -184,6 +263,11 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Sets up the listener for the button to view all items.
+     *
+     * @param user The current user.
+     */
     private void setupViewAllItemsButton(User user) {
         Button viewAllItemsButton = findViewById(R.id.viewAllItemsButton);
         viewAllItemsButton.setOnClickListener(v -> {
@@ -194,6 +278,11 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up the listener for the button to view xChanges.
+     *
+     * @param user The current user.
+     */
     private void setupXChangesButton(User user) {
         Button xChangesButton = findViewById(R.id.xChangesButton);
         xChangesButton.setOnClickListener(v -> {
@@ -209,6 +298,9 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Loads initial data for the profile such as statistics, items, and requests.
+     */
     private void loadInitialData() {
         viewModel.loadProfileData();
         viewModel.loadUserItems();

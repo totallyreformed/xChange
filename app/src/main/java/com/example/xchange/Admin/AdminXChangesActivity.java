@@ -17,12 +17,22 @@ import com.example.xchange.database.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity for displaying and managing all xChanges in the xChange app as an admin user.
+ * Provides a list of completed exchanges (xChanges) for administrative review or management.
+ */
 public class AdminXChangesActivity extends AppCompatActivity {
     private RecyclerView adminXChangesRecyclerView;
     private xChangesAdapter xChangesAdapter;
     private UserRepository userRepository;
     private User currentUser; // Admin user
 
+    /**
+     * Called when the activity is created.
+     * Sets up the RecyclerView, toolbar, and fetches xChanges data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,12 +72,21 @@ public class AdminXChangesActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Called when the activity is destroyed.
+     * Ensures proper cleanup of resources.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         userRepository.shutdownExecutor(); // Ensure to shutdown the executor to prevent leaks
     }
 
+    /**
+     * Handles the navigation up action.
+     *
+     * @return True if the action was handled successfully.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();

@@ -3,12 +3,29 @@ package com.example.xchange.database;
 import androidx.room.TypeConverter;
 import com.example.xchange.SimpleCalendar;
 
+/**
+ * Converter class for transforming {@link SimpleCalendar} objects to and from String representations.
+ * Used by Room for persisting {@link SimpleCalendar} fields in the database.
+ */
 public class CalendarConverter {
+
+    /**
+     * Converts a {@link SimpleCalendar} object to its String representation.
+     *
+     * @param calendar The {@link SimpleCalendar} object to be converted.
+     * @return A String representation of the calendar, or null if the calendar is null.
+     */
     @TypeConverter
     public static String fromSimpleCalendar(SimpleCalendar calendar) {
         return calendar != null ? calendar.toString() : null;
     }
 
+    /**
+     * Converts a {@link SimpleCalendar} object to its String representation.
+     *
+     * @param calendarString The {@link SimpleCalendar} object to be converted.
+     * @return A String representation of the calendar, or null if the calendar is null.
+     */
     @TypeConverter
     public static SimpleCalendar toSimpleCalendar(String calendarString) {
         if (calendarString == null) return null;

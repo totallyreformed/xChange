@@ -1,4 +1,3 @@
-// File: SearchViewModel.java
 package com.example.xchange.Search;
 
 import android.app.Application;
@@ -17,6 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * ViewModel class for managing search operations in the xChange application.
+ * <p>
+ * This class handles search queries, processes search results, and updates the UI through LiveData.
+ * It implements {@link SearchPresenter.SearchView} to receive callbacks from the presenter.
+ * </p>
+ */
 public class SearchViewModel extends AndroidViewModel implements SearchPresenter.SearchView {
 
     private final SearchPresenter presenter;
@@ -24,21 +30,42 @@ public class SearchViewModel extends AndroidViewModel implements SearchPresenter
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final String currentUser;
 
+    /**
+     * Constructor for initializing the SearchViewModel.
+     *
+     * @param application The application context.
+     * @param user        The current user performing the search.
+     */
     public SearchViewModel(@NonNull Application application, User user) {
         super(application);
         presenter = new SearchPresenter(application.getApplicationContext(), this);
         currentUser = user.getUsername();
     }
 
+    /**
+     * Retrieves the LiveData object for observing search results.
+     *
+     * @return LiveData containing the list of search results.
+     */
     public LiveData<List<Item>> getSearchResults() {
         return searchResults;
     }
 
+    /**
+     * Retrieves the LiveData object for observing error messages.
+     *
+     * @return LiveData containing the error message.
+     */
     public LiveData<String> getError() {
         return error;
     }
 
-
+    /**
+     * Initiates a search operation based on the query and category.
+     *
+     * @param query    The search query string.
+     * @param category The category filter for the search. If null, the search is performed by query only.
+     */
     public void searchItems(String query, Category category) {
         if (category == null) {
             presenter.performSearch(query, null);
@@ -47,6 +74,12 @@ public class SearchViewModel extends AndroidViewModel implements SearchPresenter
         }
     }
 
+    /**
+     * Callback method triggered when search results are successfully loaded.
+     * Filters out items belonging to the current user.
+     *
+     * @param items The list of items retrieved from the search.
+     */
     @Override
     public void onSearchResultsLoaded(List<Item> items) {
         Log.d("SearchViewModel", "onSearchResultsLoaded called with items: " + items.size());
@@ -61,7 +94,12 @@ public class SearchViewModel extends AndroidViewModel implements SearchPresenter
         searchResults.postValue(filteredItems);
     }
 
-
+    /**
+     * Callback method triggered when the search operation fails.
+     * Updates the LiveData with the error message.
+     *
+     * @param message The error message.
+     */
     @Override
     public void onSearchFailed(String message) {
         error.postValue(message);

@@ -22,6 +22,10 @@ import androidx.lifecycle.LiveData;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity for displaying and managing all items in the xChange app as an admin user.
+ * Provides a list of items with options to view their details.
+ */
 public class AdminItemsActivity extends AppCompatActivity {
 
     private RecyclerView adminItemsRecyclerView;
@@ -29,6 +33,12 @@ public class AdminItemsActivity extends AppCompatActivity {
     private UserRepository userRepository;
     private User currentUser; // Admin user
 
+    /**
+     * Called when the activity is created.
+     * Sets up the RecyclerView, toolbar, and observes the items data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +89,12 @@ public class AdminItemsActivity extends AppCompatActivity {
         });
     }
 
-    // Optional: Implement method to retrieve Admin user
+    /**
+     * Retrieves the admin user.
+     * This method should be implemented based on the application's logic for retrieving the admin user.
+     *
+     * @return The admin user.
+     */
     private User getAdminUser() {
         // Retrieve the Admin user from SharedPreferences, Intent, or any other method you use
         // For example:
@@ -87,12 +102,21 @@ public class AdminItemsActivity extends AppCompatActivity {
         return null; // Replace with actual retrieval logic
     }
 
+    /**
+     * Called when the activity is destroyed.
+     * Ensures proper cleanup of resources.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         userRepository.shutdownExecutor(); // Ensure to shutdown the executor to prevent leaks
     }
 
+    /**
+     * Handles the navigation up action.
+     *
+     * @return True if the action was handled successfully.
+     */
     @Override
     public boolean onSupportNavigateUp(){
         finish();

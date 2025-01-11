@@ -15,6 +15,11 @@ import com.example.xchange.Item;
 import com.example.xchange.R;
 import com.example.xchange.Request;
 
+/**
+ * The {@code SeerequestsCounteroffersActivity} class is responsible for displaying the details
+ * of a {@link Request} or {@link Counteroffer} to the user. It handles the visualization
+ * of offered and requested items along with the associated requester and requestee details.
+ */
 public class SeerequestsCounteroffersActivity extends AppCompatActivity {
 
     private ImageView offeredItemImageView, requestedItemImageView;
@@ -22,6 +27,12 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
     private TextView requesterNameTextView, requesteeNameTextView;
     private Button backButton;
 
+    /**
+     * Called when the activity is first created. Initializes the UI and handles intent data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data most recently supplied in {@code onSaveInstanceState}.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +43,9 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         setupBackButton();
     }
 
+    /**
+     * Initializes the UI components for the activity.
+     */
     private void initializeUI() {
         offeredItemImageView = findViewById(R.id.offeredItemImageView);
         requestedItemImageView = findViewById(R.id.requestedItemImageView);
@@ -42,6 +56,10 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
     }
 
+    /**
+     * Handles the intent data passed to the activity, determining whether a
+     * {@link Counteroffer} or {@link Request} is being displayed.
+     */
     private void handleIntentData() {
         boolean hasCounteroffer = getIntent().getBooleanExtra("HAS_COUNTEROFFER", false);
 
@@ -62,28 +80,55 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up the back button functionality.
+     */
     private void setupBackButton() {
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Displays the details of a {@link Request}.
+     *
+     * @param request The {@link Request} object containing the details to display.
+     */
     private void displayRequestDetails(Request request) {
         setRequesterAndRequesteeNames(request.getRequester().getUsername(), request.getRequestee().getUsername());
         displayItemDetails(request.getOfferedItem(), offeredItemNameTextView, offeredItemImageView, "Offered Item");
         displayItemDetails(request.getRequestedItem(), requestedItemNameTextView, requestedItemImageView, "Requested Item");
     }
 
+    /**
+     * Displays the details of a {@link Counteroffer}.
+     *
+     * @param counteroffer The {@link Counteroffer} object containing the details to display.
+     */
     private void displayCounterofferDetails(Counteroffer counteroffer) {
         setRequesterAndRequesteeNames(counteroffer.getCounterofferer().getUsername(), counteroffer.getCounterofferee().getUsername());
         displayItemDetails(counteroffer.getOfferedItem(), offeredItemNameTextView, offeredItemImageView, "Counteroffer Item");
         displayItemDetails(counteroffer.getRequestedItem(), requestedItemNameTextView, requestedItemImageView, "Requested Item");
     }
 
+    /**
+     * Sets the names of the requester and requestee in the corresponding UI elements.
+     *
+     * @param requester The username of the requester.
+     * @param requestee The username of the requestee.
+     */
     @SuppressLint("SetTextI18n")
     private void setRequesterAndRequesteeNames(String requester, String requestee) {
         requesterNameTextView.setText("Requester: " + requester);
         requesteeNameTextView.setText("Requestee: " + requestee);
     }
 
+    /**
+     * Displays the details of an item in the UI.
+     *
+     * @param item         The {@link Item} object containing the details to display.
+     * @param nameTextView The {@link TextView} for the item's name.
+     * @param imageView    The {@link ImageView} for the item's image.
+     * @param label        A label describing the item's role (e.g., "Offered Item").
+     */
     @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, TextView nameTextView, ImageView imageView, String label) {
         if (item != null) {
@@ -95,6 +140,12 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Loads an image into an {@link ImageView} using Glide.
+     *
+     * @param filePath The file path of the image.
+     * @param imageView The {@link ImageView} in which to load the image.
+     */
     private void loadImage(String filePath, ImageView imageView) {
         if (filePath != null) {
             try {
@@ -116,6 +167,11 @@ public class SeerequestsCounteroffersActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays a toast message and closes the activity.
+     *
+     * @param message The message to display in the toast.
+     */
     private void showToastAndFinish(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         finish();

@@ -26,6 +26,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Main activity for the xChange application.
+ * <p>
+ * Handles the main navigation and user interface for different user types (Admin and xChanger).
+ * Displays notifications, allows navigation to various sections (Browse, Search, Profile),
+ * and manages item details, uploads, and user-related actions.
+ * </p>
+ */
 public class MainActivity extends AppCompatActivity {
 
     private MainActivityViewModel viewModel;
@@ -33,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton uploadFab;
     private User currentUser;
 
+    /**
+     * Initializes the activity components and sets up user-specific UI and logic.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         observeItems();
     }
 
+    /**
+     * Initializes UI components and sets up listeners for user actions.
+     */
     private void initializeComponents() {
         uploadFab = findViewById(R.id.uploadFab);
         uploadFab.setOnClickListener(v -> {
@@ -71,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles navigation to an item detail screen if an item ID is provided in the intent.
+     *
+     * @param intent The intent containing the requested item ID.
+     * @return The requested item ID if valid; -1 otherwise.
+     */
     private int handleRequestedItemId(Intent intent) {
         int requestedItemId = -1;
         String requestedItemIdString = intent.getStringExtra("REQUESTED_ITEM_ID");
@@ -87,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
         return requestedItemId;
     }
 
+    /**
+     * Loads the appropriate fragment based on the current user's type.
+     * Admin users see the AdminHomeFragment, while xChangers see the XChangerHomeFragment.
+     */
     private void loadUserFragment() {
         if (currentUser != null) {
             String userType = currentUser.getUser_type();
@@ -109,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up the bottom navigation bar and its item selection listeners.
+     *
+     * @param bottomNavigationView The BottomNavigationView component.
+     */
     private void setupBottomNavigation(BottomNavigationView bottomNavigationView) {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -124,10 +155,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Handles the Browse menu selection.
+     *
+     * @return True if handled successfully; false otherwise.
+     */
     private boolean handleBrowseSelection() {
         return true;
     }
 
+    /**
+     * Handles the Search menu selection and navigates to the SearchActivity.
+     *
+     * @return True if handled successfully; false otherwise.
+     */
     private boolean handleSearchSelection() {
         Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
         searchIntent.putExtra("USER", currentUser);
@@ -135,6 +176,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Handles the Profile menu selection and navigates to the ProfileActivity.
+     *
+     * @return True if handled successfully; false otherwise.
+     */
     private boolean handleProfileSelection() {
         Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
         profileIntent.putExtra("USER", currentUser);
@@ -142,6 +188,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Navigates to the item detail screen for the given item ID.
+     *
+     * @param itemId The ID of the item to view.
+     */
     private void navigateToItemDetail(int itemId) {
         Intent detailIntent = new Intent(MainActivity.this, ItemDetailActivity.class);
         detailIntent.putExtra("ITEM_ID", itemId);
@@ -149,6 +200,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(detailIntent);
     }
 
+    /**
+     * Observes the list of items and updates the adapter accordingly.
+     */
     private void observeItems() {
         viewModel.getItemsList().observe(this, items -> {
             if (items != null && !items.isEmpty()) {
@@ -159,12 +213,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Opens the UploadActivity for the current user.
+     */
     private void openUploadActivity() {
         Intent uploadIntent = new Intent(MainActivity.this, UploadActivity.class);
         uploadIntent.putExtra("USER", currentUser);
         startActivity(uploadIntent);
     }
 
+    /**
+     * Displays notification dialogs sequentially for a list of notifications.
+     *
+     * @param notifications The list of notifications to display.
+     */
     private void showNotificationDialogsSequentially(List<Notification> notifications) {
         if (notifications.isEmpty()) {
             viewModel.deleteNotificationsForUser(currentUser.getUsername(), new UserRepository.OperationCallback() {
@@ -196,6 +258,11 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * Returns the current logged-in user.
+     *
+     * @return The current user.
+     */
     public User getCurrentUser() {
         return currentUser;
     }

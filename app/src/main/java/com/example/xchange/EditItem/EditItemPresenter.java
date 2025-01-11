@@ -11,11 +11,22 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Presenter class for managing the logic of editing an item in the xChange app.
+ * Handles interactions with the database through the ItemDao and performs updates on a background thread.
+ */
 public class EditItemPresenter {
 
     private final ItemDao itemDao;
     private final Executor executor;
 
+    /**
+     * Constructs an EditItemPresenter.
+     *
+     * @param itemDao  The DAO for accessing and modifying item data in the database.
+     * @param executor The executor for performing database operations on a background thread.
+     * @throws IllegalArgumentException If the provided executor is null.
+     */
     public EditItemPresenter(ItemDao itemDao, Executor executor) {
         if (executor == null) {
             throw new IllegalArgumentException("Executor cannot be null");
@@ -24,6 +35,16 @@ public class EditItemPresenter {
         this.executor = executor;
     }
 
+    /**
+     * Updates an item with new details and persists the changes to the database.
+     *
+     * @param item        The item to update.
+     * @param name        The updated name of the item.
+     * @param description The updated description of the item.
+     * @param condition   The updated condition of the item.
+     * @param category    The updated category of the item.
+     * @param images      The updated list of images associated with the item.
+     */
     public void updateItem(Item item, String name, String description, String condition, String category, ArrayList<Image> images) {
         executor.execute(() -> {
             try {

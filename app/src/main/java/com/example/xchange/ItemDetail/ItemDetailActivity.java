@@ -30,6 +30,10 @@ import com.example.xchange.RejectRequest.RejectRequestActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity to display detailed information about an item.
+ * Provides options for viewing, editing, deleting, requesting, accepting, and rejecting trade requests.
+ */
 public class ItemDetailActivity extends AppCompatActivity {
 
     private ItemDetailViewModel viewModel;
@@ -38,6 +42,19 @@ public class ItemDetailActivity extends AppCompatActivity {
     private Request requestToSend; // Request to pass to the new activity
     private Item currentItem;
 
+    /**
+     * Called when the activity is starting. Initializes the layout, retrieves the necessary data,
+     * and sets up UI components, buttons, and their respective listeners.
+     * Handles:
+     * <ul>
+     *     <li>Displaying item details.</li>
+     *     <li>Allowing the user to edit, delete, request, accept, reject, or counteroffer on items.</li>
+     *     <li>Checking and displaying the appropriate UI elements based on the item's status and the user's role.</li>
+     * </ul>
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the most recently saved data. Otherwise, it is null.
+     */
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -293,6 +310,17 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Called when the activity has become visible to the user and is actively running.
+     * This method ensures that the UI is updated with the latest data, such as the status
+     * of requests and the item's details.
+     * Responsibilities:
+     * <ul>
+     *     <li>Fetches the item ID and user data from the Intent.</li>
+     *     <li>Re-checks the request status and updates the UI to reflect the current state.</li>
+     *     <li>Fetches the latest item details for consistency.</li>
+     * </ul>
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -413,6 +441,22 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Displays the details of the specified item in the UI components.
+     * This method updates the TextViews and ImageView to show the item's name, description, category,
+     * condition, and owner. It also configures the visibility of buttons based on whether the user
+     * is the owner of the item and handles the click events for the request button.
+     * Responsibilities:
+     * <ul>
+     *     <li>Populates item details such as name, description, category, condition, and owner.</li>
+     *     <li>Loads the item's image using Glide, or displays a placeholder if no image is available.</li>
+     *     <li>Adjusts the visibility of the delete, edit, and request buttons based on the user's role.</li>
+     *     <li>Sets up a listener for the request button to initiate a request to the item's owner.</li>
+     * </ul>
+     *
+     * @param item The {@link Item} object containing the details to display.
+     * @param user The {@link User} object representing the current user.
+     */
     @SuppressLint("SetTextI18n")
     private void displayItemDetails(Item item, User user) {
         // Display item details
