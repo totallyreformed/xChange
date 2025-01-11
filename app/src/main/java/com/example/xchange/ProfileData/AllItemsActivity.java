@@ -1,5 +1,6 @@
 package com.example.xchange.ProfileData;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -19,24 +20,40 @@ import java.util.ArrayList;
 
 public class AllItemsActivity extends AppCompatActivity {
 
+    private RecyclerView allItemsRecyclerView;
+    private Button backButton;
+    private ItemsAdapter itemsAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_items);
-        RecyclerView allItemsRecyclerView = findViewById(R.id.allItemsRecyclerView);
-        Button backButton = findViewById(R.id.backToProfileButton);
 
+        initializeUI();
+        setupRecyclerView();
+        handleIntentData();
+        setupBackButton();
+    }
+
+    private void initializeUI() {
+        allItemsRecyclerView = findViewById(R.id.allItemsRecyclerView);
+        backButton = findViewById(R.id.backToProfileButton);
+    }
+
+    private void setupRecyclerView() {
+        allItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        itemsAdapter = new ItemsAdapter(new ArrayList<>(), null);
+        allItemsRecyclerView.setAdapter(itemsAdapter);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void handleIntentData() {
         Intent intent = getIntent();
         User user = intent.getParcelableExtra("USER");
         ArrayList<Item> items = intent.getParcelableArrayListExtra("ITEMS");
 
-        // Set up RecyclerView
-        allItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ItemsAdapter itemsAdapter = new ItemsAdapter(new ArrayList<>(),user); // Create adapter with empty list
-        allItemsRecyclerView.setAdapter(itemsAdapter);
-
         if (items == null || items.isEmpty()) {
-            Toast.makeText(this, "No items available", Toast.LENGTH_SHORT).show();
+            showToast("No items available");
             finish();
             return;
         }
@@ -44,15 +61,23 @@ public class AllItemsActivity extends AppCompatActivity {
         itemsAdapter.setItems(items);
         itemsAdapter.notifyDataSetChanged();
 
-        // Handle back button
-        backButton.setOnClickListener(v -> finish());
+        setupItemClickListener(user);
+    }
 
-        // Handle item clicks
+    private void setupItemClickListener(User user) {
         itemsAdapter.setOnItemClickListener(itemId -> {
             Intent detailIntent = new Intent(AllItemsActivity.this, ItemDetailActivity.class);
             detailIntent.putExtra("ITEM_ID", itemId);
             detailIntent.putExtra("USER", user);
             startActivity(detailIntent);
         });
+    }
+
+    private void setupBackButton() {
+        backButton.setOnClickListener(v -> finish());
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

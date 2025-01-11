@@ -2,7 +2,6 @@ package com.example.xchange.ProfileData;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.xchange.R;
 import com.example.xchange.User;
-import com.example.xchange.database.AppDatabase;
 import com.example.xchange.xChange;
 import com.example.xchange.xChangesAdapter;
 
@@ -30,30 +28,48 @@ public class xChangesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xchanges);
 
-        // Retrieve Intent data
+        initializeUI();
+        handleIntentData();
+        setupRecyclerView();
+        setupBackButton();
+        checkForEmptyList();
+    }
+
+    private void initializeUI() {
+        xChangesRecyclerView = findViewById(R.id.xChangesRecyclerView);
+        Button backButton = findViewById(R.id.backToProfileButton);
+        backButton.setOnClickListener(v -> finish());
+    }
+
+    private void handleIntentData() {
         Intent intent = getIntent();
         currentUser = intent.getParcelableExtra("USER");
         xChangesList = intent.getParcelableArrayListExtra("XCHANGES");
+
         if (currentUser == null || xChangesList == null) {
-            Toast.makeText(this, "Error loading xChanges data.", Toast.LENGTH_SHORT).show();
+            showToast("Error loading xChanges data.");
             finish();
-            return;
         }
+    }
 
-        // Initialize RecyclerView
-        xChangesRecyclerView = findViewById(R.id.xChangesRecyclerView);
+    private void setupRecyclerView() {
         xChangesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         adapter = new xChangesAdapter(xChangesList);
         xChangesRecyclerView.setAdapter(adapter);
+    }
 
-        // Handle back button
+    private void setupBackButton() {
         Button backButton = findViewById(R.id.backToProfileButton);
         backButton.setOnClickListener(v -> finish());
+    }
 
-        // Show a message if there are no xChanges
+    private void checkForEmptyList() {
         if (xChangesList.isEmpty()) {
-            Toast.makeText(this, "No xChanges found.", Toast.LENGTH_SHORT).show();
+            showToast("No xChanges found.");
         }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
