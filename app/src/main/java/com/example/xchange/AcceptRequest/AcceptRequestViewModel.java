@@ -6,48 +6,26 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Request;
-import com.example.xchange.database.UserRepository;
-import com.example.xchange.xChanger;
 
 public class AcceptRequestViewModel extends ViewModel {
 
-    private final UserRepository repository;
+    private final AcceptRequestPresenter presenter;
 
     public AcceptRequestViewModel(Context context) {
-        repository = new UserRepository(context);
+        // Initialize the presenter with the context.
+        presenter = new AcceptRequestPresenter(context);
     }
 
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
-        repository.acceptRequest(request, rating, new UserRepository.AcceptRequestCallback() {
-            @Override
-            public void onSuccess(long xChangeId) {
-                callback.onSuccess(xChangeId);
-            }
-
-            @Override
-            public void onFailure(String message) {
-                callback.onFailure(message);
-            }
-        });
+        presenter.acceptRequest(request, rating, callback);
     }
 
     public void acceptCounteroffer(Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
-        repository.acceptCounteroffer(counteroffer, rating, new UserRepository.AcceptRequestCallback() {
-            @Override
-            public void onSuccess(long xChangeId) {
-                callback.onSuccess(xChangeId);
-            }
-
-            @Override
-            public void onFailure(String message) {
-                callback.onFailure(message);
-            }
-        });
+        presenter.acceptCounteroffer(counteroffer, rating, callback);
     }
 
     public interface AcceptRequestCallback {
         void onSuccess(long xChangeId);
-
         void onFailure(String message);
     }
 }
