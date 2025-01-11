@@ -26,5 +26,3 @@ public class MainActivityViewModelFactory implements ViewModelProvider.Factory {
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
 }
-
-

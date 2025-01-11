@@ -89,4 +89,3 @@ public class MainActivityViewModel extends AndroidViewModel {
         fetchTotalCategories();
     }
 }
-

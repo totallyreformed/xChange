@@ -8,7 +8,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.xchange.Counteroffer;
 import com.example.xchange.R;
+import com.example.xchange.Request;
+import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChange;
 import com.example.xchange.xChanger;
@@ -21,7 +24,9 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
     private TextView counterpartyContactInfoHeader, counterpartyContactInfoTextView;
     private Button backButton;
     private UserRepository userRepository;
-    private xChanger currentUser;
+    private User currentUser;
+    private Request request;
+    private Counteroffer counteroffer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,7 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
             finish();
         });
 
+        // Retrieve intent data
         long xChangeId = getIntent().getLongExtra("XCHANGE_ID", -1);
         currentUser = getIntent().getParcelableExtra("USER");
 
@@ -71,17 +77,30 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
         exchangeStatusTextView.setText("Exchange Accepted!");
 
         // Populate your contact information
-        yourContactInfoHeader.setText("Your Contact Information:");
-        String yourContactInfo = "Name: " + xchange.getOfferer().getUsername() + "\n"
-                + "Email: " + xchange.getOfferer().getEmail() + "\n"
-                + "Location: " + xchange.getOfferer().getLocation();
-        yourContactInfoTextView.setText(yourContactInfo);
+        if (currentUser.getUsername().equals(xchange.getOfferer().getUsername())) {
+            yourContactInfoHeader.setText("Your Contact Information:");
+            String yourContactInfo = "Name: " + xchange.getOfferer().getUsername() + "\n"
+                    + "Email: " + xchange.getOfferer().getEmail() + "\n"
+                    + "Location: " + xchange.getOfferer().getLocation();
+            yourContactInfoTextView.setText(yourContactInfo);
 
-        // Populate counterparty's contact information
-        counterpartyContactInfoHeader.setText("Counterparty's Contact Information:");
-        String counterpartyContactInfo = "Name: " + xchange.getOfferee().getUsername() + "\n"
-                + "Email: " + xchange.getOfferee().getEmail() + "\n"
-                + "Location: " + xchange.getOfferee().getLocation();
-        counterpartyContactInfoTextView.setText(counterpartyContactInfo);
+            counterpartyContactInfoHeader.setText("Counterparty's Contact Information:");
+            String counterpartyContactInfo = "Name: " + xchange.getOfferee().getUsername() + "\n"
+                    + "Email: " + xchange.getOfferee().getEmail() + "\n"
+                    + "Location: " + xchange.getOfferee().getLocation();
+            counterpartyContactInfoTextView.setText(counterpartyContactInfo);
+        } else {
+            yourContactInfoHeader.setText("Your Contact Information:");
+            String yourContactInfo = "Name: " + xchange.getOfferee().getUsername() + "\n"
+                    + "Email: " + xchange.getOfferee().getEmail() + "\n"
+                    + "Location: " + xchange.getOfferee().getLocation();
+            yourContactInfoTextView.setText(yourContactInfo);
+
+            counterpartyContactInfoHeader.setText("Counterparty's Contact Information:");
+            String counterpartyContactInfo = "Name: " + xchange.getOfferer().getUsername() + "\n"
+                    + "Email: " + xchange.getOfferer().getEmail() + "\n"
+                    + "Location: " + xchange.getOfferer().getLocation();
+            counterpartyContactInfoTextView.setText(counterpartyContactInfo);
+        }
     }
 }

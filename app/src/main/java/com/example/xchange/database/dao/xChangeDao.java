@@ -36,7 +36,7 @@ public interface xChangeDao {
     void deleteAll();
 
     // Retrieve a xChange by ID
-    @Query("SELECT * FROM xchanges WHERE xchange_id = :id")
+    @Query("SELECT * FROM xchanges WHERE xchange_id = :id LIMIT 1")
     LiveData<xChange> getXChangeById(long id);
 
     // Retrieve xChanger by username
