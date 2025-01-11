@@ -29,14 +29,25 @@ class ImageTest {
 
     @Test
     void testParcelable() {
-        Image original = new Image("path/for/parcel.jpg", "parcel desc");
-        Parcel parcel = Parcel.obtain();
-        original.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Image created = Image.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
+        Parcel parcel = null;
+        try {
+            // Create the Image object to test
+            Image original = new Image("path/for/parcel.jpg", "parcel desc");
 
-        assertEquals(original.getFilePath(), created.getFilePath());
-        assertEquals(original.getDescription(), created.getDescription());
+            parcel = Parcel.obtain();
+            assertNotNull(parcel, "Parcel.obtain() failed to return a valid Parcel object");
+            original.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            Image created = Image.CREATOR.createFromParcel(parcel);
+            assertEquals(original.getFilePath(), created.getFilePath());
+            assertEquals(original.getDescription(), created.getDescription());
+        } finally {
+            // Recycle the Parcel object if it's not null
+            if (parcel != null) {
+                parcel.recycle();
+            }
+        }
     }
+
+
 }
