@@ -1,17 +1,25 @@
 package com.example.xchange;
 
 import android.os.Parcel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(RobolectricTestRunner.class)
 class ImageTest {
 
+    private Image image;
+
+    @BeforeEach
+    void setUp() {
+        image = new Image("path/to/image.jpg", "desc");
+    }
+
     @Test
     void testGettersSettersToString() {
-        Image image = new Image("path/to/image.jpg", "desc");
         assertEquals("path/to/image.jpg", image.getFilePath());
         assertEquals("desc", image.getDescription());
 
@@ -29,25 +37,13 @@ class ImageTest {
 
     @Test
     void testParcelable() {
-        Parcel parcel = null;
-        try {
-            // Create the Image object to test
-            Image original = new Image("path/for/parcel.jpg", "parcel desc");
+        Parcel parcel = Parcel.obtain();
+        image.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        Image created = Image.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
 
-            parcel = Parcel.obtain();
-            assertNotNull(parcel, "Parcel.obtain() failed to return a valid Parcel object");
-            original.writeToParcel(parcel, 0);
-            parcel.setDataPosition(0);
-            Image created = Image.CREATOR.createFromParcel(parcel);
-            assertEquals(original.getFilePath(), created.getFilePath());
-            assertEquals(original.getDescription(), created.getDescription());
-        } finally {
-            // Recycle the Parcel object if it's not null
-            if (parcel != null) {
-                parcel.recycle();
-            }
-        }
+        assertEquals(image.getFilePath(), created.getFilePath());
+        assertEquals(image.getDescription(), created.getDescription());
     }
-
-
 }

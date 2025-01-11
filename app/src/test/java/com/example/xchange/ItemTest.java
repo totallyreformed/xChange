@@ -1,29 +1,34 @@
 package com.example.xchange;
 
 import android.os.Parcel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(RobolectricTestRunner.class)
 class ItemTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-05");
+    private xChanger owner;
+    private Item item;
 
-    private xChanger createXChanger(String username) {
-        return new xChanger(username, username + "@example.com", cal, "pass", "Loc");
+    @BeforeEach
+    void setUp() {
+        owner = new xChanger("owner", "owner@example.com", cal, "pass", "Loc");
+        item = new Item(owner.getUsername(), "Item1", "Description", Category.TOYS, "New", null);
+        item.setItemId(101L);
     }
 
     @Test
     void testGettersSettersAndAddMethods() {
-        Item item = new Item(createXChanger("owner").getUsername(), "Item1", "Description",
-                Category.TOYS, "New", null);
-        item.setItemId(101L);
         assertEquals(101L, item.getItemId());
         assertEquals("Item1", item.getItemName());
         assertEquals("Description", item.getItemDescription());
@@ -35,7 +40,6 @@ class ItemTest {
         assertNotNull(item.getItemImages());
         assertEquals(1, item.getItemImages().size());
         assertEquals(img, item.getItemImages().get(0));
-
         assertEquals(img, item.getFirstImage());
 
         File tempFile;

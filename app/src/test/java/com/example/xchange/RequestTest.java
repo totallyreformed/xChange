@@ -1,84 +1,80 @@
 package com.example.xchange;
 
 import android.os.Parcel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(RobolectricTestRunner.class)
 class RequestTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-02");
+    private xChanger requester;
+    private xChanger requestee;
+    private Item offeredItem;
+    private Item requestedItem;
+    private Request request;
 
-    private xChanger createXChanger(String username) {
-        return new xChanger(username, username + "@example.com", cal, "pass", "Loc");
-    }
-
-    private Item createItem(Long id, String name, Category cat) {
-        Item item = new Item(createXChanger("owner").getUsername(), name, "desc", cat, "New", null);
-        item.setItemId(id);
-        return item;
-    }
-
-    private Request createRequest() {
-        xChanger requester = createXChanger("requester");
-        xChanger requestee = createXChanger("requestee");
-        Item offered = createItem(1L, "Offered", Category.BOOKS);
-        Item requested = createItem(2L, "Requested", Category.FASHION);
-        Request req = new Request(requester, requestee, offered, requested, cal);
-        req.setRequestId(50L);
-        return req;
+    @BeforeEach
+    void setUp() {
+        requester = new xChanger("requester", "requester@example.com", cal, "pass", "Loc1");
+        requestee = new xChanger("requestee", "requestee@example.com", cal, "pass", "Loc2");
+        offeredItem = new Item(requester.getUsername(), "Offered", "desc", Category.BOOKS, "New", null);
+        offeredItem.setItemId(1L);
+        requestedItem = new Item(requestee.getUsername(), "Requested", "desc", Category.FASHION, "New", null);
+        requestedItem.setItemId(2L);
+        request = new Request(requester, requestee, offeredItem, requestedItem, cal);
+        request.setRequestId(50L);
     }
 
     @Test
     void testGettersSettersAndStatus() {
-        Request req = createRequest();
+        assertEquals(50L, request.getRequestId());
+        assertEquals("Active", request.getStatus());
 
-        assertEquals(50L, req.getRequestId());
-        assertEquals("Active", req.getStatus());
-        req.make_unactive();
-        assertFalse(req.isActive());
-        assertEquals("Inactive", req.getStatus());
+        request.make_unactive();
+        assertFalse(request.isActive());
+        assertEquals("Inactive", request.getStatus());
 
-        Item newRequested = createItem(3L, "NewRequested", Category.HOME);
-        req.setRequestedItem(newRequested);
-        assertEquals(newRequested, req.getRequestedItem());
+        Item newRequested = new Item(requestee.getUsername(), "NewRequested", "desc", Category.HOME, "New", null);
+        newRequested.setItemId(3L);
+        request.setRequestedItem(newRequested);
+        assertEquals(newRequested, request.getRequestedItem());
     }
 
     @Test
     void testEqualsHashCodeAndToString() {
-        Request req1 = createRequest();
-        Request req2 = createRequest();
-        req1.setRequestId(100L);
-        req2.setRequestId(100L);
+        Request req2 = new Request(requester, requestee, offeredItem, requestedItem, cal);
+        req2.setRequestId(50L);
 
-        assertEquals(req1, req2);
-        assertEquals(req1.hashCode(), req2.hashCode());
+        assertEquals(request, req2);
+        assertEquals(request.hashCode(), req2.hashCode());
 
-        String str = req1.toString();
-        assertTrue(str.contains("100"));
-        assertTrue(str.contains(req1.getRequester().getUsername()));
-        assertTrue(str.contains(req1.getRequestee().getUsername()));
+        String str = request.toString();
+        assertTrue(str.contains("50"));
+        assertTrue(str.contains(request.getRequester().getUsername()));
+        assertTrue(str.contains(request.getRequestee().getUsername()));
     }
 
     @Test
     void testParcelable() {
-        Request original = createRequest();
-        original.setActive(true);
+        request.setActive(true);
 
         Parcel parcel = Parcel.obtain();
-        original.writeToParcel(parcel, 0);
+        request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Request created = Request.CREATOR.createFromParcel(parcel);
         parcel.recycle();
 
-        assertEquals(original.getRequestId(), created.getRequestId());
-        assertEquals(original.getRequester().getUsername(), created.getRequester().getUsername());
-        assertEquals(original.getRequestee().getUsername(), created.getRequestee().getUsername());
-        assertEquals(original.getOfferedItem().getItemId(), created.getOfferedItem().getItemId());
-        assertEquals(original.getRequestedItem().getItemId(), created.getRequestedItem().getItemId());
-        assertEquals(original.getDateInitiated().toString(), created.getDateInitiated().toString());
-        assertEquals(original.isActive(), created.isActive());
+        assertEquals(request.getRequestId(), created.getRequestId());
+        assertEquals(request.getRequester().getUsername(), created.getRequester().getUsername());
+        assertEquals(request.getRequestee().getUsername(), created.getRequestee().getUsername());
+        assertEquals(request.getOfferedItem().getItemId(), created.getOfferedItem().getItemId());
+        assertEquals(request.getRequestedItem().getItemId(), created.getRequestedItem().getItemId());
+        assertEquals(request.getDateInitiated().toString(), created.getDateInitiated().toString());
+        assertEquals(request.isActive(), created.isActive());
     }
 }

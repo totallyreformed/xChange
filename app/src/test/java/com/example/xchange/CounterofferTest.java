@@ -1,50 +1,51 @@
 package com.example.xchange;
 
 import android.os.Parcel;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.robolectric.RobolectricTestRunner;
-// import mockito
-import static org.mockito.Mockito.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(MockitoJUnitRunner.class)
 class CounterofferTest {
 
-    private final SimpleCalendar cal = new SimpleCalendar("2025-01-04");
+    private SimpleCalendar cal;
+    private xChanger counterofferer;
+    private xChanger counterofferee;
+    private Request request;
+    private Item offeredItem;
 
-    private xChanger createXChanger(String username) {
-        return new xChanger(username, username + "@example.com", cal, "pass", "Loc");
-    }
+    @BeforeEach
+    void setUp() {
+        cal = new SimpleCalendar("2025-01-04");
 
-    private Item createItem(Long id, String name, Category cat) {
-        Item item = new Item(createXChanger("owner").getUsername(), name, "desc", cat, "Good", null);
-        item.setItemId(id);
-        return item;
-    }
+        counterofferer = new xChanger("counter1", "counter1@example.com", cal, "pass", "Loc");
+        counterofferee = new xChanger("counter2", "counter2@example.com", cal, "pass", "Loc");
 
-    private Request createRequest() {
-        xChanger requester = createXChanger("requester");
-        xChanger requestee = createXChanger("requestee");
-        Item offered = createItem(10L, "Offered", Category.FASHION);
-        Item requested = createItem(20L, "Requested", Category.BOOKS);
-        Request req = new Request(requester, requestee, offered, requested, cal);
-        req.setRequestId(50L);
-        return req;
+        xChanger requester = new xChanger("requester", "requester@example.com", cal, "pass", "Loc");
+        xChanger requestee = new xChanger("requestee", "requestee@example.com", cal, "pass", "Loc");
+
+        Item offered = new Item("requester", "Offered", "desc", Category.FASHION, "Good", null);
+        offered.setItemId(10L);
+        Item requested = new Item("requestee", "Requested", "desc", Category.BOOKS, "Good", null);
+        requested.setItemId(20L);
+
+        request = new Request(requester, requestee, offered, requested, cal);
+        request.setRequestId(50L);
+
+        offeredItem = new Item("counter1", "OfferedItem", "desc", Category.TECHNOLOGY, "Good", null);
+        offeredItem.setItemId(30L);
     }
 
     @Test
     void testConstructorAndSetters() {
-        Request req = createRequest();
-        Item offered = createItem(30L, "Offered2", Category.TECHNOLOGY);
-        xChanger counterofferer = createXChanger("counter1");
-        xChanger counterofferee = createXChanger("counter2");
-
-        Counteroffer co = new Counteroffer(req, offered, counterofferer, counterofferee);
-        assertEquals(req.getRequestedItem(), co.getRequestedItem());
-        assertEquals(req, co.getRequest());
-        assertEquals(offered, co.getOfferedItem());
+        Counteroffer co = new Counteroffer(request, offeredItem, counterofferer, counterofferee);
+        assertEquals(request.getRequestedItem(), co.getRequestedItem());
+        assertEquals(request, co.getRequest());
+        assertEquals(offeredItem, co.getOfferedItem());
         assertEquals(counterofferer, co.getCounterofferer());
         assertEquals(counterofferee, co.getCounterofferee());
         assertTrue(co.isActive());
@@ -57,36 +58,33 @@ class CounterofferTest {
 
     @Test
     void testConstructorNullParameters() {
-        xChanger x1 = createXChanger("x1");
-        xChanger x2 = createXChanger("x2");
-        Item offered = createItem(1L, "Any", Category.HOME);
-        Exception ex1 = assertThrows(IllegalArgumentException.class, () -> new Counteroffer(null, offered, x1, x2));
+        Exception ex1 = assertThrows(IllegalArgumentException.class, () -> new Counteroffer(null, offeredItem, counterofferer, counterofferee));
         assertEquals("Request cannot be null.", ex1.getMessage());
-        Exception ex2 = assertThrows(IllegalArgumentException.class, () -> new Counteroffer(createRequest(), null, x1, x2));
+
+        Exception ex2 = assertThrows(IllegalArgumentException.class, () -> new Counteroffer(request, null, counterofferer, counterofferee));
         assertEquals("Offered item cannot be null.", ex2.getMessage());
     }
 
     @Test
     void testToString() {
-        Counteroffer co = new Counteroffer(createRequest(), createItem(40L, "Offered", Category.SPORTS),
-                createXChanger("offerer"), createXChanger("offeree"));
+        Counteroffer co = new Counteroffer(request, offeredItem, counterofferer, counterofferee);
         co.setCounterofferId(200L);
         String str = co.toString();
         assertTrue(str.contains("counterofferId=200"));
         assertTrue(str.contains("requestId=50"));
-        assertTrue(str.contains("offeredItem=40"));
+        assertTrue(str.contains("offeredItem=30"));
     }
 
     @Test
     void testParcelable() {
-        Counteroffer original = new Counteroffer(createRequest(), createItem(55L, "Offered", Category.TOYS),
-                createXChanger("counter1"), createXChanger("counter2"));
+        Counteroffer original = new Counteroffer(request, offeredItem, counterofferer, counterofferee);
         original.setCounterofferId(300L);
         original.setActive(true);
 
         Parcel parcel = Parcel.obtain();
         original.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
+
         Counteroffer created = Counteroffer.CREATOR.createFromParcel(parcel);
         parcel.recycle();
 

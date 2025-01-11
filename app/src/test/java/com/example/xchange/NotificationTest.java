@@ -1,42 +1,55 @@
 package com.example.xchange;
 
 import android.os.Parcel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(RobolectricTestRunner.class)
 class NotificationTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-06");
+    private Notification notification;
+
+    @BeforeEach
+    void setUp() {
+        notification = new Notification("user1", "Test message", cal, 777L);
+        notification.setId(55L);
+    }
 
     @Test
     void testGettersSetters() {
-        Notification notif = new Notification("user1", "Test message", cal, 777L);
-        notif.setId(55L);
+        assertEquals(55L, notification.getId());
+        assertEquals("user1", notification.getUsername());
+        assertEquals("Test message", notification.getMessage());
+        assertEquals(cal, notification.getTimestamp());
+        assertEquals(777L, notification.getXChangeId());
 
-        assertEquals(55L, notif.getId());
-        assertEquals("user1", notif.getUsername());
-        assertEquals("Test message", notif.getMessage());
-        assertEquals(cal, notif.getTimestamp());
-        assertEquals(777L, notif.getXChangeId());
+        // Updating fields
+        notification.setUsername("newUser");
+        notification.setMessage("Updated message");
+        notification.setXChangeId(999L);
+
+        assertEquals("newUser", notification.getUsername());
+        assertEquals("Updated message", notification.getMessage());
+        assertEquals(999L, notification.getXChangeId());
     }
 
     @Test
     void testParcelable() {
-        Notification original = new Notification("user2", "Parcel message", cal, 888L);
-        original.setId(66L);
         Parcel parcel = Parcel.obtain();
-        original.writeToParcel(parcel, 0);
+        notification.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Notification created = Notification.CREATOR.createFromParcel(parcel);
         parcel.recycle();
 
-        assertEquals(original.getId(), created.getId());
-        assertEquals(original.getUsername(), created.getUsername());
-        assertEquals(original.getMessage(), created.getMessage());
-        assertEquals(original.getTimestamp().toString(), created.getTimestamp().toString());
-        assertEquals(original.getXChangeId(), created.getXChangeId());
+        assertEquals(notification.getId(), created.getId());
+        assertEquals(notification.getUsername(), created.getUsername());
+        assertEquals(notification.getMessage(), created.getMessage());
+        assertEquals(notification.getTimestamp().toString(), created.getTimestamp().toString());
+        assertEquals(notification.getXChangeId(), created.getXChangeId());
     }
 }
