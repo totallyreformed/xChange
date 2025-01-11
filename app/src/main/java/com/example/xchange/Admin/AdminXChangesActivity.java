@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminXChangesActivity extends AppCompatActivity {
-
     private RecyclerView adminXChangesRecyclerView;
     private xChangesAdapter xChangesAdapter;
     private UserRepository userRepository;

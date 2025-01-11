@@ -1,9 +1,7 @@
-// File: SearchActivity.java
 package com.example.xchange.Search;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,14 +9,13 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.xchange.Category;
-import com.example.xchange.Item;
+
 import com.example.xchange.ItemsAdapter;
 import com.example.xchange.MainActivity.MainActivity;
 import com.example.xchange.Profile.ProfileActivity;
@@ -27,7 +24,6 @@ import com.example.xchange.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -37,113 +33,138 @@ public class SearchActivity extends AppCompatActivity {
     private Button searchButton, clearButton;
     private RecyclerView searchResultsRecyclerView;
     private ItemsAdapter itemsAdapter;
-    private User user; // Assuming you have a User class
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search); // Ensure activity_search.xml exists
+        setContentView(R.layout.activity_search);
 
-        // Initialize UI elements
+        initializeUI();
+        initializeUser();
+        initializeViewModel();
+        setupCategorySpinner();
+        setupRecyclerView();
+        observeViewModel();
+        setupButtonListeners();
+        setupBottomNavigation();
+    }
+
+    private void initializeUI() {
         searchEditText = findViewById(R.id.searchEditText);
         categorySpinner = findViewById(R.id.categorySpinner);
         searchButton = findViewById(R.id.searchButton);
         clearButton = findViewById(R.id.clearButton);
         searchResultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
+    }
 
+    private void initializeUser() {
         Intent intent = getIntent();
         user = intent.getParcelableExtra("USER");
 
         if (user == null) {
-            Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
-            Intent loginIntent = new Intent(SearchActivity.this, com.example.xchange.Login.LoginActivity.class);
-            startActivity(loginIntent);
-            finish();
-            return;
+            showToast("User data not found");
+            navigateToLogin();
         }
+    }
 
-        ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        categorySpinner.setAdapter(adapter);
-
-        searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        itemsAdapter = new ItemsAdapter(new ArrayList<>(),user);
-        searchResultsRecyclerView.setAdapter(itemsAdapter);
-
-        // Initialize ViewModel with Factory
+    private void initializeViewModel() {
         SearchViewModelFactory factory = new SearchViewModelFactory(getApplication(), user);
         viewModel = new ViewModelProvider(this, factory).get(SearchViewModel.class);
+    }
 
-        // Observe LiveData for search results
+    private void setupCategorySpinner() {
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, Category.values()
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+    }
+
+    private void setupRecyclerView() {
+        searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        itemsAdapter = new ItemsAdapter(new ArrayList<>(), user);
+        searchResultsRecyclerView.setAdapter(itemsAdapter);
+    }
+
+    private void observeViewModel() {
         viewModel.getSearchResults().observe(this, items -> {
             if (items != null && !items.isEmpty()) {
                 itemsAdapter.setItems(items);
             } else {
-                Toast.makeText(this, "No items found.", Toast.LENGTH_SHORT).show();
+                showToast("No items found.");
                 itemsAdapter.setItems(new ArrayList<>());
             }
         });
 
-        // Observe LiveData for errors
         viewModel.getError().observe(this, errorMessage -> {
             if (errorMessage != null) {
-                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+                showToast(errorMessage);
             }
         });
+    }
 
-        // Set up search button click listener
-        searchButton.setOnClickListener(v -> {
-            String query = searchEditText.getText().toString().trim();
-            String selectedCategoryName = categorySpinner.getSelectedItem().toString();
-            Category selectedCategory = Category.fromDisplayName(selectedCategoryName);
+    private void setupButtonListeners() {
+        searchButton.setOnClickListener(v -> performSearch());
+        clearButton.setOnClickListener(v -> clearSearch());
+    }
 
-            if (query.isEmpty() && selectedCategory == Category.ALL) {
-                Toast.makeText(this, "Please enter a search query or select a category.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Category categoryFilter = (selectedCategory == Category.ALL) ? null : selectedCategory;
-            viewModel.searchItems(query, categoryFilter);
-        });
+    private void performSearch() {
+        String query = searchEditText.getText().toString().trim();
+        String selectedCategoryName = categorySpinner.getSelectedItem().toString();
+        Category selectedCategory = Category.fromDisplayName(selectedCategoryName);
 
-        // Set up clear button click listener
-        clearButton.setOnClickListener(v -> {
-            // Clear search input
-            searchEditText.setText("");
-            categorySpinner.setSelection(0);
-            // Clear search results
-            itemsAdapter.setItems(new ArrayList<>());
-            Toast.makeText(this, "Search cleared.", Toast.LENGTH_SHORT).show();
-        });
+        if (query.isEmpty() && selectedCategory == Category.ALL) {
+            showToast("Please enter a search query or select a category.");
+            return;
+        }
 
-        // Initialize BottomNavigationView
+        Category categoryFilter = (selectedCategory == Category.ALL) ? null : selectedCategory;
+        viewModel.searchItems(query, categoryFilter);
+    }
+
+    private void clearSearch() {
+        searchEditText.setText("");
+        categorySpinner.setSelection(0);
+        itemsAdapter.setItems(new ArrayList<>());
+        showToast("Search cleared.");
+    }
+
+    private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-
-        // Set the selected item to Search to highlight it in the navigation bar
         bottomNavigationView.setSelectedItemId(R.id.menu_search);
+        bottomNavigationView.setOnItemSelectedListener(this::handleBottomNavigationSelection);
+    }
 
-        // Set up OnItemSelectedListener for navigation
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.menu_browse) {
-                // Navigate to MainActivity (Browse section)
-                Intent browseIntent = new Intent(SearchActivity.this, MainActivity.class);
-                browseIntent.putExtra("USER", user); // Pass the current User object
-                startActivity(browseIntent);
-                return true;
+    private boolean handleBottomNavigationSelection(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_browse) {
+            navigateToActivity(MainActivity.class);
+            return true;
+        } else if (itemId == R.id.menu_search) {
+            return true;
+        } else if (itemId == R.id.menu_profile) {
+            navigateToActivity(ProfileActivity.class);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-            } else if (itemId == R.id.menu_search) {
-                // Currently in SearchActivity, no action needed
-                return true;
+    private void navigateToActivity(Class<?> activityClass) {
+        Intent intent = new Intent(this, activityClass);
+        intent.putExtra("USER", user);
+        startActivity(intent);
+    }
 
-            } else if (itemId == R.id.menu_profile) {
-                // Navigate to ProfileActivity
-                Intent profileIntent = new Intent(SearchActivity.this, ProfileActivity.class);
-                profileIntent.putExtra("USER", user); // Pass the current User object
-                startActivity(profileIntent);
-                return true;
-            } else {
-                return false;
-            }
-        });
+    private void navigateToLogin() {
+        Intent loginIntent = new Intent(this, com.example.xchange.Login.LoginActivity.class);
+        loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+        finish();
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
