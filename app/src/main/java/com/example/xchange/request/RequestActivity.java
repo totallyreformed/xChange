@@ -36,72 +36,98 @@ public class RequestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
+        initializeUIComponents();
+        if (!loadIntentData()) {
+            showErrorAndExit();
+            return;
+        }
+        setupRequestedItemDetails();
+        setupRequesterDetails();
+        initializeViewModel();
+        setupSendRequestButton();
+    }
 
-        TextView requestedItemNameTextView = findViewById(R.id.requestedItemNameTextView);
-        TextView requestedItemDescriptionTextView = findViewById(R.id.requestedItemDescriptionTextView);
-        TextView requesterNameTextView = findViewById(R.id.requesterNameTextView);
-        ImageView requestedItemImageView = findViewById(R.id.requestedItemImageView);
+    private void initializeUIComponents() {
         userItemsSpinner = findViewById(R.id.userItemsSpinner);
-        Button sendRequestButton = findViewById(R.id.sendRequestButton);
+    }
 
-        // Get Data from Intent
+    private boolean loadIntentData() {
         requestedItem = getIntent().getParcelableExtra("REQUESTED_ITEM");
         user = getIntent().getParcelableExtra("USER");
         itemOwner = getIntent().getParcelableExtra("ITEM_OWNER");
 
-        // Δημιουργούμε τα αντικείμενα Requester και Requestee
-        Requester = new xChanger(user.getUsername(), user.getEmail(), user.getJoin_Date(), user.getPassword(), user.getLocation());
-        Requestee = new xChanger(itemOwner.getUsername(), itemOwner.getEmail(), itemOwner.getJoin_Date(), itemOwner.getPassword(), itemOwner.getLocation());
-
-        if (requestedItem == null || user == null || itemOwner == null) {
-            Toast.makeText(this, "Error loading request details.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+        if (requestedItem != null && user != null && itemOwner != null) {
+            Requester = new xChanger(user.getUsername(), user.getEmail(), user.getJoin_Date(), user.getPassword(), user.getLocation());
+            Requestee = new xChanger(itemOwner.getUsername(), itemOwner.getEmail(), itemOwner.getJoin_Date(), itemOwner.getPassword(), itemOwner.getLocation());
+            return true;
         }
+        return false;
+    }
 
-        // Display requested item details
+    private void showErrorAndExit() {
+        Toast.makeText(this, "Error loading request details.", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    private void setupRequestedItemDetails() {
+        TextView requestedItemNameTextView = findViewById(R.id.requestedItemNameTextView);
+        TextView requestedItemDescriptionTextView = findViewById(R.id.requestedItemDescriptionTextView);
+        ImageView requestedItemImageView = findViewById(R.id.requestedItemImageView);
+
         requestedItemNameTextView.setText(requestedItem.getItemName());
         requestedItemDescriptionTextView.setText(requestedItem.getItemDescription());
-        requesterNameTextView.setText("Requester: " + user.getUsername());
 
         if (requestedItem.getFirstImage() != null) {
-            String filePath = requestedItem.getFirstImage().getFilePath();
-            if (filePath != null) {
-                try {
-                    int resourceId = Integer.parseInt(filePath);
-                    Glide.with(this)
-                            .load(resourceId)
-                            .placeholder(R.drawable.image_placeholder)
-                            .error(R.drawable.image_placeholder)
-                            .into(requestedItemImageView);
-                } catch (NumberFormatException e) {
-                    Glide.with(this)
-                            .load(filePath)
-                            .placeholder(R.drawable.image_placeholder)
-                            .error(R.drawable.image_placeholder)
-                            .into(requestedItemImageView);
-                }
-            } else {
-                requestedItemImageView.setImageResource(R.drawable.image_placeholder);
-            }
+            loadImage(requestedItem.getFirstImage().getFilePath(), requestedItemImageView);
         } else {
             requestedItemImageView.setImageResource(R.drawable.image_placeholder);
         }
+    }
 
-        // Initialize ViewModel
+    private void loadImage(String filePath, ImageView imageView) {
+        if (filePath != null) {
+            try {
+                int resourceId = Integer.parseInt(filePath);
+                Glide.with(this)
+                        .load(resourceId)
+                        .placeholder(R.drawable.image_placeholder)
+                        .error(R.drawable.image_placeholder)
+                        .into(imageView);
+            } catch (NumberFormatException e) {
+                Glide.with(this)
+                        .load(filePath)
+                        .placeholder(R.drawable.image_placeholder)
+                        .error(R.drawable.image_placeholder)
+                        .into(imageView);
+            }
+        } else {
+            imageView.setImageResource(R.drawable.image_placeholder);
+        }
+    }
+
+    private void setupRequesterDetails() {
+        TextView requesterNameTextView = findViewById(R.id.requesterNameTextView);
+        requesterNameTextView.setText("Requester: " + user.getUsername());
+    }
+
+    private void initializeViewModel() {
         viewModel = new ViewModelProvider(this, new RequestViewModelFactory(getApplicationContext())).get(RequestViewModel.class);
         viewModel.fetchUserItems(user.getUsername());
-        viewModel.getUserItems().observe(this, items -> {
-            if (items != null && !items.isEmpty()) {
-                ArrayAdapter<Item> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>(items));
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                userItemsSpinner.setAdapter(adapter);
-            } else {
-                Toast.makeText(this, "No items found for the requester.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        viewModel.getUserItems().observe(this, this::populateUserItemsSpinner);
+    }
 
-        // Set button click listener
+    private void populateUserItemsSpinner(List<Item> items) {
+        if (items != null && !items.isEmpty()) {
+            ArrayAdapter<Item> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>(items));
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            userItemsSpinner.setAdapter(adapter);
+        } else {
+            Toast.makeText(this, "No items found for the requester.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setupSendRequestButton() {
+        Button sendRequestButton = findViewById(R.id.sendRequestButton);
         sendRequestButton.setOnClickListener(v -> handleSendRequest());
     }
 
@@ -112,11 +138,17 @@ public class RequestActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select an item to offer.", Toast.LENGTH_SHORT).show();
             return;
         }
+
         viewModel.sendRequest(Requester, Requestee, offeredItem, requestedItem);
         Toast.makeText(this, "Request sent successfully!", Toast.LENGTH_SHORT).show();
-        Intent intent=new Intent(this, MainActivity.class);
-        intent.putExtra("USER",user);
+
+        navigateToMainActivity();
+    }
+
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("USER", user);
         startActivity(intent);
-        finish(); // Finish the current activity
+        finish();
     }
 }

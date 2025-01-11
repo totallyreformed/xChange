@@ -1,8 +1,8 @@
 package com.example.xchange.Profile;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,18 +25,33 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView, requestsSentCountTextView, requestsReceivedCountTextView, counterOffersSentCountTextView, counterOffersReceivedCountTextView, totalExchangesTextView;
+    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView,
+            requestsSentCountTextView, requestsReceivedCountTextView,
+            counterOffersSentCountTextView, counterOffersReceivedCountTextView, totalExchangesTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        initializeUI();
+        User user = retrieveUserFromIntent();
+        if (user == null) {
+            navigateToLogin();
+            return;
+        }
+        initializeViewModel(user);
+        observeViewModelData(user);
+        setupNavigation(user);
+        setupButtonListeners(user);
+        loadInitialData();
+    }
 
-        // Initialize UI elements
+    private void initializeUI() {
         usernameTextView = findViewById(R.id.profileUsernameTextView);
         emailTextView = findViewById(R.id.profileEmailTextView);
         userTypeTextView = findViewById(R.id.profileUserTypeTextView);
@@ -48,38 +63,32 @@ public class ProfileActivity extends AppCompatActivity {
         counterOffersReceivedCountTextView = findViewById(R.id.counterOffersReceivedCountTextView);
         totalExchangesTextView = findViewById(R.id.totalExchangesTextView);
 
-        // Initialize Logout Button
         Button logoutButton = findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(v -> {
-            Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
-            loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
-            startActivity(loginIntent);
-            finish(); // Close the current activity
-        });
+        logoutButton.setOnClickListener(v -> navigateToLogin());
+    }
 
-        // Retrieve the User object from the Intent
+    private User retrieveUserFromIntent() {
         Intent intent = getIntent();
-        User user = intent.getParcelableExtra("USER");
+        return intent.getParcelableExtra("USER");
+    }
 
-        if (user == null) {
-            Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
-            Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
-            startActivity(loginIntent);
-            finish();
-            return;
-        }
+    private void navigateToLogin() {
+        Intent loginIntent = new Intent(ProfileActivity.this, com.example.xchange.Login.LoginActivity.class);
+        loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+        finish();
+    }
 
-        // Initialize ViewModel with Factory
+    private void initializeViewModel(User user) {
         ProfileViewModelFactory factory = new ProfileViewModelFactory(getApplication(), user);
         viewModel = new ViewModelProvider(this, factory).get(ProfileViewModel.class);
+    }
 
-        // Observe LiveData for profile data
+    @SuppressLint("SetTextI18n")
+    private void observeViewModelData(User user) {
         viewModel.getUser().observe(this, userData -> {
             if (userData != null) {
-                usernameTextView.setText("Username: " + userData.getUsername());
-                emailTextView.setText("Email: " + userData.getEmail());
-                userTypeTextView.setText("User Type: " + userData.getUser_type());
-                locationTextView.setText("Location: " + userData.getLocation());
+                updateUserInfo(userData);
             }
         });
 
@@ -95,156 +104,118 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        // Observe LiveData for requests and counters
-        viewModel.getSentRequestsCount().observe(this, count -> {
-            requestsSentCountTextView.setText(count + " Requests Sent");
-        });
+        viewModel.getSentRequestsCount().observe(this, count -> requestsSentCountTextView.setText(count + " Requests Sent"));
 
-        viewModel.getReceivedRequestsCount().observe(this, count -> {
-            requestsReceivedCountTextView.setText(count + " Requests Received");
-        });
+        viewModel.getReceivedRequestsCount().observe(this, count -> requestsReceivedCountTextView.setText(count + " Requests Received"));
 
-        viewModel.getCounterOffersSentCount().observe(this, count -> {
-            counterOffersSentCountTextView.setText(count + " Counter Offers Sent");
-        });
+        viewModel.getCounterOffersSentCount().observe(this, count -> counterOffersSentCountTextView.setText(count + " Counter Offers Sent"));
 
-        viewModel.getCounterOffersReceivedCount().observe(this, count -> {
-            counterOffersReceivedCountTextView.setText(count + " Counter Offers Received");
-        });
-        viewModel.loadUserXChanges();
-        viewModel.getUserXChanges().observe(this, xChanges -> {
+        viewModel.getCounterOffersReceivedCount().observe(this, count -> counterOffersReceivedCountTextView.setText(count + " Counter Offers Received"));
 
-            int count=xChanges.size();
-            totalExchangesTextView.setText(count + " xChanges");
-        });
+        viewModel.getUserXChanges().observe(this, xChanges -> totalExchangesTextView.setText(xChanges.size() + " xChanges"));
+    }
 
-        // Navigate to AllItemsActivity
-        Button viewAllItemsButton = findViewById(R.id.viewAllItemsButton);
-        viewAllItemsButton.setOnClickListener(v -> {
-            Intent allItemsIntent = new Intent(ProfileActivity.this, AllItemsActivity.class);
-            allItemsIntent.putExtra("USER", user);
-            allItemsIntent.putParcelableArrayListExtra("ITEMS", new ArrayList<>(viewModel.getUserItems().getValue()));
-            startActivity(allItemsIntent);
-        });
+    @SuppressLint("SetTextI18n")
+    private void updateUserInfo(User user) {
+        usernameTextView.setText("Username: " + user.getUsername());
+        emailTextView.setText("Email: " + user.getEmail());
+        userTypeTextView.setText("User Type: " + user.getUser_type());
+        locationTextView.setText("Location: " + user.getLocation());
+    }
 
-        ArrayList<Request> sentRequests = new ArrayList<>();
-        ArrayList<Request> receivedRequests = new ArrayList<>();
-        viewModel.loadRequests();
-
-        viewModel.getRequestsSent().observe(this, sent -> {
-            if (sent != null) {
-                sentRequests.clear();
-                sentRequests.addAll(sent);
-            }
-        });
-        viewModel.getRequestsReceived().observe(this, received -> {
-            if (received != null) {
-                receivedRequests.clear();
-                receivedRequests.addAll(received);
-            }
-        });
-        ArrayList<Counteroffer> sentCounterOffers = new ArrayList<>();
-        ArrayList<Counteroffer> receivedCounterOffers = new ArrayList<>();
-
-        viewModel.loadCounterOffers();
-
-        viewModel.getCounterOffersSent().observe(this, sent -> {
-            if (sent != null) {
-                sentCounterOffers.clear();
-                sentCounterOffers.addAll(sent); // Now the types match
-            }
-        });
-
-        viewModel.getCounterOffersReceived().observe(this, received -> {
-            if (received != null) {
-                receivedCounterOffers.clear();
-                receivedCounterOffers.addAll(received); // Now the types match
-            }
-        });
-
-        Button requestsSent = findViewById(R.id.requestsSentButton);
-        Button requestsReceived = findViewById(R.id.requestsReceivedButton);
-
-        requestsSent.setOnClickListener(v -> {
-            Intent showRequestsSent = new Intent(ProfileActivity.this, RequestsActivity.class);
-            showRequestsSent.putExtra("REQUEST_TYPE", "SENT");
-            showRequestsSent.putExtra("USER", user);
-            showRequestsSent.putParcelableArrayListExtra("REQUESTS", sentRequests);
-            startActivity(showRequestsSent);
-        });
-
-        requestsReceived.setOnClickListener(v -> {
-            Intent showRequestsReceived = new Intent(ProfileActivity.this, RequestsActivity.class);
-            showRequestsReceived.putExtra("REQUEST_TYPE", "RECEIVED");
-            showRequestsReceived.putParcelableArrayListExtra("REQUESTS", receivedRequests);
-            showRequestsReceived.putExtra("USER", user);
-            startActivity(showRequestsReceived);
-        });
-
-        // New Counter Offer Buttons
-        Button counterOffersSent = findViewById(R.id.counterOffersSentButton);
-        Button counterOffersReceived = findViewById(R.id.counterOffersReceivedButton);
-
-        counterOffersSent.setOnClickListener(v -> {
-            Intent showCounterOffersSent = new Intent(ProfileActivity.this, CounteroffersActivity.class);
-            showCounterOffersSent.putExtra("REQUEST_TYPE", "COUNTER_OFFERS_SENT");
-            showCounterOffersSent.putParcelableArrayListExtra("COUNTEROFFERS", new ArrayList<>(sentCounterOffers));
-            showCounterOffersSent.putExtra("USER", user);
-            startActivity(showCounterOffersSent);
-        });
-
-        counterOffersReceived.setOnClickListener(v -> {
-            Intent showCounterOffersReceived = new Intent(ProfileActivity.this, CounteroffersActivity.class);
-            showCounterOffersReceived.putExtra("REQUEST_TYPE", "COUNTER_OFFERS_RECEIVED");
-            showCounterOffersReceived.putParcelableArrayListExtra("COUNTEROFFERS", new ArrayList<>(receivedCounterOffers));
-            showCounterOffersReceived.putExtra("USER", user);
-            startActivity(showCounterOffersReceived);
-        });
-
-        Button xChangesButton = findViewById(R.id.xChangesButton);
-
-        xChangesButton.setOnClickListener(v -> {
-            // Ensure the user is loaded and viewModel is properly initialized
-            if (user == null || viewModel == null) {
-                Toast.makeText(ProfileActivity.this, "User data is missing.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            viewModel.getUserXChanges().observe(this, xChanges -> {
-                    Intent xChangesIntent = new Intent(ProfileActivity.this, xChangesActivity.class);
-                    xChangesIntent.putExtra("USER", user);
-                    xChangesIntent.putParcelableArrayListExtra("XCHANGES", new ArrayList<>(xChanges));
-                    startActivity(xChangesIntent);
-
-            });
-        });
-
-        viewModel.loadProfileData();
-        viewModel.loadUserItems();
-        viewModel.loadRequestsCount();
-        viewModel.loadCounterOffersCount();
-
+    private void setupNavigation(User user) {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.menu_profile);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_browse) {
-                Intent browseIntent = new Intent(ProfileActivity.this, MainActivity.class);
-                browseIntent.putExtra("USER", user);
-                startActivity(browseIntent);
+                navigateToActivity(MainActivity.class, user);
                 return true;
-
             } else if (itemId == R.id.menu_search) {
-                Intent searchIntent = new Intent(ProfileActivity.this, SearchActivity.class);
-                searchIntent.putExtra("USER", user);
-                startActivity(searchIntent);
+                navigateToActivity(SearchActivity.class, user);
                 return true;
+            } else return itemId == R.id.menu_profile;
+        });
+    }
 
-            } else if (itemId == R.id.menu_profile) {
-                return true;
+    private void navigateToActivity(Class<?> targetActivity, User user) {
+        Intent intent = new Intent(ProfileActivity.this, targetActivity);
+        intent.putExtra("USER", user);
+        startActivity(intent);
+    }
+
+    private void setupButtonListeners(User user) {
+        setupRequestsButtons(user);
+        setupCounterOffersButtons(user);
+        setupViewAllItemsButton(user);
+        setupXChangesButton(user);
+    }
+
+    private void setupRequestsButtons(User user) {
+        Button requestsSentButton = findViewById(R.id.requestsSentButton);
+        Button requestsReceivedButton = findViewById(R.id.requestsReceivedButton);
+
+        requestsSentButton.setOnClickListener(v -> navigateToRequestsActivity("SENT", user, viewModel.getRequestsSent().getValue()));
+        requestsReceivedButton.setOnClickListener(v -> navigateToRequestsActivity("RECEIVED", user, viewModel.getRequestsReceived().getValue()));
+    }
+
+    private void navigateToRequestsActivity(String requestType, User user, List<Request> requests) {
+        Intent intent = new Intent(ProfileActivity.this, RequestsActivity.class);
+        intent.putExtra("REQUEST_TYPE", requestType);
+        intent.putExtra("USER", user);
+        intent.putParcelableArrayListExtra("REQUESTS", new ArrayList<>(requests));
+        startActivity(intent);
+    }
+
+    private void setupCounterOffersButtons(User user) {
+        Button counterOffersSentButton = findViewById(R.id.counterOffersSentButton);
+        Button counterOffersReceivedButton = findViewById(R.id.counterOffersReceivedButton);
+
+        counterOffersSentButton.setOnClickListener(v -> navigateToCounterOffersActivity("COUNTER_OFFERS_SENT", user, viewModel.getCounterOffersSent().getValue()));
+        counterOffersReceivedButton.setOnClickListener(v -> navigateToCounterOffersActivity("COUNTER_OFFERS_RECEIVED", user, viewModel.getCounterOffersReceived().getValue()));
+    }
+
+    private void navigateToCounterOffersActivity(String requestType, User user, List<Counteroffer> counterOffers) {
+        Intent intent = new Intent(ProfileActivity.this, CounteroffersActivity.class);
+        intent.putExtra("REQUEST_TYPE", requestType);
+        intent.putExtra("USER", user);
+        intent.putParcelableArrayListExtra("COUNTEROFFERS", new ArrayList<>(counterOffers));
+        startActivity(intent);
+    }
+
+    private void setupViewAllItemsButton(User user) {
+        Button viewAllItemsButton = findViewById(R.id.viewAllItemsButton);
+        viewAllItemsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, AllItemsActivity.class);
+            intent.putExtra("USER", user);
+            intent.putParcelableArrayListExtra("ITEMS", new ArrayList<>(Objects.requireNonNull(viewModel.getUserItems().getValue())));
+            startActivity(intent);
+        });
+    }
+
+    private void setupXChangesButton(User user) {
+        Button xChangesButton = findViewById(R.id.xChangesButton);
+        xChangesButton.setOnClickListener(v -> {
+            List<xChange> xChanges = viewModel.getUserXChanges().getValue();
+            if (xChanges != null) {
+                Intent intent = new Intent(ProfileActivity.this, xChangesActivity.class);
+                intent.putExtra("USER", user);
+                intent.putParcelableArrayListExtra("XCHANGES", new ArrayList<>(xChanges));
+                startActivity(intent);
             } else {
-                return false;
+                Toast.makeText(this, "No xChanges available.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void loadInitialData() {
+        viewModel.loadProfileData();
+        viewModel.loadUserItems();
+        viewModel.loadRequests();
+        viewModel.loadCounterOffers();
+        viewModel.loadUserXChanges();
+        viewModel.loadRequestsCount();
+        viewModel.loadCounterOffersCount();
     }
 }
