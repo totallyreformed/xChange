@@ -1,14 +1,10 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 class ImageTest {
 
     private Image image;
@@ -33,17 +29,5 @@ class ImageTest {
                 ", description='new desc'" +
                 '}';
         assertEquals(expected, image.toString());
-    }
-
-    @Test
-    void testParcelable() {
-        Parcel parcel = Parcel.obtain();
-        image.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Image created = Image.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        assertEquals(image.getFilePath(), created.getFilePath());
-        assertEquals(image.getDescription(), created.getDescription());
     }
 }

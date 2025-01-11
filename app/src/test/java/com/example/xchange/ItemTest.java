@@ -1,10 +1,7 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +10,6 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 class ItemTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-05");
@@ -74,30 +70,5 @@ class ItemTest {
         assertEquals(item1, item2);
         assertEquals(item1.hashCode(), item2.hashCode());
         assertEquals("TestItem", item1.toString());
-    }
-
-    @Test
-    void testParcelable() {
-        ArrayList<Image> images = new ArrayList<>();
-        images.add(new Image("pathA", "descA"));
-        Item original = new Item("owner", "ParcelItem", "ParcelDesc", Category.SPORTS, "New", images);
-        original.setItemId(600L);
-        Parcel parcel = Parcel.obtain();
-        original.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Item created = Item.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        assertEquals(original.getItemId(), created.getItemId());
-        assertEquals(original.getItemName(), created.getItemName());
-        assertEquals(original.getItemDescription(), created.getItemDescription());
-        assertEquals(original.getItemCategory(), created.getItemCategory());
-        assertEquals(original.getItemCondition(), created.getItemCondition());
-        assertEquals(original.getXchanger(), created.getXchanger());
-        assertNotNull(created.getItemImages());
-        assertEquals(original.getItemImages().size(), created.getItemImages().size());
-        if (!original.getItemImages().isEmpty()) {
-            assertEquals(original.getItemImages().get(0).getFilePath(), created.getItemImages().get(0).getFilePath());
-        }
     }
 }

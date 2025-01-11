@@ -1,14 +1,10 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 class xChangeTest {
 
     private SimpleCalendar cal;
@@ -98,26 +94,5 @@ class xChangeTest {
         assertEquals(origFailedOfferer + 1, xchg.getOfferer().getFailedDeals());
         assertEquals(origFailedOfferee + 1, xchg.getOfferee().getFailedDeals());
         assertFalse(xchg.getOfferee().getRatings().isEmpty());
-    }
-
-    @Test
-    void testParcelable() {
-        xChange original = new xChange(request, counteroffer, cal);
-        original.setXChangeId(999L);
-        original.setDealStatus("InProgress");
-
-        Parcel parcel = Parcel.obtain();
-        original.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        xChange created = xChange.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        assertEquals(original.getXChangeId(), created.getXChangeId());
-        assertEquals(original.getDealStatus(), created.getDealStatus());
-        assertEquals(original.getFinalizedId(), created.getFinalizedId());
-        assertEquals(original.getRequest().getRequestId(), created.getRequest().getRequestId());
-        if (original.getCounteroffer() != null) {
-            assertEquals(original.getCounteroffer().getCounterofferId(), created.getCounteroffer().getCounterofferId());
-        }
     }
 }

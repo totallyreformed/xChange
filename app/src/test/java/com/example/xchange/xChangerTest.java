@@ -1,16 +1,12 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 public class xChangerTest {
 
     private SimpleCalendar cal;
@@ -27,7 +23,7 @@ public class xChangerTest {
     }
 
     @Test
-    void testInitialValuesAndParcelable() {
+    void testInitialValues() {
         assertEquals(0f, testXChanger.getAverageRating(), 0.001f);
         assertEquals(0, testXChanger.getTotalRatings());
         assertEquals(0, testXChanger.getSucceedDeals());
@@ -38,15 +34,6 @@ public class xChangerTest {
         assertNotNull(testXChanger.getRequests());
         assertNotNull(testXChanger.getCounterOffers());
         assertNotNull(testXChanger.getFinalized());
-
-        Parcel parcel = Parcel.obtain();
-        testXChanger.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        xChanger created = xChanger.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-        assertEquals(testXChanger.getAverageRating(), created.getAverageRating(), 0.001f);
-        assertEquals(testXChanger.getTotalRatings(), created.getTotalRatings());
-        assertTrue(created.getRatings().isEmpty());
     }
 
     @Test

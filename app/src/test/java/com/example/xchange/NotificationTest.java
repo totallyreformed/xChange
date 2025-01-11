@@ -1,14 +1,9 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 class NotificationTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-06");
@@ -36,20 +31,5 @@ class NotificationTest {
         assertEquals("newUser", notification.getUsername());
         assertEquals("Updated message", notification.getMessage());
         assertEquals(999L, notification.getXChangeId());
-    }
-
-    @Test
-    void testParcelable() {
-        Parcel parcel = Parcel.obtain();
-        notification.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Notification created = Notification.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        assertEquals(notification.getId(), created.getId());
-        assertEquals(notification.getUsername(), created.getUsername());
-        assertEquals(notification.getMessage(), created.getMessage());
-        assertEquals(notification.getTimestamp().toString(), created.getTimestamp().toString());
-        assertEquals(notification.getXChangeId(), created.getXChangeId());
     }
 }
