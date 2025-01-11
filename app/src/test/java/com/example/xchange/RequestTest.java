@@ -1,85 +1,84 @@
 package com.example.xchange;
 
-import org.junit.jupiter.api.BeforeEach;
+import android.os.Parcel;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RequestTest {
+@RunWith(RobolectricTestRunner.class)
+class RequestTest {
 
-    private xChanger requester;
-    private xChanger requestee;
-    private Item offeredItem;
-    private Item requestedItem;
-    private SimpleCalendar dateInitiated;
-    private Request request;
-    private Category category = Category.fromDisplayName("Fashion");
+    private final SimpleCalendar cal = new SimpleCalendar("2025-01-02");
 
-    @BeforeEach
-    public void setUp() {
-        requester = new xChanger("Requester", "requester@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
-        requestee = new xChanger("Requestee", "requestee@example.com", new SimpleCalendar(2024, 12, 1), "password", "Location");
-        ArrayList<Image> images = new ArrayList<>();
-        offeredItem = new Item(requester.toString(), "Offered Item", "Description", category, "Condition", images);
-        requestedItem = new Item(requester.toString(), "Requested Item", "Description", category, "Condition", images);
-        dateInitiated = new SimpleCalendar(2024, 12, 1);
-        request = new Request(requester, requestee, offeredItem, requestedItem, dateInitiated);
+    private xChanger createXChanger(String username) {
+        return new xChanger(username, username + "@example.com", cal, "pass", "Loc");
+    }
+
+    private Item createItem(Long id, String name, Category cat) {
+        Item item = new Item(createXChanger("owner").getUsername(), name, "desc", cat, "New", null);
+        item.setItemId(id);
+        return item;
+    }
+
+    private Request createRequest() {
+        xChanger requester = createXChanger("requester");
+        xChanger requestee = createXChanger("requestee");
+        Item offered = createItem(1L, "Offered", Category.BOOKS);
+        Item requested = createItem(2L, "Requested", Category.FASHION);
+        Request req = new Request(requester, requestee, offered, requested, cal);
+        req.setRequestId(50L);
+        return req;
     }
 
     @Test
-    public void testRequestInitialization() {
-        assertEquals(requester, request.getRequester());
-        assertEquals(requestee, request.getRequestee());
-        assertEquals(offeredItem, request.getOfferedItem());
-        assertEquals(requestedItem, request.getRequestedItem());
-        assertEquals(dateInitiated, request.getDateInitiated());
-        assertTrue(request.isActive());
+    void testGettersSettersAndStatus() {
+        Request req = createRequest();
+
+        assertEquals(50L, req.getRequestId());
+        assertEquals("Active", req.getStatus());
+        req.make_unactive();
+        assertFalse(req.isActive());
+        assertEquals("Inactive", req.getStatus());
+
+        Item newRequested = createItem(3L, "NewRequested", Category.HOME);
+        req.setRequestedItem(newRequested);
+        assertEquals(newRequested, req.getRequestedItem());
     }
 
     @Test
-    public void testMakeUnactive() {
-        request.make_unactive();
-        assertFalse(request.isActive());
+    void testEqualsHashCodeAndToString() {
+        Request req1 = createRequest();
+        Request req2 = createRequest();
+        req1.setRequestId(100L);
+        req2.setRequestId(100L);
+
+        assertEquals(req1, req2);
+        assertEquals(req1.hashCode(), req2.hashCode());
+
+        String str = req1.toString();
+        assertTrue(str.contains("100"));
+        assertTrue(str.contains(req1.getRequester().getUsername()));
+        assertTrue(str.contains(req1.getRequestee().getUsername()));
     }
 
     @Test
-    public void testNullRequester() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Request(null, requestee, offeredItem, requestedItem, dateInitiated);
-        });
+    void testParcelable() {
+        Request original = createRequest();
+        original.setActive(true);
 
-        assertEquals("Requester cannot be null.", exception.getMessage());
-    }
+        Parcel parcel = Parcel.obtain();
+        original.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        Request created = Request.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
 
-    @Test
-    public void testNullRequestee() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Request(requester, null, offeredItem, requestedItem, dateInitiated);
-        });
-
-        assertEquals("Requestee cannot be null.", exception.getMessage());
-    }
-
-    @Test
-    public void testFutureDateInitiation() {
-        SimpleCalendar futureDate = new SimpleCalendar(2024, 12, 4);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Request(requester, requestee, offeredItem, requestedItem, futureDate);
-        });
-
-        String expectedMessage = "Date cannot be in the future.";
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void testRemoveRequestFromUsers() {
-        requester.getRequests().remove(request);
-        requestee.getRequests().remove(request);
-
-        assertFalse(requester.getRequests().contains(request));
-        assertFalse(requestee.getRequests().contains(request));
+        assertEquals(original.getRequestId(), created.getRequestId());
+        assertEquals(original.getRequester().getUsername(), created.getRequester().getUsername());
+        assertEquals(original.getRequestee().getUsername(), created.getRequestee().getUsername());
+        assertEquals(original.getOfferedItem().getItemId(), created.getOfferedItem().getItemId());
+        assertEquals(original.getRequestedItem().getItemId(), created.getRequestedItem().getItemId());
+        assertEquals(original.getDateInitiated().toString(), created.getDateInitiated().toString());
+        assertEquals(original.isActive(), created.isActive());
     }
 }

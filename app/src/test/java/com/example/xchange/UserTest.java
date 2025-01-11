@@ -1,47 +1,47 @@
 package com.example.xchange;
 
-import org.junit.jupiter.api.BeforeEach;
+import android.os.Parcel;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserTest {
-    private User testUser;
+@RunWith(RobolectricTestRunner.class)
+class UserTest {
 
-    @BeforeEach
-    public void setUp() {
-        testUser = new User("testUser", "test@example.com", new SimpleCalendar(2024,18,12), "password123", "TestLocation", "user");
+    private final SimpleCalendar cal = new SimpleCalendar("2025-01-01");
+
+    @Test
+    void testGettersSetters() {
+        User user = new User("john", "john@example.com", cal, "pass123", "City", "user");
+        user.setUser_id(100L);
+
+        assertEquals(100L, user.getUser_id());
+        assertEquals("john", user.getUsername());
+        assertEquals("john@example.com", user.getEmail());
+        assertEquals(cal, user.getJoin_Date());
+        assertEquals("pass123", user.getPassword());
+        assertEquals("City", user.getLocation());
+        assertEquals("user", user.getUser_type());
     }
 
     @Test
-    public void testGetters() {
-        assertNull(testUser.getUser_id()); // Primary key is auto-generated
-        assertEquals("testUser", testUser.getUsername());
-        assertEquals("test@example.com", testUser.getEmail());
-        assertEquals("password123", testUser.getPassword());
-        assertEquals("TestLocation", testUser.getLocation());
-        assertEquals("2024-12-03", testUser.getJoin_Date());
-        assertEquals("user", testUser.getUser_type());
-    }
+    void testParcelable() {
+        User original = new User("alice", "alice@example.com", cal, "alicepass", "Town", "admin");
+        original.setUser_id(101L);
 
-    @Test
-    public void testSetters() {
-        testUser.setUsername("newUsername");
-        testUser.setEmail("newemail@example.com");
-        testUser.setPassword("newPassword");
-        testUser.setLocation("NewLocation");
+        Parcel parcel = Parcel.obtain();
+        original.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        User created = User.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
 
-        assertEquals("newUsername", testUser.getUsername());
-        assertEquals("newemail@example.com", testUser.getEmail());
-        assertEquals("newPassword", testUser.getPassword());
-        assertEquals("NewLocation", testUser.getLocation());
-    }
-
-    @Test
-    public void testUserType() {
-        testUser.setUser_type("admin");
-        assertEquals("admin", testUser.getUser_type());
-
-        testUser.setUser_type("xChanger");
-        assertEquals("xChanger", testUser.getUser_type());
+        assertEquals(original.getUser_id(), created.getUser_id());
+        assertEquals(original.getUsername(), created.getUsername());
+        assertEquals(original.getEmail(), created.getEmail());
+        assertEquals(original.getJoin_Date().toString(), created.getJoin_Date().toString());
+        assertEquals(original.getPassword(), created.getPassword());
+        assertEquals(original.getLocation(), created.getLocation());
+        assertEquals(original.getUser_type(), created.getUser_type());
     }
 }

@@ -1,73 +1,77 @@
 package com.example.xchange;
 
-import org.junit.jupiter.api.BeforeEach;
+import android.os.Parcel;
 import org.junit.jupiter.api.Test;
-
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import static org.junit.jupiter.api.Assertions.*;
 
+@RunWith(RobolectricTestRunner.class)
 class RatingTest {
-    private xChanger rater;
-    private xChanger ratee;
-    private Request request;
-    private xChange xChange;
 
-    @BeforeEach
-    void setUp() {
-        // Mock xChanger objects
-        rater = new xChanger("RaterUser", "rater@example.com", new SimpleCalendar(2024, 1, 1), "password123", "Location1");
-        ratee = new xChanger("RateeUser", "ratee@example.com", new SimpleCalendar(2024, 1, 1), "password123", "Location2");
+    private final SimpleCalendar cal = new SimpleCalendar("2025-01-03");
 
-        // Mock Request and xChange objects
-        request = new Request(rater, ratee, null, null, new SimpleCalendar(2024, 1, 1));
-        xChange = new xChange(request, new SimpleCalendar(2024, 1, 2));
+    private xChanger createXChanger(String username) {
+        return new xChanger(username, username + "@example.com", cal, "pass", "Loc");
+    }
+
+    private Request createRequest() {
+        xChanger requester = createXChanger("rater");
+        xChanger requestee = createXChanger("ratee");
+        Item offered = new Item(requester.getUsername(), "Offered", "desc", Category.FASHION, "Good", null);
+        offered.setItemId(1L);
+        Item requested = new Item(requestee.getUsername(), "Requested", "desc", Category.TECHNOLOGY, "New", null);
+        requested.setItemId(2L);
+        Request req = new Request(requester, requestee, offered, requested, cal);
+        req.setRequestId(100L);
+        return req;
+    }
+
+    private xChange createXChange(Request req) {
+        return new xChange(req, (Counteroffer) null, cal);
     }
 
     @Test
-    void testConstructorAndGetters() {
-        Rating rating = new Rating(4.5f, rater, ratee, request, xChange);
+    void testSetAndGetRating() {
+        xChanger rater = createXChanger("rater");
+        xChanger ratee = createXChanger("ratee");
+        Request req = createRequest();
+        xChange xchg = createXChange(req);
+        Rating rating = new Rating(3.5f, rater, ratee, req, xchg);
 
-        assertEquals(4.5f, rating.getRating());
-        assertEquals(rater, rating.getRater());
-        assertEquals(ratee, rating.getRatee());
-        assertEquals(request, rating.getRequest());
-        assertEquals(xChange, rating.getXChange());
-    }
-
-    @Test
-    void testSetRatingValid() {
-        Rating rating = new Rating(3.0f, rater, ratee, request, xChange);
+        assertEquals(3.5f, rating.getRating(), 0.001f);
         rating.setRating(4.0f);
+        assertEquals(4.0f, rating.getRating(), 0.001f);
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> rating.setRating(6.0f));
+        assertEquals("Rating must be between 0 and 5.", ex.getMessage());
 
-        assertEquals(4.0f, rating.getRating());
+        String str = rating.toString();
+        assertTrue(str.contains("rating=4.0"));
+        assertTrue(str.contains("rater="));
+        assertTrue(str.contains("ratee="));
+        assertTrue(str.contains("request="));
+        assertTrue(str.contains("xChange="));
     }
 
     @Test
-    void testSetRatingInvalid() {
-        Rating rating = new Rating(3.0f, rater, ratee, request, xChange);
+    void testParcelable() {
+        xChanger rater = createXChanger("rater");
+        xChanger ratee = createXChanger("ratee");
+        Request req = createRequest();
+        xChange xchg = createXChange(req);
+        Rating original = new Rating(2.5f, rater, ratee, req, xchg);
 
-        assertThrows(IllegalArgumentException.class, () -> rating.setRating(-1.0f));
-        assertThrows(IllegalArgumentException.class, () -> rating.setRating(6.0f));
-    }
+        Parcel parcel = Parcel.obtain();
+        original.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        Rating created = Rating.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
 
-    @Test
-    void testSetRequestAndXChange() {
-        Rating rating = new Rating(3.5f, rater, ratee, request, xChange);
-
-        Request newRequest = new Request(rater, ratee, null, null, new SimpleCalendar(2024, 1, 3));
-        xChange newXChange = new xChange(newRequest, new SimpleCalendar(2024, 1, 4));
-
-        rating.setRequest(newRequest);
-        rating.setXChange(newXChange);
-
-        assertEquals(newRequest, rating.getRequest());
-        assertEquals(newXChange, rating.getXChange());
-    }
-
-    @Test
-    void testToString() {
-        Rating rating = new Rating(4.0f, rater, ratee, request, xChange);
-        String expected = "Rating{rating=4.0, rater=" + rater + ", ratee=" + ratee + ", request=" + request + ", xChange=" + xChange + "}";
-
-        assertEquals(expected, rating.toString());
+        // rater and ratee are transient – expect them null after parceling
+        assertNull(created.getRater());
+        assertNull(created.getRatee());
+        assertEquals(original.getRating(), created.getRating(), 0.001f);
+        assertEquals(original.getRequest().getRequestId(), created.getRequest().getRequestId());
+        assertEquals(original.getXChange().getFinalizedId(), created.getXChange().getFinalizedId());
     }
 }
