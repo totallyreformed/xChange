@@ -1,6 +1,7 @@
 package com.example.xchange.MainActivity;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -19,17 +20,14 @@ public class MainActivityViewModel extends AndroidViewModel {
     private final MutableLiveData<Integer> totalExchangesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> totalItemsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> totalCategoriesLiveData = new MutableLiveData<>();
-    private final UserRepository userRepository;
-
     private final MainActivityPresenter presenter;
     private final MutableLiveData<String> usernameLiveData = new MutableLiveData<>();
     private LiveData<List<Item>> itemsLiveData;
 
-    public MainActivityViewModel(Application application) {
+    public MainActivityViewModel(Application application, Context context) {
         super(application);
-        presenter = new MainActivityPresenter(this);
-        itemsLiveData = (LiveData<List<Item>>) presenter.loadItems();
-        userRepository = new UserRepository(application.getApplicationContext());
+        presenter = new MainActivityPresenter(this, context);
+        itemsLiveData = presenter.loadItems(); // Assuming loadItems() returns LiveData
     }
 
     public LiveData<String> getUsername() {
@@ -65,79 +63,23 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     public void fetchTotalRequests() {
-        userRepository.getTotalRequests(new UserRepository.UserStatisticsCallback() {
-            @Override
-            public void onSuccess(String stats) {
-                try {
-                    int count = Integer.parseInt(stats);
-                    totalRequestsLiveData.postValue(count);
-                } catch (NumberFormatException e) {
-                    totalRequestsLiveData.postValue(0);
-                }
-            }
+        presenter.fetchTotalRequests(totalRequestsLiveData);
+    }
 
-            @Override
-            public void onFailure(String message) {
-                totalRequestsLiveData.postValue(0);
-            }
-        });
+    public void deleteNotificationsForUser(String username, UserRepository.OperationCallback callback) {
+        presenter.deleteNotificationsForUser(username, callback);
     }
 
     public void fetchTotalExchanges() {
-        userRepository.getTotalExchanges(new UserRepository.UserStatisticsCallback() {
-            @Override
-            public void onSuccess(String stats) {
-                try {
-                    int count = Integer.parseInt(stats);
-                    totalExchangesLiveData.postValue(count);
-                } catch (NumberFormatException e) {
-                    totalExchangesLiveData.postValue(0);
-                }
-            }
-
-            @Override
-            public void onFailure(String message) {
-                totalExchangesLiveData.postValue(0);
-            }
-        });
+        presenter.fetchTotalExchanges(totalExchangesLiveData);
     }
 
     public void fetchTotalItems() {
-        userRepository.getTotalItems(new UserRepository.UserStatisticsCallback() {
-            @Override
-            public void onSuccess(String stats) {
-                try {
-                    int count = Integer.parseInt(stats);
-                    totalItemsLiveData.postValue(count);
-                } catch (NumberFormatException e) {
-                    totalItemsLiveData.postValue(0);
-                }
-            }
-
-            @Override
-            public void onFailure(String message) {
-                totalItemsLiveData.postValue(0);
-            }
-        });
+        presenter.fetchTotalItems(totalItemsLiveData);
     }
 
     public void fetchTotalCategories() {
-        userRepository.getTotalCategories(new UserRepository.UserStatisticsCallback() {
-            @Override
-            public void onSuccess(String stats) {
-                try {
-                    int count = Integer.parseInt(stats);
-                    totalCategoriesLiveData.postValue(count);
-                } catch (NumberFormatException e) {
-                    totalCategoriesLiveData.postValue(0);
-                }
-            }
-
-            @Override
-            public void onFailure(String message) {
-                totalCategoriesLiveData.postValue(0);
-            }
-        });
+        presenter.fetchTotalCategories(totalCategoriesLiveData);
     }
 
     public void fetchAllStatistics() {
@@ -147,3 +89,4 @@ public class MainActivityViewModel extends AndroidViewModel {
         fetchTotalCategories();
     }
 }
+

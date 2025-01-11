@@ -448,7 +448,7 @@ public class UserRepository {
     public void saveRequest(Request request, SaveRequestCallback callback) {
         executor.execute(() -> {
             try {
-                long requestId = AppDatabase.getRequestDao().insertRequest(request);
+                long requestId = requestDao.insertRequest(request);
                 if (requestId > 0) {
                     callback.onSuccess();
                 } else {

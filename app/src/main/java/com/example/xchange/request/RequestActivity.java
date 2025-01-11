@@ -37,7 +37,7 @@ public class RequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
 
-            TextView requestedItemNameTextView = findViewById(R.id.requestedItemNameTextView);
+        TextView requestedItemNameTextView = findViewById(R.id.requestedItemNameTextView);
         TextView requestedItemDescriptionTextView = findViewById(R.id.requestedItemDescriptionTextView);
         TextView requesterNameTextView = findViewById(R.id.requesterNameTextView);
         ImageView requestedItemImageView = findViewById(R.id.requestedItemImageView);
