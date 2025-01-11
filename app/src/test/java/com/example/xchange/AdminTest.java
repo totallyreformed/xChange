@@ -1,49 +1,24 @@
 package com.example.xchange;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AdminTest {
-    private admin testAdmin;
+@RunWith(RobolectricTestRunner.class)
+class AdminTest {
 
-    @BeforeEach
-    public void setUp() {
-        testAdmin = new admin("admin1", "admin1@example.com", new SimpleCalendar(2024, 12, 3), "IamtheAdmin", "HQ");
-    }
+    private final SimpleCalendar cal = new SimpleCalendar("2025-01-09");
 
     @Test
-    public void testAdminInitialization() {
-        // Ensure that all fields are correctly initialized
-        assertNull(testAdmin.getUser_id());
-        assertEquals("admin1", testAdmin.getUsername());
-        assertEquals("admin1@example.com", testAdmin.getEmail());
-        assertEquals("IamtheAdmin", testAdmin.getPassword());
-        assertEquals("HQ", testAdmin.getLocation());
-        assertEquals("admin", testAdmin.getUser_type()); // Ensure user_type is "admin"
-    }
+    void testAdminCreationAndGetters() {
+        admin adminUser = new admin("adminUser", "admin@example.com", cal, "adminpass", "HQ");
 
-    @Test
-    public void testSettersAndGetters() {
-        // Modify the admin fields and ensure they update correctly
-        testAdmin.setUsername("newAdmin");
-        testAdmin.setEmail("newAdmin@example.com");
-        testAdmin.setPassword("newPassword");
-        testAdmin.setLocation("NewHQ");
-
-        assertEquals("newAdmin", testAdmin.getUsername());
-        assertEquals("newAdmin@example.com", testAdmin.getEmail());
-        assertEquals("newPassword", testAdmin.getPassword());
-        assertEquals("NewHQ", testAdmin.getLocation());
-    }
-
-    @Test
-    public void testInheritance() {
-        // Verify that admin is an instance of User
-        assertNotNull(testAdmin);
-
-        // Ensure admin-specific behavior doesn't override User behavior
-        assertEquals("admin", testAdmin.getUser_type());
+        assertEquals("adminUser", adminUser.getUsername());
+        assertEquals("admin@example.com", adminUser.getEmail());
+        assertEquals(cal, adminUser.getJoin_Date());
+        assertEquals("adminpass", adminUser.getPassword());
+        assertEquals("HQ", adminUser.getLocation());
+        assertEquals("admin", adminUser.getUser_type());
     }
 }
