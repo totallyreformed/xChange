@@ -243,6 +243,7 @@ public class RejectRequestActivity extends AppCompatActivity {
                 username,
                 message,
                 SimpleCalendar.today(),
+                (long) -1,
                 (long) -1
         );
 

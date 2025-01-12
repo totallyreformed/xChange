@@ -184,7 +184,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
             viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
                 @Override
                 public void onSuccess(long xChangeId) {
-                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername(), xChangeId);
+                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername(), xChangeId, request.getRequestedItem().getItemId());
                 }
 
                 @Override
@@ -196,7 +196,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
             viewModel.acceptCounteroffer(counteroffer, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
                 @Override
                 public void onSuccess(long xChangeId) {
-                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername(), xChangeId);
+                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername(), xChangeId, counteroffer.getRequestedItem().getItemId());
                 }
 
                 @Override
@@ -214,12 +214,13 @@ public class AcceptRequestActivity extends AppCompatActivity {
      * @param message   The notification message.
      * @param xChangeId The ID of the xChange.
      */
-    private void sendNotification(String username, String message, long xChangeId) {
+    private void sendNotification(String username, String message, long xChangeId, long itemId) {
         Notification notification = new Notification(
                 username,
                 message,
                 SimpleCalendar.today(),
-                xChangeId
+                xChangeId,
+                itemId
         );
 
         UserRepository userRepository = new UserRepository(getApplication());

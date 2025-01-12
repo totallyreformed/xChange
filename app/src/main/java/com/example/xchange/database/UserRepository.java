@@ -96,6 +96,14 @@ public class UserRepository {
     }
 
     /**
+     * Callback interface for loading a counteroffer.
+     */
+    public interface LoadCounterofferCallback {
+        void onSuccess(Counteroffer counteroffer);
+        void onFailure(String message);
+    }
+
+    /**
      * Callback interface for handling user counteroffers.
      */
     public interface UserCounterOffersCallback {
@@ -600,28 +608,6 @@ public class UserRepository {
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
-            }
-        });
-    }
-
-    /**
-     * Stores a notification for a user.
-     *
-     * @param username   the username of the user.
-     * @param message    the notification message.
-     * @param xChangeId  the ID of the associated {@link xChange}.
-     * @param callback   the callback to handle success or failure.
-     */
-    public void storeNotification(String username, String message, long xChangeId, OperationCallback callback) {
-        executor.execute(() -> {
-            try {
-                // Create a notification object (or use a simple database table)
-                Notification notification = new Notification(username, message, SimpleCalendar.today(), xChangeId);
-                AppDatabase.getNotificationDao().insertNotification(notification);
-                callback.onSuccess();
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error storing notification", e);
-                callback.onFailure("Failed to store notification.");
             }
         });
     }

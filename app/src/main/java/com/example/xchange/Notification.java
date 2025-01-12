@@ -31,6 +31,9 @@ public class Notification implements Parcelable {
     @ColumnInfo(name = "xchange_id") // New field to store the associated xChange ID
     private Long xChangeId;
 
+    @ColumnInfo(name = "item_id") // New field to store the associated item ID
+    private Long itemId;
+
     /**
      * Constructs a new {@link Notification}.
      *
@@ -38,12 +41,14 @@ public class Notification implements Parcelable {
      * @param message   The notification message.
      * @param timestamp The timestamp of the notification, represented as a {@link SimpleCalendar}.
      * @param xChangeId The ID of the associated xChange, if any.
+     * @param itemId    The ID of the associated item, if any.
      */
-    public Notification(String username, String message, SimpleCalendar timestamp, Long xChangeId) {
+    public Notification(String username, String message, SimpleCalendar timestamp, Long xChangeId, Long itemId) {
         this.username = username;
         this.message = message;
         this.timestamp = timestamp;
         this.xChangeId = xChangeId;
+        this.itemId = itemId;
     }
 
     /**
@@ -137,6 +142,20 @@ public class Notification implements Parcelable {
     }
 
     /**
+     * Gets the ID of the associated item, if any.
+     *
+     * @return The associated item ID, or {@code null} if not set.
+     */
+    public Long getItemId() { return itemId; }
+
+    /**
+     * Sets the ID of the associated item.
+     *
+     * @param itemId The item ID to set.
+     */
+    public void setItemId(Long itemId) { this.itemId = itemId; }
+
+    /**
      * Constructs a {@link Notification} from a {@link Parcel}.
      *
      * @param in The {@link Parcel} containing the serialized {@link Notification}.
@@ -150,6 +169,11 @@ public class Notification implements Parcelable {
             xChangeId = null;
         } else {
             xChangeId = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            itemId = null;
+        } else {
+            itemId = in.readLong();
         }
     }
 
@@ -185,6 +209,12 @@ public class Notification implements Parcelable {
         } else {
             dest.writeByte((byte) 1);
             dest.writeLong(xChangeId);
+        }
+        if (itemId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(itemId);
         }
     }
 

@@ -290,6 +290,9 @@ public class ItemDetailActivity extends AppCompatActivity {
                 if (success && request != null) {
                     Intent intent = new Intent(this, CounterofferActivity.class);
                     intent.putExtra("REQUEST", request);
+                    intent.putExtra("USER", user);
+                    intent.putExtra("XCHANGE_ID", request.getRequestId());
+                    intent.putExtra("ITEM_ID", request.getRequestedItem());
 
                     viewModel.findItemsByXChanger(request.getRequester().getUsername(), new UserRepository.UserItemsCallback() {
                         @Override
@@ -513,6 +516,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 if (owner != null) {
                     Intent intent = new Intent(this, RequestActivity.class);
                     intent.putExtra("REQUESTED_ITEM", item);
+                    intent.putExtra("ITEM_ID", item.getItemId());
                     intent.putExtra("USER", user);
                     intent.putExtra("ITEM_OWNER", owner);
                     startActivity(intent);
