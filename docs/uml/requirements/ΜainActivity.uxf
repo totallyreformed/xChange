@@ -1,0 +1,123 @@
+<diagram program="umletino" version="15.1"><zoom_level>7</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>518</x><y>63</y><w>315</w><h>189</h></coordinates><panel_attributes>MainActivity
+--ItemsAdapter itemsAdapter
+-FloatingActionButton uploadFab
+-User currentUser
+-
++nitializeComponents():void
++handleRequestedItemId(Intent intent):int
++loadUserFragment():void
++setupBottomNavigation(BottomNavigationView bottomNavigationView):void
++handleBrowseSelection():boolean
++handleSearchSelection():boolean
++handleProfileSelection():boolean
++navigateToItemDetail(int itemId):void
++observeItems():void
++openUploadActivity():void
++showNotificationDialogsSequentially(List&lt;Notification&gt; notifications):void
++getCurrentUser():User</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>567</x><y>245</y><w>56</w><h>140</h></coordinates><panel_attributes>lt=&lt;-
+includes</panel_attributes><additional_attributes>10;180;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>406</x><y>371</y><w>210</w><h>259</h></coordinates><panel_attributes>lw=2
+MainActivityViewModel
+-
+-MutableLiveData&lt;Integer&gt; totalRequestsLiveData
+-MutableLiveData&lt;Integer&gt; totalExchangesLiveData
+-MutableLiveData&lt;Integer&gt; totalItemsLiveData
+-MutableLiveData&lt;Integer&gt; totalCategoriesLiveData
+- MutableLiveData&lt;String&gt; usernameLiveData
+-LiveData&lt;List&lt;Item&gt;&gt; itemsLiveData
+-
++getUsername():LiveData&lt;String&gt;
++getItemsList(): LiveData&lt;List&lt;Item&gt;&gt;
++loadUser(User user): void
++updateUsername(String username): void
++getTotalRequestsLiveData(): LiveData&lt;Integer&gt;
++getTotalExchangesLiveData(): LiveData&lt;Integer&gt;
++getTotalItemsLiveData(): LiveData&lt;Integer&gt;
++getTotalCategoriesLiveData(): LiveData&lt;Integer&gt;
++fetchTotalRequests(): void
++deleteNotificationsForUser(String username,
+ UserRepository.OperationCallback callback): void
++fetchTotalExchanges(): void
++fetchTotalItems(): void
++fetchTotalCategories(): void
++fetchAllStatistics(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>658</x><y>350</y><w>266</w><h>126</h></coordinates><panel_attributes>lw=2
+MainActivityPresenter
+-
+- MainActivityViewModel viewModel
+-
++loadItems(): LiveData&lt;List&lt;Item&gt;&gt;
++loadUser(User user): void
++fetchTotalRequests(MutableLiveData&lt;Integer&gt; liveData): void
++deleteNotificationsForUser(String username, 
+UserRepository.OperationCallback callback): void
++fetchTotalExchanges(MutableLiveData&lt;Integer&gt; liveData): void
++fetchTotalItems(MutableLiveData&lt;Integer&gt; liveData): void
++fetchTotalCategories(MutableLiveData&lt;Integer&gt; liveData): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>609</x><y>371</y><w>63</w><h>28</h></coordinates><panel_attributes>lt=&lt;-
+includes</panel_attributes><additional_attributes>70;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>735</x><y>525</y><w>259</w><h>98</h></coordinates><panel_attributes>lw=2
+UserRepository
+-
+-ExecutorService executor
+-
++getTotalRequests(UserStatisticsCallback callback):void
++deleteNotificationsForUser(String username, 
+OperationCallback callback):void
++getTotalExchanges(UserStatisticsCallback callback):void
++getTotalItems(UserStatisticsCallback callback):void
++getTotalCategories(UserStatisticsCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>777</x><y>469</y><w>56</w><h>70</h></coordinates><panel_attributes>lt=&lt;-
+includes
+</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>861</x><y>735</y><w>77</w><h>21</h></coordinates><panel_attributes>lw=2
+RequestDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1057</x><y>455</y><w>133</w><h>63</h></coordinates><panel_attributes>lw=2
+Interface
+UserStatisticsCallback
+-
+void onSuccess(int stats);
+void onFailure(String message);</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1064</x><y>525</y><w>133</w><h>56</h></coordinates><panel_attributes>lw=2
+Interface
+OperationCallback
+-
+void onSuccess();
+void onFailure(String message);</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>938</x><y>672</y><w>77</w><h>21</h></coordinates><panel_attributes>lw=2
+UserDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>644</x><y>280</y><w>161</w><h>42</h></coordinates><panel_attributes>lw=2
+MainActivityViewModelFactory
+-
+-Context context
+-
+create()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>693</x><y>315</y><w>56</w><h>49</h></coordinates><panel_attributes>lt=&lt;-
+includes</panel_attributes><additional_attributes>10;10;10;50</additional_attributes></element><element><id>Relation</id><coordinates><x>987</x><y>462</y><w>84</w><h>147</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>100;10;10;190</additional_attributes></element><element><id>Relation</id><coordinates><x>987</x><y>553</y><w>91</w><h>56</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>110;10;10;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>196</x><y>133</y><w>259</w><h>133</h></coordinates><panel_attributes>ItemsAdapter
+-
+-List&lt;Item&gt; items
+-User currentUser
+-OnItemClickListener listener
+-
++setOnItemClickListener(OnItemClickListener listener):void
++setItems(List&lt;Item&gt; newItems):void
++onCreateViewHolder(@NonNull ViewGroup parent, 
+int viewType):ItemViewHolder
++onBindViewHolder(@NonNull ItemViewHolder holder, 
+int position):void
++getItemCount():void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>448</x><y>210</y><w>84</w><h>28</h></coordinates><panel_attributes>lt=&lt;-
+includes</panel_attributes><additional_attributes>10;20;100;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>245</x><y>322</y><w>196</w><h>35</h></coordinates><panel_attributes>ItemViewHolder
+-
+-ItemViewHolder(@NonNull View itemView)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>329</x><y>259</y><w>49</w><h>77</h></coordinates><panel_attributes>lt=&lt;-
+include</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>749</x><y>679</y><w>77</w><h>21</h></coordinates><panel_attributes>lw=2
+ItemDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>910</x><y>707</y><w>77</w><h>21</h></coordinates><panel_attributes>lw=2
+xChangeDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>805</x><y>707</y><w>77</w><h>21</h></coordinates><panel_attributes>lw=2
+CounterOfferDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>987</x><y>588</y><w>91</w><h>49</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>110;50;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1064</x><y>595</y><w>133</w><h>56</h></coordinates><panel_attributes>lw=2
+Interface
+NotificationCallback
+-
+void onSuccess(List&lt;Notification&gt; notifications)
+void onFailure(String message);</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>231</y><w>140</w><h>28</h></coordinates><panel_attributes>OnItemClickListener
+-
+-onItemClick(Long itemId):void
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>133</x><y>238</y><w>77</w><h>21</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;90;10</additional_attributes></element><element><id>Relation</id><coordinates><x>588</x><y>14</y><w>21</w><h>63</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;11;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>511</x><y>0</y><w>168</w><h>21</h></coordinates><panel_attributes>AppCompatActivity</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>273</x><y>441</y><w>98</w><h>21</h></coordinates><panel_attributes>AndroidViewModel</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>364</x><y>448</y><w>56</w><h>21</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>Relation</id><coordinates><x>791</x><y>616</y><w>77</w><h>77</h></coordinates><panel_attributes>lt=&lt;-
+includes
+</panel_attributes><additional_attributes>10;90;80;10</additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>616</y><w>56</w><h>105</h></coordinates><panel_attributes>lt=&lt;-
+includes
+</panel_attributes><additional_attributes>10;130;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>616</y><w>84</w><h>133</h></coordinates><panel_attributes>lt=&lt;-
+includes
+</panel_attributes><additional_attributes>90;170;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>616</y><w>105</w><h>105</h></coordinates><panel_attributes>lt=&lt;-
+includes
+</panel_attributes><additional_attributes>130;130;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>616</y><w>154</w><h>70</h></coordinates><panel_attributes>lt=&lt;-
+includes
+</panel_attributes><additional_attributes>200;80;10;10</additional_attributes></element></diagram>
