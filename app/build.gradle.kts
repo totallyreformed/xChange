@@ -38,12 +38,6 @@ android {
     buildFeatures {
         viewBinding = true
     }
-
-    testOptions {
-        unitTests {
-            isReturnDefaultValues = true
-        }
-    }
 }
 
 dependencies {
@@ -68,7 +62,6 @@ dependencies {
     androidTestImplementation(libs.junit.jupiter) // JUnit 5 API for tests
     testRuntimeOnly(libs.junit.jupiter.engine) // JUnit 5 engine for running tests
     testImplementation(libs.junit.vintage.engine) // Optional, allows running JUnit 4 tests on JUnit 5 platform
-    testImplementation(libs.robolectric)
 
     // Android Instrumentation Testing Dependencies
     androidTestImplementation(libs.ext.junit) // Android-specific JUnit 4

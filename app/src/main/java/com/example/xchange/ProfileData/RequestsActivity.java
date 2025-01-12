@@ -22,6 +22,14 @@ import com.example.xchange.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity class for displaying sent or received requests in the xChange application.
+ * <p>
+ * This activity shows a list of requests in a RecyclerView and allows navigation to the
+ * item details. It also adjusts system bars and provides a back button to return to the
+ * previous screen.
+ * </p>
+ */
 public class RequestsActivity extends AppCompatActivity {
 
     private RequestsAdapter adapter;
@@ -29,6 +37,11 @@ public class RequestsActivity extends AppCompatActivity {
     private List<Request> requestList = new ArrayList<>();
     private User currentUser;
 
+    /**
+     * Initializes the activity, sets up UI components, and handles intent data.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +54,18 @@ public class RequestsActivity extends AppCompatActivity {
         setupBackButton();
     }
 
+    /**
+     * Initializes UI components such as the RecyclerView and the back button.
+     */
     private void initializeUI() {
         recyclerView = findViewById(R.id.requestsRecyclerView);
         Button backButton = findViewById(R.id.backToProfileButton);
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Adjusts system bars to ensure proper padding for UI elements.
+     */
     private void adjustSystemBars() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -55,12 +74,19 @@ public class RequestsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Configures the RecyclerView with a layout manager and an adapter.
+     */
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RequestsAdapter(requestList, null, this::onRequestClicked, this);
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Handles intent data to populate the RecyclerView with requests.
+     * If no valid data is provided, displays an error message and finishes the activity.
+     */
     private void handleIntentData() {
         Intent intent = getIntent();
         currentUser = intent.getParcelableExtra("USER");
@@ -77,6 +103,11 @@ public class RequestsActivity extends AppCompatActivity {
         loadRequests(requestType);
     }
 
+    /**
+     * Populates the RecyclerView with requests from the intent data.
+     *
+     * @param requestsFromIntent The list of requests from the intent.
+     */
     private void populateRequests(ArrayList<Request> requestsFromIntent) {
         if (requestsFromIntent != null && !requestsFromIntent.isEmpty()) {
             requestList.addAll(requestsFromIntent);
@@ -86,6 +117,11 @@ public class RequestsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays a message indicating the type of requests being displayed.
+     *
+     * @param requestType The type of requests (e.g., "SENT" or "RECEIVED").
+     */
     private void loadRequests(String requestType) {
         if ("SENT".equals(requestType)) {
             showToast("Displaying sent requests...");
@@ -94,11 +130,19 @@ public class RequestsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Configures the back button to finish the activity and return to the previous screen.
+     */
     private void setupBackButton() {
         Button backButton = findViewById(R.id.backToProfileButton);
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Handles click events on a request, navigating to the item detail screen.
+     *
+     * @param request The clicked request.
+     */
     private void onRequestClicked(Request request) {
         Intent intent = new Intent(this, ItemDetailActivity.class);
         intent.putExtra("ITEM_ID", request.getRequestedItem().getItemId());
@@ -106,6 +150,11 @@ public class RequestsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Displays a toast message.
+     *
+     * @param message The message to display.
+     */
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

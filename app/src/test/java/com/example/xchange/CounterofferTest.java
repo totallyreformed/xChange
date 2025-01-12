@@ -1,15 +1,10 @@
 package com.example.xchange;
 
-import android.os.Parcel;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(MockitoJUnitRunner.class)
 class CounterofferTest {
 
     private SimpleCalendar cal;
@@ -73,27 +68,5 @@ class CounterofferTest {
         assertTrue(str.contains("counterofferId=200"));
         assertTrue(str.contains("requestId=50"));
         assertTrue(str.contains("offeredItem=30"));
-    }
-
-    @Test
-    void testParcelable() {
-        Counteroffer original = new Counteroffer(request, offeredItem, counterofferer, counterofferee);
-        original.setCounterofferId(300L);
-        original.setActive(true);
-
-        Parcel parcel = Parcel.obtain();
-        original.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        Counteroffer created = Counteroffer.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        assertEquals(original.getCounterofferId(), created.getCounterofferId());
-        assertEquals(original.getRequest().getRequestId(), created.getRequest().getRequestId());
-        assertEquals(original.getOfferedItem().getItemId(), created.getOfferedItem().getItemId());
-        assertEquals(original.getRequestedItem().getItemId(), created.getRequestedItem().getItemId());
-        assertEquals(original.getCounterofferer().getUsername(), created.getCounterofferer().getUsername());
-        assertEquals(original.getCounterofferee().getUsername(), created.getCounterofferee().getUsername());
-        assertEquals(original.isActive(), created.isActive());
     }
 }

@@ -24,6 +24,11 @@ import com.example.xchange.R;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 
+/**
+ * The {@code AdminHomeFragment} class represents the admin home screen in the application.
+ * It displays admin-specific information and provides access to various admin functionalities,
+ * such as viewing items, requests, and exchanges, along with logout options.
+ */
 public class AdminHomeFragment extends Fragment {
 
     // UI Components
@@ -36,11 +41,19 @@ public class AdminHomeFragment extends Fragment {
     private TextView totalCategoriesTextView;
     private TextView adminXChangesCountTextView;
     private Button adminViewXChangesButton;
-
-
     private UserRepository userRepository;
     private User currentUser;
 
+    /**
+     * Creates and returns the view hierarchy associated with the fragment.
+     * This method initializes the UI components, sets up button click listeners,
+     * and retrieves user-related data to display admin-specific information.
+     *
+     * @param inflater  The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container The parent view that this fragment's UI should be attached to, or null if it is not provided.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return The root view of the fragment's layout.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -106,6 +119,22 @@ public class AdminHomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Fetches and displays various admin statistics, including total items, requests, users, categories, and exchanges.
+     * This method uses the {@link UserRepository} to retrieve the data and updates the UI components
+     * such as text views and toasts for displaying success or failure messages.
+     *
+     * <p>Statistics fetched:
+     * <ul>
+     *     <li>Total Exchanges</li>
+     *     <li>Total Items</li>
+     *     <li>Total Requests</li>
+     *     <li>Total Users</li>
+     *     <li>Total Categories</li>
+     * </ul>
+     *
+     * <p>All UI updates are performed on the main thread.
+     */
     private void fetchStatistics() {
         userRepository.getTotalExchanges(new UserRepository.UserStatisticsCallback() {
             @Override

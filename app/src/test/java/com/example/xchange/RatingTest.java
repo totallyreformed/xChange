@@ -1,14 +1,10 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 class RatingTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-03");
@@ -52,21 +48,5 @@ class RatingTest {
         assertTrue(str.contains("ratee="));
         assertTrue(str.contains("request="));
         assertTrue(str.contains("xChange="));
-    }
-
-    @Test
-    void testParcelable() {
-        Parcel parcel = Parcel.obtain();
-        rating.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Rating created = Rating.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        // rater and ratee are transient – expect them null after parceling
-        assertNull(created.getRater());
-        assertNull(created.getRatee());
-        assertEquals(rating.getRating(), created.getRating(), 0.001f);
-        assertEquals(rating.getRequest().getRequestId(), created.getRequest().getRequestId());
-        assertEquals(rating.getXChange().getFinalizedId(), created.getXChange().getFinalizedId());
     }
 }

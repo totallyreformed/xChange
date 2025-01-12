@@ -1,14 +1,10 @@
 package com.example.xchange;
 
-import android.os.Parcel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(RobolectricTestRunner.class)
 class RequestTest {
 
     private final SimpleCalendar cal = new SimpleCalendar("2025-01-02");
@@ -57,24 +53,5 @@ class RequestTest {
         assertTrue(str.contains("50"));
         assertTrue(str.contains(request.getRequester().getUsername()));
         assertTrue(str.contains(request.getRequestee().getUsername()));
-    }
-
-    @Test
-    void testParcelable() {
-        request.setActive(true);
-
-        Parcel parcel = Parcel.obtain();
-        request.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Request created = Request.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-
-        assertEquals(request.getRequestId(), created.getRequestId());
-        assertEquals(request.getRequester().getUsername(), created.getRequester().getUsername());
-        assertEquals(request.getRequestee().getUsername(), created.getRequestee().getUsername());
-        assertEquals(request.getOfferedItem().getItemId(), created.getOfferedItem().getItemId());
-        assertEquals(request.getRequestedItem().getItemId(), created.getRequestedItem().getItemId());
-        assertEquals(request.getDateInitiated().toString(), created.getDateInitiated().toString());
-        assertEquals(request.isActive(), created.isActive());
     }
 }

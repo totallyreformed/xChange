@@ -1,4 +1,3 @@
-// File: SearchPresenter.java
 package com.example.xchange.Search;
 
 import android.content.Context;
@@ -10,21 +9,53 @@ import com.example.xchange.database.UserRepository;
 
 import java.util.List;
 
+/**
+ * Presenter class for handling search functionality in the xChange application.
+ * <p>
+ * This class acts as an intermediary between the data layer ({@link UserRepository}) and the view ({@link SearchView}),
+ * managing item searches by name and category.
+ * </p>
+ */
 public class SearchPresenter {
 
+    /**
+     * Interface for communicating search results and errors to the view.
+     */
     public interface SearchView {
+        /**
+         * Called when search results are successfully loaded.
+         *
+         * @param items The list of items matching the search criteria.
+         */
         void onSearchResultsLoaded(List<Item> items);
+        /**
+         * Called when the search operation fails.
+         *
+         * @param message The error message.
+         */
         void onSearchFailed(String message);
     }
 
     private final UserRepository userRepository;
     private final SearchView view;
 
+    /**
+     * Constructor for initializing the SearchPresenter.
+     *
+     * @param context The application context.
+     * @param view    The view interface for updating the UI.
+     */
     public SearchPresenter(Context context, SearchView view) {
         this.userRepository = new UserRepository(context);
         this.view = view;
     }
 
+    /**
+     * Performs a search operation based on the query and optional category filter.
+     *
+     * @param query    The search query string.
+     * @param category The category filter for the search. If null, the search is performed by name only.
+     */
     public void performSearch(String query, Category category) {
         if (category == null) {
             // Perform search by name only

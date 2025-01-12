@@ -16,20 +16,33 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.Item;
 import com.example.xchange.MainActivity.MainActivity;
+import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
+import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity for creating a counteroffer in the xChange app.
+ * Displays request details and allows the user to select an item for the counteroffer.
+ */
 public class CounterofferActivity extends AppCompatActivity {
 
     private TextView requesterTextView, requesteeTextView, requestedItemTextView;
     private Spinner offeredItemSpinner;
     private CounterofferViewModel viewModel;
 
+    /**
+     * Called when the activity is created.
+     * Initializes the UI, ViewModel, and handles intent data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +55,9 @@ public class CounterofferActivity extends AppCompatActivity {
         setupCounterofferButton();
     }
 
+    /**
+     * Initializes the UI components of the activity.
+     */
     private void initializeUI() {
         requesterTextView = findViewById(R.id.requesterTextView);
         requesteeTextView = findViewById(R.id.requesteeTextView);
@@ -49,6 +65,9 @@ public class CounterofferActivity extends AppCompatActivity {
         offeredItemSpinner = findViewById(R.id.offeredItemSpinner);
     }
 
+    /**
+     * Initializes the ViewModel used for managing data in the activity.
+     */
     private void initializeViewModel() {
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @NonNull
@@ -59,6 +78,9 @@ public class CounterofferActivity extends AppCompatActivity {
         }).get(CounterofferViewModel.class);
     }
 
+    /**
+     * Handles the intent data passed to the activity and updates the ViewModel.
+     */
     private void handleIntentData() {
         Request request = getIntent().getParcelableExtra("REQUEST");
         ArrayList<Item> items = getIntent().getParcelableArrayListExtra("XCHANGER_ITEMS");
@@ -72,6 +94,9 @@ public class CounterofferActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Observes data in the ViewModel and updates the UI accordingly.
+     */
     private void observeViewModelData() {
         viewModel.getRequesterText().observe(this, text -> requesterTextView.setText(text));
         viewModel.getRequesteeText().observe(this, text -> requesteeTextView.setText(text));
@@ -86,6 +111,11 @@ public class CounterofferActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Populates the spinner with items and handles item selection events.
+     *
+     * @param items The list of items to display in the spinner.
+     */
     private void populateSpinner(List<Item> items) {
         ArrayAdapter<Item> adapter = new ArrayAdapter<>(
                 this,
@@ -109,11 +139,17 @@ public class CounterofferActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up the counteroffer button and its click event.
+     */
     private void setupCounterofferButton() {
         Button initializeCounterofferButton = findViewById(R.id.initializeCounterofferButton);
         initializeCounterofferButton.setOnClickListener(view -> initializeCounteroffer());
     }
 
+    /**
+     * Initializes a counteroffer using the selected item and request details.
+     */
     private void initializeCounteroffer() {
         Item selectedItem = (Item) offeredItemSpinner.getSelectedItem();
 
@@ -135,6 +171,15 @@ public class CounterofferActivity extends AppCompatActivity {
                 if (found && foundRequest != null) {
                     xChanger xchanger = new xChanger(user.getUsername(), user.getEmail(), user.getJoin_Date(), user.getPassword(), user.getLocation());
                     viewModel.initializeCounterRequest(foundRequest, selectedItem, xchanger);
+
+                    // Send notification to the original requester that a counteroffer has been made.
+                    sendCounterofferNotification(
+                            request.getRequester().getUsername(),
+                            "Your request has received a counteroffer from " + user.getUsername(),
+                            foundRequest.getRequestId(),  // Using the request id as the xChangeId for context.
+                            request.getRequestedItem().getItemId()
+                    );
+
                     Toast.makeText(this, "Counter offer initialized", Toast.LENGTH_SHORT).show();
                     navigateToMainActivity(user, selectedItem);
                 } else {
@@ -144,6 +189,47 @@ public class CounterofferActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sends a counteroffer notification to the given recipient.
+     *
+     * @param recipientUsername The username of the recipient.
+     * @param message           The notification message.
+     * @param xChangeId         The ID representing the associated xChange (or request).
+     * @param itemId            The ID of the item offered as a counteroffer.
+     */
+    private void sendCounterofferNotification(String recipientUsername, String message, long xChangeId, long itemId) {
+        Notification notification = new Notification(
+                recipientUsername,
+                message,
+                SimpleCalendar.today(),
+                xChangeId,
+                itemId
+        );
+        UserRepository userRepository = new UserRepository(getApplication());
+        userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                // Log success (UI updates such as Toasts should not be called here because this may not be the main thread)
+                runOnUiThread(() ->
+                        Toast.makeText(CounterofferActivity.this, "Counteroffer notification sent.", Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            @Override
+            public void onFailure(String message) {
+                runOnUiThread(() ->
+                        Toast.makeText(CounterofferActivity.this, "Failed to send notification: " + message, Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
+    /**
+     * Navigates to the main activity with the updated user and selected item data.
+     *
+     * @param user         The user involved in the counteroffer.
+     * @param selectedItem The item selected for the counteroffer.
+     */
     private void navigateToMainActivity(User user, Item selectedItem) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("USER", user);

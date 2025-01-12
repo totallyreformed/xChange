@@ -23,6 +23,13 @@ import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 import com.example.xchange.Item;
 
+/**
+ * Activity class for handling the rejection of requests or counteroffers in the xChange application.
+ * <p>
+ * This class displays the details of the request or counteroffer, allows the user to confirm
+ * the rejection, and notifies the requester or counterofferer about the rejection.
+ * </p>
+ */
 public class RejectRequestActivity extends AppCompatActivity {
 
     private RejectRequestViewModel viewModel;
@@ -40,7 +47,11 @@ public class RejectRequestActivity extends AppCompatActivity {
     private Button backButton;
     private RatingBar requestRatingBar;
 
-
+    /**
+     * Initializes the activity, sets up the UI, and handles user interactions.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +100,7 @@ public class RejectRequestActivity extends AppCompatActivity {
     }
 
     /**
-     * Populates the UI with Request details.
+     * Populates the UI with the details of a request.
      */
     private void populateRequestDetails() {
         // Check if request has a requester
@@ -109,8 +120,9 @@ public class RejectRequestActivity extends AppCompatActivity {
         loadItemImage(request.getRequestedItem(), requestedItemImageView);
     }
 
+
     /**
-     * Populates the UI with Counteroffer details.
+     * Populates the UI with the details of a counteroffer.
      */
     private void populateCounterofferDetails() {
         // Check if counteroffer has a requester
@@ -130,7 +142,12 @@ public class RejectRequestActivity extends AppCompatActivity {
         loadItemImage(counteroffer.getRequestedItem(), requestedItemImageView);
     }
 
-
+    /**
+     * Loads an item's image into an ImageView.
+     *
+     * @param item      The item whose image is to be loaded.
+     * @param imageView The ImageView where the image will be displayed.
+     */
     private void loadItemImage(Item item, ImageView imageView) {
         if (item.getFirstImage() != null) {
             String filePath = item.getFirstImage().getFilePath();
@@ -158,7 +175,7 @@ public class RejectRequestActivity extends AppCompatActivity {
     }
 
     /**
-     * Displays a confirmation dialog before rejecting the request/counteroffer.
+     * Displays a confirmation dialog before rejecting the request or counteroffer.
      */
     private void showRejectConfirmationDialog() {
         new AlertDialog.Builder(this)
@@ -173,7 +190,9 @@ public class RejectRequestActivity extends AppCompatActivity {
     }
 
     /**
-     * Handles the rejection of a Request or Counteroffer.
+     * Handles the rejection of a request or counteroffer.
+     *
+     * @param rating The rating provided for the rejection.
      */
     private void handleRejectRequest(float rating) {
         xChanger xchanger = new xChanger(
@@ -214,7 +233,7 @@ public class RejectRequestActivity extends AppCompatActivity {
     }
 
     /**
-     * Sends a notification to the specified user.
+     * Sends a notification to a specified user.
      *
      * @param username The username of the recipient.
      * @param message  The notification message.
@@ -224,6 +243,7 @@ public class RejectRequestActivity extends AppCompatActivity {
                 username,
                 message,
                 SimpleCalendar.today(),
+                (long) -1,
                 (long) -1
         );
 

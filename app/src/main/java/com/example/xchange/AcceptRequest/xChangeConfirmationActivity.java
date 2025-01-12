@@ -17,6 +17,10 @@ import com.example.xchange.xChange;
 import com.example.xchange.xChanger;
 import com.example.xchange.MainActivity.MainActivity;
 
+/**
+ * Activity for displaying confirmation details of a successful exchange (xChange).
+ * Provides contact information of the involved parties and navigational options back to the main activity.
+ */
 public class xChangeConfirmationActivity extends AppCompatActivity {
 
     private TextView exchangeStatusTextView;
@@ -28,6 +32,12 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
     private Request request;
     private Counteroffer counteroffer;
 
+    /**
+     * Called when the activity is created.
+     * Initializes the UI components and loads exchange details from the intent.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +82,11 @@ public class xChangeConfirmationActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Displays the contact information of the involved parties in the exchange.
+     *
+     * @param xchange The xChange object containing the details of the exchange.
+     */
     private void displayContactInfo(xChange xchange) {
         // Set the exchange status
         exchangeStatusTextView.setText("Exchange Accepted!");

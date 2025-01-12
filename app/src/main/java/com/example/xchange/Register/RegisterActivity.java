@@ -14,11 +14,23 @@ import com.example.xchange.Login.LoginActivity;
 import com.example.xchange.R;
 import com.example.xchange.User;
 
+/**
+ * Activity class for user registration in the xChange application.
+ * <p>
+ * This activity provides a user interface for creating a new account. It handles input validation,
+ * user registration logic, and navigation to the login screen upon successful registration.
+ * </p>
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     private RegisterViewModel viewModel;
     private EditText usernameEditText, emailEditText, passwordEditText, confirmPasswordEditText;
 
+    /**
+     * Initializes the activity, sets up UI components, and handles user interactions.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -12,19 +12,43 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * Adapter for displaying a list of {@link xChange} objects in a {@link RecyclerView}.
+ * <p>
+ * This adapter binds the data from a list of {@link xChange} objects to the corresponding UI elements
+ * in the RecyclerView.
+ * </p>
+ */
 public class xChangesAdapter extends RecyclerView.Adapter<xChangesAdapter.xChangeViewHolder> {
 
     private List<xChange> xChanges;
 
+    /**
+     * Constructs a new {@link xChangesAdapter}.
+     *
+     * @param xChanges The initial list of {@link xChange} objects to display.
+     */
     public xChangesAdapter(List<xChange> xChanges) {
         this.xChanges = xChanges;
     }
 
+    /**
+     * Updates the list of {@link xChange} objects and refreshes the RecyclerView.
+     *
+     * @param newXChanges The new list of {@link xChange} objects to display.
+     */
     public void setXChanges(List<xChange> newXChanges) {
         this.xChanges = newXChanges;
         notifyDataSetChanged();
     }
 
+    /**
+     * Creates a new {@link xChangeViewHolder} to represent a single {@link xChange} item.
+     *
+     * @param parent   The parent {@link ViewGroup}.
+     * @param viewType The view type of the new {@link xChangeViewHolder}.
+     * @return A new {@link xChangeViewHolder} for the RecyclerView.
+     */
     @NonNull
     @Override
     public xChangeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -33,6 +57,12 @@ public class xChangesAdapter extends RecyclerView.Adapter<xChangesAdapter.xChang
         return new xChangeViewHolder(view);
     }
 
+    /**
+     * Binds the data from a {@link xChange} object to the corresponding UI elements in the ViewHolder.
+     *
+     * @param holder   The {@link xChangeViewHolder} that holds the UI elements for a single item.
+     * @param position The position of the item in the dataset.
+     */
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull xChangeViewHolder holder, int position) {
@@ -53,11 +83,19 @@ public class xChangesAdapter extends RecyclerView.Adapter<xChangesAdapter.xChang
         holder.offeredItemTextView.setText("Offered Item: " + offeredItem);
     }
 
+    /**
+     * Returns the total number of {@link xChange} objects in the dataset.
+     *
+     * @return The total number of items.
+     */
     @Override
     public int getItemCount() {
         return xChanges == null ? 0 : xChanges.size();
     }
 
+    /**
+     * ViewHolder for displaying a single {@link xChange} in the RecyclerView.
+     */
     public static class xChangeViewHolder extends RecyclerView.ViewHolder {
         TextView exchangeDetailsTextView;
         TextView requesterTextView;
@@ -66,6 +104,11 @@ public class xChangesAdapter extends RecyclerView.Adapter<xChangesAdapter.xChang
         TextView requestedItemTextView;
         TextView offeredItemTextView;
 
+        /**
+         * Constructs a new {@link xChangeViewHolder}.
+         *
+         * @param itemView The root view of the individual item layout.
+         */
         public xChangeViewHolder(@NonNull View itemView) {
             super(itemView);
             exchangeDetailsTextView = itemView.findViewById(R.id.exchangeDetailsTextView);

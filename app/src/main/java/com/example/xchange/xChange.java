@@ -16,6 +16,14 @@ import com.example.xchange.database.RequestConverter;
 import com.example.xchange.database.CalendarConverter;
 import com.example.xchange.database.XChangerConverter;
 
+/**
+ * Represents an exchange deal in the xChange application.
+ * <p>
+ * The {@code xChange} class tracks the details of a finalized or in-progress exchange,
+ * including the associated {@link Request}, {@link Counteroffer}, involved users, items, and its status.
+ * This class is a Room entity and implements {@link Parcelable} for data persistence and transfer.
+ * </p>
+ */
 @Entity(tableName = "xchanges")
 public class xChange implements Parcelable {
 
@@ -43,11 +51,11 @@ public class xChange implements Parcelable {
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "offerer")
-    private  xChanger offerer; // Excluded from parceling
+    private xChanger offerer; // Excluded from parceling
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "offeree")
-    private  xChanger offeree; // Excluded from parceling
+    private xChanger offeree; // Excluded from parceling
 
     @TypeConverters(ItemConverter.class)
     @ColumnInfo(name = "offered_item")
@@ -63,8 +71,13 @@ public class xChange implements Parcelable {
     @ColumnInfo(name = "offeree_username")
     private String offereeUsername;
 
-
-    // Constructors
+    /**
+     * Constructs a new {@link xChange} from a {@link Request}.
+     *
+     * @param request       The associated {@link Request}.
+     * @param dateFinalized The date the exchange was finalized.
+     * @throws IllegalArgumentException if the request is {@code null}.
+     */
     @Ignore
     public xChange(Request request, SimpleCalendar dateFinalized) {
         if (request == null) {
@@ -82,6 +95,13 @@ public class xChange implements Parcelable {
         this.offereeUsername = offeree != null ? offeree.getUsername() : null;
     }
 
+    /**
+     * Constructs a new {@link xChange} from a {@link Request} and a {@link Counteroffer}.
+     *
+     * @param request       The associated {@link Request}.
+     * @param counteroffer  The associated {@link Counteroffer}.
+     * @param dateFinalized The date the exchange was finalized.
+     */
     public xChange(Request request, Counteroffer counteroffer, SimpleCalendar dateFinalized) {
         this.counteroffer = counteroffer;
         this.request = request;
@@ -101,105 +121,229 @@ public class xChange implements Parcelable {
             this.finalizedId = request.getRequestId();
         }
     }
+
+    /**
+     * Returns the username of the offerer.
+     *
+     * @return The username of the offerer.
+     */
     public String getOffererUsername() {
         return offererUsername;
     }
 
+    /**
+     * Sets the username of the offerer.
+     *
+     * @param offererUsername The username to set.
+     */
     public void setOffererUsername(String offererUsername) {
         this.offererUsername = offererUsername;
     }
 
+    /**
+     * Returns the username of the offeree.
+     *
+     * @return The username of the offeree.
+     */
     public String getOffereeUsername() {
         return offereeUsername;
     }
 
+    /**
+     * Sets the username of the offeree.
+     *
+     * @param offereeUsername The username to set.
+     */
     public void setOffereeUsername(String offereeUsername) {
         this.offereeUsername = offereeUsername;
     }
 
 
-    // Getters and Setters
+    /**
+     * Gets the unique ID of the xChange.
+     *
+     * @return The xChange ID.
+     */
     public Long getXChangeId() {
         return xChangeId;
     }
 
+    /**
+     * Sets the unique ID of the xChange.
+     *
+     * @param xChangeId The ID to set.
+     */
     public void setXChangeId(Long xChangeId) {
         this.xChangeId = xChangeId;
     }
 
+    /**
+     * Gets the current deal status of the xChange.
+     *
+     * @return The deal status as a {@link String}.
+     */
     public String getDealStatus() {
         return dealStatus;
     }
 
+    /**
+     * Sets the deal status of the xChange.
+     *
+     * @param dealStatus The deal status to set.
+     */
     public void setDealStatus(String dealStatus) {
         this.dealStatus = dealStatus;
     }
 
+    /**
+     * Gets the associated {@link Request} of the xChange.
+     *
+     * @return The associated {@link Request}.
+     */
     public Request getRequest() {
         return request;
     }
 
+    /**
+     * Sets the associated {@link Request} of the xChange.
+     *
+     * @param request The {@link Request} to set.
+     */
     public void setRequest(Request request) {
         this.request = request;
     }
 
+    /**
+     * Gets the associated {@link Counteroffer} of the xChange.
+     *
+     * @return The associated {@link Counteroffer}.
+     */
     public Counteroffer getCounteroffer() {
         return counteroffer;
     }
 
+    /**
+     * Sets the associated {@link Counteroffer} of the xChange.
+     *
+     * @param counteroffer The {@link Counteroffer} to set.
+     */
     public void setCounteroffer(Counteroffer counteroffer) {
         this.counteroffer = counteroffer;
     }
 
+    /**
+     * Gets the finalized ID of the xChange.
+     *
+     * @return The finalized ID.
+     */
     public Long getFinalizedId() {
         return finalizedId;
     }
 
+    /**
+     * Sets the finalized ID of the xChange.
+     *
+     * @param finalizedId The finalized ID to set.
+     */
     public void setFinalizedId(Long finalizedId) {
         this.finalizedId = finalizedId;
     }
 
+    /**
+     * Gets the date the xChange was finalized.
+     *
+     * @return The finalized date as a {@link SimpleCalendar}.
+     */
     public SimpleCalendar getDateFinalized() {
         return dateFinalized;
     }
 
+    /**
+     * Sets the date the xChange was finalized.
+     *
+     * @param dateFinalized The finalized date to set as a {@link SimpleCalendar}.
+     */
     public void setDateFinalized(SimpleCalendar dateFinalized) {
         this.dateFinalized = dateFinalized;
     }
 
+    /**
+     * Gets the offerer involved in the xChange.
+     *
+     * @return The offerer as a {@link xChanger}.
+     */
     public xChanger getOfferer() {
         return offerer;
     }
 
+    /**
+     * Sets the offerer involved in the xChange.
+     *
+     * @param offerer The offerer to set as a {@link xChanger}.
+     */
     public void setOfferer(xChanger offerer) {
         this.offerer = offerer;
     }
 
+    /**
+     * Gets the offeree involved in the xChange.
+     *
+     * @return The offeree as a {@link xChanger}.
+     */
     public xChanger getOfferee() {
         return offeree;
     }
 
+    /**
+     * Sets the offeree involved in the xChange.
+     *
+     * @param offeree The offeree to set as a {@link xChanger}.
+     */
     public void setOfferee(xChanger offeree) {
         this.offeree = offeree;
     }
 
+    /**
+     * Gets the offered {@link Item} in the xChange.
+     *
+     * @return The offered {@link Item}.
+     */
     public Item getOfferedItem() {
         return offeredItem;
     }
 
+    /**
+     * Sets the offered {@link Item} in the xChange.
+     *
+     * @param offeredItem The offered {@link Item} to set.
+     */
     public void setOfferedItem(Item offeredItem) {
         this.offeredItem = offeredItem;
     }
 
+    /**
+     * Gets the requested {@link Item} in the xChange.
+     *
+     * @return The requested {@link Item}.
+     */
     public Item getRequestedItem() {
         return requestedItem;
     }
 
+    /**
+     * Sets the requested {@link Item} in the xChange.
+     *
+     * @param requestedItem The requested {@link Item} to set.
+     */
     public void setRequestedItem(Item requestedItem) {
         this.requestedItem = requestedItem;
     }
 
-    // Parcelable Implementation
+    /**
+     * Constructs an {@link xChange} from a {@link Parcel}.
+     *
+     * @param in The {@link Parcel} containing the serialized {@link xChange}.
+     */
     protected xChange(Parcel in) {
         if (in.readByte() == 0) {
             xChangeId = null;
@@ -223,7 +367,9 @@ public class xChange implements Parcelable {
         offereeUsername = in.readString();
     }
 
-
+    /**
+     * A {@link Parcelable.Creator} implementation for creating {@link xChange} objects from a {@link Parcel}.
+     */
     public static final Creator<xChange> CREATOR = new Creator<xChange>() {
         @Override
         public xChange createFromParcel(Parcel in) {
@@ -236,6 +382,12 @@ public class xChange implements Parcelable {
         }
     };
 
+    /**
+     * Writes the {@link xChange} object to a {@link Parcel}.
+     *
+     * @param dest  The {@link Parcel} to write to.
+     * @param flags Additional flags for writing the parcel.
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         if (xChangeId == null) {
@@ -262,13 +414,33 @@ public class xChange implements Parcelable {
         dest.writeString(offereeUsername);
     }
 
-
+    /**
+     * Describes the contents of the {@link Parcelable} implementation.
+     *
+     * @return Always returns 0 as no special objects are contained.
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
-    // Methods to accept or reject the offer
+    /**
+     * Accepts the exchange offer and finalizes the deal.
+     * <p>
+     * This method performs the following steps:
+     * <ul>
+     *     <li>Sets the deal status to "Accepted".</li>
+     *     <li>Removes the requested and offered items from the inventories of the offerer and offeree.</li>
+     *     <li>Marks the associated {@link Request} as inactive.</li>
+     *     <li>Deactivates the associated {@link Counteroffer}, if present.</li>
+     *     <li>Updates the deal statistics for both the offerer and offeree.</li>
+     *     <li>Creates and assigns a {@link Rating} for the offeree based on the provided rating value.</li>
+     * </ul>
+     * </p>
+     *
+     * @param ratingValue The rating value (e.g., between 0 and 5) to assign to the offeree.
+     * @return The email of the offeree.
+     */
     public String acceptOffer(float ratingValue) {
         this.setDealStatus("Accepted");
 
@@ -290,13 +462,30 @@ public class xChange implements Parcelable {
         this.getOfferee().plusOneSucceedDeal();
         this.getOfferer().plusOneSucceedDeal();
 
-        // Add rating to offeree
+        // Add rating to offerer
         Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
-        this.getOfferee().addRating(rating);
+        this.getOfferer().addRating(rating);
 
         return this.getOfferee().getEmail();
     }
 
+    /**
+     * Accepts the exchange offer and finalizes the deal.
+     * <p>
+     * This method performs the following steps:
+     * <ul>
+     *     <li>Sets the deal status to "Accepted".</li>
+     *     <li>Removes the requested and offered items from the inventories of the offerer and offeree.</li>
+     *     <li>Marks the associated {@link Request} as inactive.</li>
+     *     <li>Deactivates the associated {@link Counteroffer}, if present.</li>
+     *     <li>Updates the deal statistics for both the offerer and offeree.</li>
+     *     <li>Creates and assigns a {@link Rating} for the offeree based on the provided rating value.</li>
+     * </ul>
+     * </p>
+     *
+     * @param ratingValue The rating value (e.g., between 0 and 5) to assign to the offeree.
+     * @return The email of the offeree.
+     */
     public void rejectOffer(float ratingValue) {
         this.setDealStatus("Rejected");
         // Finalize the exchange
@@ -313,12 +502,16 @@ public class xChange implements Parcelable {
         this.getOfferee().plusOneFailedDeal();
         this.getOfferer().plusOneFailedDeal();
 
-        // Add rating to offeree
+        // Add rating to offerer
         Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
-        this.getOfferee().addRating(rating);
+        this.getOfferer().addRating(rating);
     }
 
-    // toString method for better debugging
+    /**
+     * Returns a string representation of the {@link xChange}.
+     *
+     * @return A string containing details about the xChange, including IDs, deal status, usernames, and items involved.
+     */
     @Override
     public String toString() {
         return "xChange{" +

@@ -12,11 +12,13 @@ import androidx.lifecycle.Observer;
 import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
+import com.example.xchange.Rating;
 import com.example.xchange.Request;
 import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
+import com.example.xchange.database.dao.RatingDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
 import com.example.xchange.database.dao.xChangeDao;
@@ -31,14 +33,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Repository class for managing interactions between the application and the database.
+ * It handles operations for {@link User}, {@link Item}, {@link Request}, {@link Counteroffer},
+ * {@link Notification}, and {@link xChange}.
+ */
 public class UserRepository {
     private final UserDao userDao;
     private final ItemDao itemDao;
     private final RequestDao requestDao;
     private final CounterofferDao counterofferDao;
     private final xChangeDao xChangeDao;
+    private final RatingDao ratingDao;
     private final ExecutorService executor;
 
+    /**
+     * Constructor to initialize the repository with required DAOs and an executor.
+     *
+     * @param context the application context used to access the database.
+     */
     public UserRepository(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
         userDao = db.userDao();
@@ -46,86 +59,353 @@ public class UserRepository {
         requestDao = db.requestDao();
         counterofferDao = db.getCounterofferDao();
         xChangeDao = db.xChangeDao();
+        ratingDao = db.ratingDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
+    /**
+     * Callback interface for handling login operations.
+     */
     public interface LoginCallback {
+        /**
+         * Called when the login operation is successful.
+         *
+         * @param user the {@link User} object representing the logged-in user.
+         */
+        void onSuccess(User user);
+        /**
+         * Called when the login operation fails.
+         *
+         * @param message a descriptive error message.
+         */
+        void onFailure(String message);
+    }
+
+    public interface UserCallback {
         void onSuccess(User user);
         void onFailure(String message);
     }
 
+    public interface UserRatingCallback {
+        void onSuccess(float averageRating, int totalRatings);
+        void onFailure(String message);
+    }
+
+    /**
+     * Callback interface for handling notifications.
+     */
     public interface NotificationCallback {
+        /**
+         * Called when notifications are successfully retrieved.
+         *
+         * @param notifications the list of {@link Notification} objects.
+         */
         void onSuccess(List<Notification> notifications);
+        /**
+         * Called when notification retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for loading a counteroffer.
+     */
+    public interface LoadCounterofferCallback {
+        void onSuccess(Counteroffer counteroffer);
+        void onFailure(String message);
+    }
+
+    /**
+     * Callback interface for handling user counteroffers.
+     */
     public interface UserCounterOffersCallback {
+        /**
+         * Called when counteroffers are successfully retrieved.
+         *
+         * @param counterOffers the list of {@link Counteroffer} objects.
+         */
         void onSuccess(List<Counteroffer> counterOffers);
+        /**
+         * Called when counteroffer retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for fetching an item.
+     */
+    public interface ItemCallback {
+        /**
+         * Called when an item is successfully fetched.
+         *
+         * @param item the {@link Item} object.
+         */
+        void onItemFetched(Item item);
+    }
+
+    /**
+     * Callback interface for handling user registration operations.
+     */
     public interface RegisterCallback {
+        /**
+         * Called when registration is successful.
+         */
         void onSuccess();
+        /**
+         * Called when registration fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Callback interface for retrieving user statistics.
+     */
     public interface UserStatisticsCallback {
+        /**
+         * Called when user statistics are successfully retrieved.
+         *
+         * @param stats a descriptive string of user statistics.
+         */
         void onSuccess(String stats);
+        /**
+         * Called when user statistics retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Callback interface for finding a request.
+     */
     public interface FindRequestCallback {
+        /**
+         * Called when the request is successfully found or not found.
+         *
+         * @param success a boolean indicating whether the request was found.
+         * @param request the {@link Request} object, or null if not found.
+         */
         void onResult(boolean success, @Nullable Request request);
     }
+
+    /**
+     * Callback interface for retrieving user items.
+     */
     public interface UserItemsCallback {
+        /**
+         * Called when items are successfully retrieved.
+         *
+         * @param items the list of {@link Item} objects.
+         */
         void onSuccess(List<Item> items);
+        /**
+         * Called when item retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for saving a request.
+     */
     public interface SaveRequestCallback {
+        /**
+         * Called when the request is successfully saved.
+         */
         void onSuccess();
+        /**
+         * Called when the save operation fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for counting user requests.
+     */
     public interface UserRequestsCallback {
+        /**
+         * Called when the request count is successfully retrieved.
+         *
+         * @param count the count of user requests.
+         */
         void onSuccess(int count);
+        /**
+         * Called when the request count retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for retrieving received requests.
+     */
     public interface UserRequestsReceivedCallback {
+        /**
+         * Called when received requests are successfully retrieved.
+         *
+         * @param requests the list of {@link Request} objects.
+         */
         void onSuccess(List<Request> requests);
+        /**
+         * Called when received request retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for retrieving sent requests.
+     */
     public interface UserRequestsSentCallback {
+        /**
+         * Called when sent requests are successfully retrieved.
+         *
+         * @param requests the list of {@link Request} objects.
+         */
         void onSuccess(List<Request> requests);
+        /**
+         * Called when sent request retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
+
+    /**
+     * Callback interface for checking counteroffers.
+     */
+    public interface CheckCounterofferCallback {
+        /**
+         * Called when the counteroffer check operation completes.
+         *
+         * @param success a boolean indicating whether the check was successful.
+         */
+        void onResult(boolean success);
+    }
+
+    /**
+     * Callback interface for accepting a request.
+     */
     public interface AcceptRequestCallback {
+        /**
+         * Called when a request is successfully accepted.
+         *
+         * @param xChangeId the ID of the resulting {@link xChange}.
+         */
         void onSuccess(long xChangeId);
+        /**
+         * Called when accepting the request fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Callback interface for rejecting a request.
+     */
     public interface RejectRequestCallback {
+        /**
+         * Called when a request is successfully rejected.
+         */
         void onSuccess();
+        /**
+         * Called when rejecting the request fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Callback interface for inserting an xChange.
+     */
     public interface InsertXChangeCallback {
+        /**
+         * Called when an xChange is successfully inserted.
+         *
+         * @param xChangeId the ID of the inserted {@link xChange}.
+         */
         void onSuccess(long xChangeId);
+        /**
+         * Called when inserting the xChange fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Generic callback interface for operations with no return value.
+     */
     public interface OperationCallback {
+        /**
+         * Called when the operation is successful.
+         */
         void onSuccess();
+        /**
+         * Called when the operation fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Callback interface for retrieving requests.
+     */
     public interface RequestItemsCallback {
+        /**
+         * Called when requests are successfully retrieved.
+         *
+         * @param requests the list of {@link Request} objects.
+         */
         void onSuccess(List<Request> requests);
+        /**
+         * Called when request retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
+    /**
+     * Callback interface for retrieving user xChanges.
+     */
     public interface UserXChangesCallback {
+        /**
+         * Called when xChanges are successfully retrieved.
+         *
+         * @param xChanges the list of {@link xChange} objects.
+         */
         void onSuccess(List<xChange> xChanges);
+        /**
+         * Called when xChange retrieval fails.
+         *
+         * @param message a descriptive error message.
+         */
         void onFailure(String message);
     }
 
 
+    /**
+     * Logs in a user with the given username and password.
+     *
+     * @param username the username of the user.
+     * @param password the password of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void loginUser(String username, String password, LoginCallback callback) {
         executor.execute(() -> {
             User user = userDao.loginUser(username, password);
@@ -137,6 +417,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Registers a new user.
+     *
+     * @param newUser  the {@link User} object containing user details.
+     * @param callback the callback to handle success or failure.
+     */
     public void registerUser(User newUser, RegisterCallback callback) {
         executor.execute(() -> {
             try {
@@ -153,10 +439,59 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves a user by username.
+     *
+     * @param username the username to search for.
+     * @return a {@link LiveData} object containing the user details.
+     */
     public LiveData<User> getUserByUsername(String username) {
         return userDao.findByUsername(username);
     }
 
+    public void getUserRating(String username, UserRatingCallback callback) {
+        executor.execute(() -> {
+            try {
+                float avgRating = ratingDao.getAverageRating(username);
+                int totalRatings = ratingDao.getTotalRatings(username);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    callback.onSuccess(avgRating, totalRatings);
+                });
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    callback.onFailure(e.getMessage());
+                });
+            }
+        });
+    }
+
+    public void getUserByUsername_Rating(String username, UserCallback callback) {
+        executor.execute(() -> {
+            try {
+                User user = userDao.findByUsername_initial(username);
+
+                // Post the result on the main thread:
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (user != null) {
+                        callback.onSuccess(user);
+                    } else {
+                        callback.onFailure("User not found");
+                    }
+                });
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() ->
+                        callback.onFailure(e.getMessage())
+                );
+            }
+        });
+    }
+
+    /**
+     * Retrieves user statistics such as item count.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void getUserStatistics(String username, UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -169,6 +504,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves all items listed by a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void getItemsByUsername(String username, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -181,12 +522,11 @@ public class UserRepository {
     }
 
     /**
-     * Accepts a trade request by marking it as inactive, creating an xChange entry,
-     * and updating both the requester and requestee's data accordingly.
+     * Accepts a trade request, creating an {@link xChange} entry.
      *
-     * @param request  The Request object to be accepted.
-     * @param rating   The rating value provided by the user.
-     * @param callback Callback to handle success or failure.
+     * @param request  the {@link Request} to be accepted.
+     * @param rating   the rating provided for the trade.
+     * @param callback the callback to handle success or failure.
      */
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
@@ -198,11 +538,19 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
+
+                xChanger requester = request.getRequester();
+                userDao.updateUser(requester);
+
                 newXChange.acceptOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
 
                 xChangeDao.updateXChange(newXChange);
+
+                Rating newRating = new Rating(rating, requestee, requester, request, null);
+                ratingDao.insertRating(newRating);
+
                 callback.onSuccess(xChangeId);
                 // Pass the xChangeId to the callback
             } catch (Exception e) {
@@ -212,21 +560,35 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Accepts a counteroffer, creating an {@link xChange} entry.
+     *
+     * @param counteroffer the {@link Counteroffer} to accept.
+     * @param rating       the rating provided for the trade.
+     * @param callback     the callback to handle success or failure.
+     */
     public void acceptCounteroffer(Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
                 xChanger counterofferee = counteroffer.getCounterofferee();
-                counterofferee.acceptCounteroffer(counteroffer, 0);
+                counterofferee.acceptCounteroffer(counteroffer, rating);
                 userDao.updateUser(counterofferee);
 
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(counteroffer.getRequest(), counteroffer, today);
                 requestDao.deleteRequest(counteroffer.getRequest());
+
+                xChanger counterofferer = counteroffer.getCounterofferer();
+                userDao.updateUser(counterofferer);
+
                 counterofferDao.deleteCounteroffer(counteroffer);
 
                 newXChange.acceptOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
+
+                Rating newRating = new Rating(rating, counterofferee, counterofferer, counteroffer.getRequest(), null);
+                ratingDao.insertRating(newRating);
 
                 callback.onSuccess(xChangeId);
             } catch (Exception e) {
@@ -237,10 +599,11 @@ public class UserRepository {
     }
 
     /**
-     * Rejects a trade request by marking it as inactive and updating both users' data.
+     * Rejects a trade request.
      *
-     * @param request  The Request object to be rejected.
-     * @param callback Callback to handle success or failure.
+     * @param xchanger the {@link xChanger} rejecting the request.
+     * @param request  the {@link Request} to reject.
+     * @param callback the callback to handle success or failure.
      */
     public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
         executor.execute(() -> {
@@ -268,6 +631,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Rejects a counteroffer.
+     *
+     * @param counteroffer the {@link Counteroffer} to reject.
+     * @param callback     the callback to handle success or failure.
+     */
     public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
@@ -292,6 +661,11 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves the total number of users.
+     *
+     * @param callback the callback to handle success or failure.
+     */
     public void getTotalUsers(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -304,21 +678,12 @@ public class UserRepository {
         });
     }
 
-    public void storeNotification(String username, String message, long xChangeId, OperationCallback callback) {
-        executor.execute(() -> {
-            try {
-                // Create a notification object (or use a simple database table)
-                Notification notification = new Notification(username, message, SimpleCalendar.today(), xChangeId);
-                AppDatabase.getNotificationDao().insertNotification(notification);
-                callback.onSuccess();
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error storing notification", e);
-                callback.onFailure("Failed to store notification.");
-            }
-        });
-    }
-
-
+    /**
+     * Adds a notification to the database.
+     *
+     * @param notification the {@link Notification} to add.
+     * @param callback     the callback to handle success or failure.
+     */
     public void addNotification(Notification notification, OperationCallback callback) {
         executor.execute(() -> {
             try {
@@ -331,6 +696,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves notifications for a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void getNotificationsForUser(String username, UserRepository.NotificationCallback callback) {
         executor.execute(() -> {
             try {
@@ -343,6 +714,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Deletes all notifications for a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void deleteNotificationsForUser(String username, OperationCallback callback) {
         executor.execute(() -> {
             try {
@@ -357,11 +734,10 @@ public class UserRepository {
 
 
     /**
-     * Example: Insert xChange (Additional Methods)
-     * Allows inserting a new xChange and receiving a callback with the generated ID.
+     * Inserts a new {@link xChange} into the database and updates its ID.
      *
-     * @param xchange  The xChange object to be inserted.
-     * @param callback Callback to handle success or failure.
+     * @param xchange  the {@link xChange} object to insert.
+     * @param callback the callback to handle success or failure.
      */
     public void insertXChange(xChange xchange, InsertXChangeCallback callback) {
         executor.execute(() -> {
@@ -377,22 +753,41 @@ public class UserRepository {
         });
     }
 
-    // Example: Retrieve xChange by ID
+    /**
+     * Retrieves an {@link xChange} by its ID.
+     *
+     * @param id the ID of the {@link xChange}.
+     * @return a {@link LiveData} object containing the {@link xChange}.
+     */
     public LiveData<xChange> getXChangeById(long id) {
         return xChangeDao.getXChangeById(id);
     }
 
-    // Example: Retrieve xChanger by username
+    /**
+     * Retrieves a list of {@link xChange} objects associated with a specific username.
+     *
+     * @param username the username to search for.
+     * @return a list of {@link xChange} objects.
+     */
     public List<xChange> getXChangerByUser(String username) {
         return xChangeDao.getXChangerByUser(username);
     }
 
-    // Example: Retrieve all xChanges
+    /**
+     * Retrieves all {@link xChange} objects in the database.
+     *
+     * @return a {@link LiveData} object containing the list of {@link xChange} objects.
+     */
     public LiveData<List<xChange>> getAllXChanges() {
         return xChangeDao.getAllXChanges();
     }
 
-    // Example: Mark xChange as Inactive
+    /**
+     * Marks an {@link xChange} as inactive in the database.
+     *
+     * @param id       the ID of the {@link xChange} to mark as inactive.
+     * @param callback the callback to handle success or failure.
+     */
     public void markXChangeAsInactive(long id, OperationCallback callback) {
         executor.execute(() -> {
             try {
@@ -405,21 +800,39 @@ public class UserRepository {
         });
     }
 
-    // Get All Items (For Admin)
+    /**
+     * Retrieves all items in the database.
+     *
+     * @return a {@link LiveData} object containing the list of {@link Item} objects.
+     */
     public LiveData<List<Item>> getAllItems() {
         return itemDao.getAllItems();
     }
 
-    // Get Total Item Count (For Admin)
+    /**
+     * Retrieves the total number of items in the database.
+     *
+     * @return a {@link LiveData} object containing the total item count.
+     */
     public LiveData<Integer> getItemCount() {
         return itemDao.getItemCount();
     }
 
-    // Get Total Requests sent count (For Admin)
+    /**
+     * Retrieves the total number of sent requests.
+     *
+     * @return a {@link LiveData} object containing the count of sent requests.
+     */
     public LiveData<Integer> getSentRequestsCount() {
         return requestDao.getRequestsSentCount();
     }
 
+    /**
+     * Searches for items by name.
+     *
+     * @param query    the search query.
+     * @param callback the callback to handle success or failure.
+     */
     public void searchItemsByName(String query, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -431,7 +844,13 @@ public class UserRepository {
         });
     }
 
-
+    /**
+     * Searches for items by name and category.
+     *
+     * @param query    the search query.
+     * @param category the {@link Category} to filter by.
+     * @param callback the callback to handle success or failure.
+     */
     public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
         new Thread(() -> {
             try {
@@ -445,10 +864,17 @@ public class UserRepository {
             }
         }).start();
     }
+
+    /**
+     * Saves a request to the database.
+     *
+     * @param request  the {@link Request} to save.
+     * @param callback the callback to handle success or failure.
+     */
     public void saveRequest(Request request, SaveRequestCallback callback) {
         executor.execute(() -> {
             try {
-                long requestId = requestDao.insertRequest(request);
+                long requestId = AppDatabase.getRequestDao().insertRequest(request);
                 if (requestId > 0) {
                     callback.onSuccess();
                 } else {
@@ -459,6 +885,10 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Shuts down the executor service gracefully.
+     */
     public void shutdownExecutor() {
         executor.shutdown();
         try {
@@ -470,6 +900,13 @@ public class UserRepository {
             Thread.currentThread().interrupt();
         }
     }
+
+    /**
+     * Retrieves the count of sent requests for a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void getSentRequestsCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
             try {
@@ -488,7 +925,11 @@ public class UserRepository {
 
     }
 
-    // Get Sent Requests (For Admin)
+    /**
+     * Retrieves all sent requests for administrative purposes.
+     *
+     * @param callback the callback to handle the list of sent requests or an error message.
+     */
     public void getSentRequests(RequestItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -500,6 +941,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves the count of received requests for a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the request count or an error message.
+     */
     public void getReceivedRequestsCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
             try {
@@ -516,6 +963,13 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Retrieves all requests received by a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the list of received requests or an error message.
+     */
     public void getRequestsReceived(String username, UserRequestsReceivedCallback callback) {
         executor.execute(() -> {
             try {
@@ -532,6 +986,13 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Retrieves all requests sent by a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the list of sent requests or an error message.
+     */
     public void getSentRequests(String username, UserRequestsSentCallback callback) {
         executor.execute(() -> {
             try {
@@ -552,8 +1013,8 @@ public class UserRepository {
     /**
      * Retrieves active received requests for a specific user.
      *
-     * @param username The username of the user.
-     * @param callback Callback to handle the list of active received requests.
+     * @param username the username of the user.
+     * @param callback the callback to handle the list of active received requests or an error message.
      */
     public void getActiveReceivedRequests(String username, UserRepository.RequestItemsCallback callback) {
         executor.execute(() -> {
@@ -578,23 +1039,28 @@ public class UserRepository {
     /**
      * Retrieves the count of active requests for a specific item.
      *
-     * @param itemId The ID of the item.
-     * @return The count of active requests.
+     * @param itemId the ID of the item.
+     * @return the count of active requests.
      */
     public int getActiveRequestCountForItem(long itemId) {
         return requestDao.countActiveRequestsForItem(itemId);
     }
 
     /**
-     * Handles the received requests by invoking the callback.
+     * Invokes the callback with the received requests.
      *
-     * @param requests The list of received requests.
-     * @param callback The callback to handle success.
+     * @param requests the list of received requests.
+     * @param callback the callback to handle the received requests.
      */
     private void onRequestReceived(List<Request> requests, UserRepository.RequestItemsCallback callback) {
         callback.onSuccess(requests);
     }
 
+    /**
+     * Retrieves the total number of requests in the system.
+     *
+     * @param callback the callback to handle the request count or an error message.
+     */
     public void getTotalRequests(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -607,6 +1073,11 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves the total number of exchanges in the system.
+     *
+     * @param callback the callback to handle the exchange count or an error message.
+     */
     public void getTotalExchanges(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -619,6 +1090,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves the total number of exchanges for a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the exchange count or an error message.
+     */
     public void getTotalExchangesCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
             int count = 0;
@@ -639,8 +1116,12 @@ public class UserRepository {
         });
     }
 
-
-    // Retrieve all xChanges for a user
+    /**
+     * Retrieves all exchanges associated with a specific user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the list of exchanges or an error message.
+     */
     public void getUserXChanges(String username, UserXChangesCallback callback) {
         executor.execute(() -> {
             try {
@@ -661,6 +1142,12 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Retrieves the total number of items in the system.
+     *
+     * @param callback the callback to handle success or failure.
+     */
     public void getTotalItems(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -673,6 +1160,11 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves the total number of categories in the system.
+     *
+     * @param callback the callback to handle success or failure.
+     */
     public void getTotalCategories(UserStatisticsCallback callback) {
         executor.execute(() -> {
             try {
@@ -685,6 +1177,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Cancels a user's item request by deleting it and associated counteroffers.
+     *
+     * @param itemId   the ID of the item for which the request is to be canceled.
+     * @param username the username of the requester.
+     */
     public void cancelItemRequest(long itemId, String username) {
         Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(() -> {
@@ -710,6 +1208,32 @@ public class UserRepository {
                         }
                         if (tobedeleted != null) {
                             requestDao.deleteRequest(tobedeleted);
+
+                            // Build and send the cancellation notification.
+                            String recipientUsername = tobedeleted.getRequestee().getUsername();
+                            String notificationMessage = "Your request for your item '"
+                                    + tobedeleted.getRequestedItem().getItemName()
+                                    + "' has been cancelled by " + username;
+                            Notification cancellationNotification = new Notification(
+                                    recipientUsername,
+                                    notificationMessage,
+                                    SimpleCalendar.today(),
+                                    tobedeleted.getRequestId(),                // Use request's ID as context.
+                                    tobedeleted.getRequestedItem().getItemId()    // The requested item's ID.
+                            );
+
+                            // Send the cancellation notification.
+                            addNotification(cancellationNotification, new OperationCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d("UserRepository", "Cancellation notification sent successfully.");
+                                }
+
+                                @Override
+                                public void onFailure(String message) {
+                                    Log.e("UserRepository", "Failed to send cancellation notification: " + message);
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         Log.e("UserRepository", "Error canceling request: ", e);
@@ -719,6 +1243,13 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Finds a request for a specific item and user.
+     *
+     * @param itemId   the ID of the item.
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void findRequest(long itemId, String username, FindRequestCallback callback) {
         executor.execute(() -> {
             try {
@@ -744,6 +1275,13 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Finds items associated with a specific xChanger.
+     *
+     * @param xChangerUsername the username of the xChanger.
+     * @param callback         the callback to handle success or failure.
+     */
     public void findItemsByXChanger(String xChangerUsername, UserItemsCallback callback) {
         executor.execute(() -> {
             try {
@@ -755,6 +1293,13 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Retrieves the count of counteroffers sent by a user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void getCounterOffersSentCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
             try {
@@ -771,6 +1316,12 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Retrieves the count of counteroffers received by a user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle success or failure.
+     */
     public void getCounterOffersReceivedCount(String username, UserRequestsCallback callback) {
         executor.execute(() -> {
             try {
@@ -788,6 +1339,13 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Retrieves counteroffers sent by a user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the list of sent counteroffers or an error message.
+     */
     public void getSentCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
 
@@ -807,7 +1365,12 @@ public class UserRepository {
         });
     }
 
-
+    /**
+     * Retrieves counteroffers received by a user.
+     *
+     * @param username the username of the user.
+     * @param callback the callback to handle the list of received counteroffers or an error message.
+     */
     public void getReceivedCounterOffers(String username, UserCounterOffersCallback callback) {
         executor.execute(() -> {
             try {
@@ -825,6 +1388,14 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * Checks if a user is the requestee with a counteroffer for a specific item.
+     *
+     * @param itemId   the ID of the item.
+     * @param username the username of the user.
+     * @return the {@link Counteroffer} if found, or null otherwise.
+     */
     public Counteroffer checkIfRequesteeWithCounteroffer(long itemId,String username) {
         try {
             List<Request> requests = requestDao.getAllRequests();
@@ -845,6 +1416,13 @@ public class UserRepository {
         return null;
     }
 
+    /**
+     * Checks if a user is the requester with a counterofferee for a specific item.
+     *
+     * @param itemId   the ID of the item.
+     * @param username the username of the user.
+     * @return the {@link Counteroffer} if found, or null otherwise.
+     */
     public Counteroffer checkIfRequesterWithCounterofferee(long itemId,String username) {
         try {
             List<Request> requests = requestDao.getAllRequests();
@@ -864,6 +1442,14 @@ public class UserRepository {
         }
         return null;
     }
+
+    /**
+     * Retrieves the offered item for a counteroffer by a user for a specific item.
+     *
+     * @param itemId   the ID of the item.
+     * @param username the username of the user.
+     * @return the offered {@link Item} if found, or null otherwise.
+     */
     public Item getOfferedItemForCounteroffer(long itemId, String username) {
         try {
             List<Request> requests = requestDao.getAllRequests();
@@ -881,8 +1467,14 @@ public class UserRepository {
         } catch (Exception e) {
             Log.e("UserRepository", "Error fetching offered item for counteroffer: " + e.getMessage(), e);
         }
-        return null;
+        return null; // Return null if no match found
     }
+
+    /**
+     * Retrieves all exchanges in the system.
+     *
+     * @param callback the callback to handle the list of exchanges or an error message.
+     */
     public void getAllXChanges(UserXChangesCallback callback) {
         executor.execute(() -> {
             try {

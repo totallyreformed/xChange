@@ -24,6 +24,10 @@ import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 import com.example.xchange.Item;
 
+/**
+ * Activity for handling the acceptance of requests or counteroffers in the xChange app.
+ * Displays details of the request or counteroffer and provides options to accept or return to the previous screen.
+ */
 public class AcceptRequestActivity extends AppCompatActivity {
 
     private AcceptRequestViewModel viewModel;
@@ -40,6 +44,12 @@ public class AcceptRequestActivity extends AppCompatActivity {
     private Button acceptButton, backButton;
     private RatingBar requestRatingBar;
 
+    /**
+     * Called when the activity is created.
+     * Initializes the UI components and populates data based on the intent extras.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being shut down, this Bundle contains the saved data.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +93,9 @@ public class AcceptRequestActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Populates the UI with details from a Request.
+     */
     private void populateRequestDetails() {
         requesterTextView.setText("Requester: " + request.getRequester().getUsername());
         offeredItemHeaderTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
@@ -93,6 +106,9 @@ public class AcceptRequestActivity extends AppCompatActivity {
         loadItemImage(request.getRequestedItem(), requestedItemImageView);
     }
 
+    /**
+     * Populates the UI with details from a Counteroffer.
+     */
     private void populateCounterofferDetails() {
         requesterTextView.setText("Requester: " + counteroffer.getCounterofferer().getUsername());
         offeredItemHeaderTextView.setText("Offered Item: " + counteroffer.getOfferedItem().getItemName());
@@ -103,6 +119,12 @@ public class AcceptRequestActivity extends AppCompatActivity {
         loadItemImage(counteroffer.getRequestedItem(), requestedItemImageView);
     }
 
+    /**
+     * Loads an image for an Item into the specified ImageView.
+     *
+     * @param item      The item whose image is to be loaded.
+     * @param imageView The ImageView to display the image.
+     */
     private void loadItemImage(Item item, ImageView imageView) {
         if (item.getFirstImage() != null) {
             String filePath = item.getFirstImage().getFilePath();
@@ -129,6 +151,9 @@ public class AcceptRequestActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays a confirmation dialog before accepting the request or counteroffer.
+     */
     private void showAcceptConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Acceptance")
@@ -141,6 +166,11 @@ public class AcceptRequestActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Handles the acceptance of a request or counteroffer.
+     *
+     * @param rating The rating provided by the user.
+     */
     private void handleAcceptRequest(float rating) {
         xChanger xchanger = new xChanger(
                 currentUser.getUsername(),
@@ -154,7 +184,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
             viewModel.acceptRequest(request, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
                 @Override
                 public void onSuccess(long xChangeId) {
-                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername(), xChangeId);
+                    sendNotification(request.getRequester().getUsername(), "Your request has been accepted by " + currentUser.getUsername(), xChangeId, request.getRequestedItem().getItemId());
                 }
 
                 @Override
@@ -166,7 +196,7 @@ public class AcceptRequestActivity extends AppCompatActivity {
             viewModel.acceptCounteroffer(counteroffer, rating, new AcceptRequestViewModel.AcceptRequestCallback() {
                 @Override
                 public void onSuccess(long xChangeId) {
-                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername(), xChangeId);
+                    sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been accepted by " + currentUser.getUsername(), xChangeId, counteroffer.getRequestedItem().getItemId());
                 }
 
                 @Override
@@ -177,12 +207,20 @@ public class AcceptRequestActivity extends AppCompatActivity {
         }
     }
 
-    private void sendNotification(String username, String message, long xChangeId) {
+    /**
+     * Sends a notification to the user about the acceptance of their request or counteroffer.
+     *
+     * @param username  The username of the recipient.
+     * @param message   The notification message.
+     * @param xChangeId The ID of the xChange.
+     */
+    private void sendNotification(String username, String message, long xChangeId, long itemId) {
         Notification notification = new Notification(
                 username,
                 message,
                 SimpleCalendar.today(),
-                xChangeId
+                xChangeId,
+                itemId
         );
 
         UserRepository userRepository = new UserRepository(getApplication());

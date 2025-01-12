@@ -32,11 +32,17 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Activity class for uploading items in the xChange application.
+ * <p>
+ * This class allows users to upload new items with details such as name, category, condition,
+ * description, and an image. It handles permission requests, image selection, and upload logic.
+ * </p>
+ */
 public class UploadActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int MANAGE_ALL_FILES_ACCESS_PERMISSION_REQUEST_CODE = 2296;
-
     private EditText itemNameEditText;
     private Spinner categorySpinner;
     private Spinner conditionSpinner;
@@ -44,13 +50,18 @@ public class UploadActivity extends AppCompatActivity {
     private ImageView itemImageView;
     private Button finalizeUploadButton;
     private Button cancelUploadButton;
-
     private Uri imageUri;
-
     private UploadViewModel viewModel;
+    private User currentUser;
 
-    private User currentUser; // Assuming you pass the current user via Intent
-
+    /**
+     * Called when the activity is starting. This method initializes the UI components, sets up spinners for
+     * category and condition selection, and handles interactions such as image selection, finalizing the upload,
+     * or canceling the upload.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the most recent data supplied in {@link #onSaveInstanceState(Bundle)}.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +129,10 @@ public class UploadActivity extends AppCompatActivity {
                     .show();
         });
     }
+
+    /**
+     * Requests permission to manage external storage.
+     */
     private void requestManageExternalStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 and above
             try {
@@ -131,18 +146,36 @@ public class UploadActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Opens the image picker for selecting an image.
+     */
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(Intent.createChooser(intent, "Select Item Image"), PICK_IMAGE_REQUEST);
     }
 
+    /**
+     * Handles permission result callbacks.
+     *
+     * @param requestCode  The request code passed during the permission request.
+     * @param permissions  The requested permissions.
+     * @param grantResults The results of the permission requests.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    /**
+     * Handles activity result callbacks, including image selection from the picker.
+     *
+     * @param requestCode The request code identifying the request.
+     * @param resultCode  The result code indicating success or failure.
+     * @param data        The intent containing the data returned from the activity.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -167,6 +200,13 @@ public class UploadActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Retrieves the real file path from a URI.
+     *
+     * @param uri The URI to convert.
+     * @return The real file path as a string, or null if the path could not be resolved.
+     */
     private String getRealPathFromURI(Uri uri) {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
@@ -180,8 +220,9 @@ public class UploadActivity extends AppCompatActivity {
         return null;
     }
 
-
-
+    /**
+     * Finalizes the upload process by validating input fields, preparing item data, and submitting the item.
+     */
     private void finalizeUpload() {
         String itemName = itemNameEditText.getText().toString().trim();
         Category selectedCategory = (Category) categorySpinner.getSelectedItem();
@@ -214,8 +255,10 @@ public class UploadActivity extends AppCompatActivity {
         viewModel.uploadItem(itemName, itemDescription, selectedCategory, selectedCondition, images, this::onUploadSuccess, this::onUploadFailure);
     }
 
-
-
+    /**
+     * Callback method triggered when the item upload is successful.
+     * Displays a success message and closes the activity.
+     */
     private void onUploadSuccess() {
         runOnUiThread(() -> {
             Toast.makeText(UploadActivity.this, "Item uploaded successfully", Toast.LENGTH_SHORT).show();
@@ -223,6 +266,11 @@ public class UploadActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Callback method triggered when the item upload fails.
+     *
+     * @param errorMessage The error message to display.
+     */
     private void onUploadFailure(String errorMessage) {
         runOnUiThread(() -> {
             Toast.makeText(UploadActivity.this, "Upload failed: " + errorMessage, Toast.LENGTH_SHORT).show();
