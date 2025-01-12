@@ -605,10 +605,10 @@ public class UserRepository {
      * @param request  the {@link Request} to reject.
      * @param callback the callback to handle success or failure.
      */
-    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
+    public void rejectRequest(xChanger xchanger, Request request, float rating, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
-                xchanger.rejectRequest(request, 0);
+                xchanger.rejectRequest(request, rating);
                 requestDao.deleteRequest(request);
 
                 xChanger requester = request.getRequester();
@@ -619,9 +619,13 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
-                newXChange.rejectOffer(0.0f);
+
+                newXChange.rejectOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
+
+                Rating newRating = new Rating(rating, requestee, requester, request, null);
+                ratingDao.insertRating(newRating);
 
                 callback.onSuccess();
             } catch (Exception e) {
@@ -637,20 +641,27 @@ public class UserRepository {
      * @param counteroffer the {@link Counteroffer} to reject.
      * @param callback     the callback to handle success or failure.
      */
-    public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
+    public void rejectCounteroffer(Counteroffer counteroffer, float rating, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
                 xChanger counterofferee = counteroffer.getCounterofferee();
                 counterofferee.rejectCounteroffer(counteroffer, 0);
                 counterofferDao.deleteCounteroffer(counteroffer);
                 requestDao.deleteRequest(counteroffer.getRequest());
+
                 userDao.updateUser(counterofferee);
+                userDao.updateUser(counteroffer.getCounterofferer());
+
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(counteroffer.getRequest(), counteroffer, today);
                 requestDao.deleteRequest(counteroffer.getRequest());
-                newXChange.rejectOffer(0.0f);
+
+                newXChange.rejectOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
+
+                Rating newRating = new Rating(rating, counterofferee, counteroffer.getCounterofferer(), counteroffer.getRequest(), null);
+                ratingDao.insertRating(newRating);
 
                 callback.onSuccess();
             }

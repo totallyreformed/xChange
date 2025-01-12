@@ -205,7 +205,7 @@ public class RejectRequestActivity extends AppCompatActivity {
 
         if (request != null) {
             // Handle rejection of a regular Request
-            viewModel.rejectRequest(xchanger, request, new RejectRequestViewModel.RejectRequestCallback() {
+            viewModel.rejectRequest(xchanger, request, rating, new RejectRequestViewModel.RejectRequestCallback() {
                 @Override
                 public void onSuccess() {
                     sendNotification(request.getRequester().getUsername(), "Your request has been rejected by " + currentUser.getUsername());
@@ -218,7 +218,7 @@ public class RejectRequestActivity extends AppCompatActivity {
             });
         } else if (counteroffer != null) {
             // Handle rejection of a Counteroffer
-            viewModel.rejectCounteroffer(counteroffer, new RejectRequestViewModel.RejectRequestCallback() {
+            viewModel.rejectCounteroffer(counteroffer, rating, new RejectRequestViewModel.RejectRequestCallback() {
                 @Override
                 public void onSuccess() {
                     sendNotification(counteroffer.getCounterofferer().getUsername(), "Your counteroffer has been rejected by " + currentUser.getUsername());
