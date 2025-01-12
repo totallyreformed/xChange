@@ -177,7 +177,7 @@ public class CounterofferActivity extends AppCompatActivity {
                             request.getRequester().getUsername(),
                             "Your request has received a counteroffer from " + user.getUsername(),
                             foundRequest.getRequestId(),  // Using the request id as the xChangeId for context.
-                            selectedItem.getItemId()
+                            request.getRequestedItem().getItemId()
                     );
 
                     Toast.makeText(this, "Counter offer initialized", Toast.LENGTH_SHORT).show();

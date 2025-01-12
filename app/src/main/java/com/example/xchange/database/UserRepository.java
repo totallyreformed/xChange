@@ -1142,6 +1142,32 @@ public class UserRepository {
                         }
                         if (tobedeleted != null) {
                             requestDao.deleteRequest(tobedeleted);
+
+                            // Build and send the cancellation notification.
+                            String recipientUsername = tobedeleted.getRequestee().getUsername();
+                            String notificationMessage = "Your request for your item '"
+                                    + tobedeleted.getRequestedItem().getItemName()
+                                    + "' has been cancelled by " + username;
+                            Notification cancellationNotification = new Notification(
+                                    recipientUsername,
+                                    notificationMessage,
+                                    SimpleCalendar.today(),
+                                    tobedeleted.getRequestId(),                // Use request's ID as context.
+                                    tobedeleted.getRequestedItem().getItemId()    // The requested item's ID.
+                            );
+
+                            // Send the cancellation notification.
+                            addNotification(cancellationNotification, new OperationCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d("UserRepository", "Cancellation notification sent successfully.");
+                                }
+
+                                @Override
+                                public void onFailure(String message) {
+                                    Log.e("UserRepository", "Failed to send cancellation notification: " + message);
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         Log.e("UserRepository", "Error canceling request: ", e);

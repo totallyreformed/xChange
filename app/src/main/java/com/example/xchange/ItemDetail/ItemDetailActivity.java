@@ -292,7 +292,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     intent.putExtra("REQUEST", request);
                     intent.putExtra("USER", user);
                     intent.putExtra("XCHANGE_ID", request.getRequestId());
-                    intent.putExtra("ITEM_ID", request.getRequestedItem());
+                    intent.putExtra("ITEM_ID", itemId);
 
                     viewModel.findItemsByXChanger(request.getRequester().getUsername(), new UserRepository.UserItemsCallback() {
                         @Override

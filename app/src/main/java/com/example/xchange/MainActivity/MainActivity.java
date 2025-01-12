@@ -260,11 +260,10 @@ public class MainActivity extends AppCompatActivity {
         /*
          * We differentiate notifications based on keywords in the message.
          * - "accepted": for accepted requests.
+         * - "rejected": for notifications about rejected requests or counteroffers.
          * - "requested": for plain request notifications.
          * - "counteroffer": for notifications about counteroffers.
-         *
-         * It is recommended to use a dedicated field (like a notificationType enum)
-         * in your Notification model for more robust handling.
+         * - "cancelled": for cancellations.
          */
         if (currentNotification.getMessage().contains("accepted")) {
             // Accepted request notification: offer a way to view the xChange details.
@@ -277,6 +276,13 @@ public class MainActivity extends AppCompatActivity {
                 showNotificationDialogsSequentially(notifications);
             });
             builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else if (currentNotification.getMessage().toLowerCase().contains("rejected")) {
+            // Rejection notification: inform the user that their request/counteroffer was rejected.
+            // Here, we provide a simple dismiss-only dialog.
+            builder.setPositiveButton("Dismiss", (dialog, which) -> {
                 dialog.dismiss();
                 showNotificationDialogsSequentially(notifications);
             });
@@ -306,6 +312,12 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
                 showNotificationDialogsSequentially(notifications);
             });
+            builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else if (currentNotification.getMessage().contains("cancelled")) {
+            // Request cancellation notification: only a dismiss button.
             builder.setNegativeButton("Dismiss", (dialog, which) -> {
                 dialog.dismiss();
                 showNotificationDialogsSequentially(notifications);
