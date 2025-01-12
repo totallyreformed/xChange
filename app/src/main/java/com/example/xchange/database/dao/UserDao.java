@@ -9,6 +9,7 @@ import androidx.room.Update;
 import com.example.xchange.Item;
 import com.example.xchange.User;
 import com.example.xchange.xChange;
+import com.example.xchange.Rating;
 
 import java.util.List;
 

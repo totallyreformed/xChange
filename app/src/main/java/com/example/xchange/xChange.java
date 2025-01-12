@@ -51,11 +51,11 @@ public class xChange implements Parcelable {
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "offerer")
-    private  xChanger offerer; // Excluded from parceling
+    private xChanger offerer; // Excluded from parceling
 
     @TypeConverters(XChangerConverter.class)
     @ColumnInfo(name = "offeree")
-    private  xChanger offeree; // Excluded from parceling
+    private xChanger offeree; // Excluded from parceling
 
     @TypeConverters(ItemConverter.class)
     @ColumnInfo(name = "offered_item")
@@ -462,9 +462,9 @@ public class xChange implements Parcelable {
         this.getOfferee().plusOneSucceedDeal();
         this.getOfferer().plusOneSucceedDeal();
 
-        // Add rating to offeree
+        // Add rating to offerer
         Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
-        this.getOfferee().addRating(rating);
+        this.getOfferer().addRating(rating);
 
         return this.getOfferee().getEmail();
     }
@@ -502,9 +502,9 @@ public class xChange implements Parcelable {
         this.getOfferee().plusOneFailedDeal();
         this.getOfferer().plusOneFailedDeal();
 
-        // Add rating to offeree
+        // Add rating to offerer
         Rating rating = new Rating(ratingValue, this.getOfferer(), this.getOfferee(), this.getRequest(), this);
-        this.getOfferee().addRating(rating);
+        this.getOfferer().addRating(rating);
     }
 
     /**

@@ -40,7 +40,7 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     private final MutableLiveData<List<Counteroffer>> receivedCounterOffers = new MutableLiveData<>();
     private final MutableLiveData<List<xChange>> userXChanges = new MutableLiveData<>();
     private final MutableLiveData<Integer> totalExchangesCount = new MutableLiveData<>();
-
+    private final MutableLiveData<String> ratingLiveData = new MutableLiveData<>();
 
     /**
      * Constructor for initializing the ProfileViewModel.
@@ -151,6 +151,13 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     public LiveData<List<xChange>> getUserXChanges() { return userXChanges; }
 
     /**
+     * Retrieves the LiveData for user rating.
+     *
+     * @return LiveData containing the user's rating.
+     */
+    public LiveData<String> getRating() { return ratingLiveData; }
+
+    /**
      * Retrieves the LiveData for total exchanges count.
      *
      * @return LiveData containing the total number of exchanges.
@@ -163,6 +170,16 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     public void loadProfileData() {
         presenter.loadProfileData();
     }
+
+    /**
+     * Loads the updated user data.
+     */
+    public void loadUpdatedUser() { presenter.loadUpdatedUser(); }
+
+    /**
+     * Loads the user's rating.
+     */
+    public void loadUserRating() { presenter.loadUserRating(); }
 
     /**
      * Loads the user's items.
@@ -270,6 +287,14 @@ public class ProfileViewModel extends AndroidViewModel implements ProfilePresent
     public void onUserItemsLoaded(List<Item> items) {
         userItems.postValue(items);
     }
+
+    /**
+     * Callback when user rating is successfully loaded.
+     *
+     * @param rating The user's rating.
+     */
+    @Override
+    public void onUserRatingLoaded(String rating) { ratingLiveData.postValue(rating); }
 
     /**
      * Callback when loading user items fails.
