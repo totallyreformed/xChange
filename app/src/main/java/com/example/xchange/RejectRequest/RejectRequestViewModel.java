@@ -38,8 +38,8 @@ public class RejectRequestViewModel extends AndroidViewModel {
      * @param request   The request to be rejected.
      * @param callback  The callback to notify of success or failure.
      */
-    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
-        presenter.rejectRequest(xchanger, request, callback);
+    public void rejectRequest(xChanger xchanger, Request request, float rating, RejectRequestCallback callback) {
+        presenter.rejectRequest(xchanger, request, rating, callback);
     }
 
     /**
@@ -48,8 +48,8 @@ public class RejectRequestViewModel extends AndroidViewModel {
      * @param counteroffer The counteroffer to be rejected.
      * @param callback     The callback to notify of success or failure.
      */
-    public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
-        presenter.rejectCounteroffer(counteroffer, callback);
+    public void rejectCounteroffer(Counteroffer counteroffer, float rating, RejectRequestCallback callback) {
+        presenter.rejectCounteroffer(counteroffer, rating, callback);
     }
 
     /**

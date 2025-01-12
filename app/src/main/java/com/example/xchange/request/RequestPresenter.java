@@ -7,9 +7,11 @@ import android.util.Log;
 
 import com.example.xchange.Item;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
+import com.example.xchange.Notification;
 
 import java.util.List;
 
@@ -74,6 +76,31 @@ public class RequestPresenter {
         userRepository.saveRequest(request, new UserRepository.SaveRequestCallback() {
             @Override
             public void onSuccess() {
+                // After saving the request, send a notification to the requestee
+                String notificationMessage = "Your item '" + requestedItem.getItemName() + "' has been requested by " + requester.getUsername() + ".";
+
+                // Create a Notification for the requestee. Here, we assume that the Request object has an id.
+                // If the Request id is not available at this point, you can pass a default/dummy id.
+                Notification notification = new Notification(
+                        requestee.getUsername(),
+                        notificationMessage,
+                        SimpleCalendar.today(),
+                        request.getRequestId(), // or a dummy value (e.g., -1) if request id is unavailable
+                        request.getRequestedItem().getItemId() // or a dummy value (e.g., -1) if item id is unavailable
+                );
+
+                userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("RequestPresenter", "Notification added successfully");
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        Log.e("RequestPresenter", "Failed to add notification: " + message);
+                    }
+                });
+
                 mainThreadHandler.post(() -> {
                 });
             }

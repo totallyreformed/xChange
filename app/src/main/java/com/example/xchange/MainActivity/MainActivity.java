@@ -9,7 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.xchange.AcceptRequest.xChangeConfirmationActivity;
 import com.example.xchange.ItemDetail.ItemDetailActivity;
+import com.example.xchange.ItemDetail.SeerequestsCounteroffersActivity;
 import com.example.xchange.ItemsAdapter;
 import com.example.xchange.Notification;
 import com.example.xchange.Profile.ProfileActivity;
@@ -232,17 +234,22 @@ public class MainActivity extends AppCompatActivity {
             viewModel.deleteNotificationsForUser(currentUser.getUsername(), new UserRepository.OperationCallback() {
                 @Override
                 public void onSuccess() {
-                    Toast.makeText(MainActivity.this, "Notifications cleared.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(() ->
+                            Toast.makeText(MainActivity.this, "Notifications cleared.", Toast.LENGTH_SHORT).show()
+                    );
                 }
 
                 @Override
                 public void onFailure(String message) {
-                    Toast.makeText(MainActivity.this, "Failed to clear notifications.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(() ->
+                            Toast.makeText(MainActivity.this, "Failed to clear notifications.", Toast.LENGTH_SHORT).show()
+                    );
                 }
             });
             return;
         }
 
+        // Get the first notification to display.
         Notification currentNotification = notifications.remove(0);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -250,13 +257,84 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage(currentNotification.getMessage())
                 .setCancelable(false);
 
-        builder.setNegativeButton("Dismiss", (dialog, which) -> {
-            dialog.dismiss();
-            showNotificationDialogsSequentially(notifications);
-        });
+        /*
+         * We differentiate notifications based on keywords in the message.
+         * - "accepted": for accepted requests.
+         * - "rejected": for notifications about rejected requests or counteroffers.
+         * - "requested": for plain request notifications.
+         * - "counteroffer": for notifications about counteroffers.
+         * - "cancelled": for cancellations.
+         */
+        if (currentNotification.getMessage().contains("accepted")) {
+            // Accepted request notification: offer a way to view the xChange details.
+            builder.setPositiveButton("View xChange Details", (dialog, which) -> {
+                Intent intent = new Intent(MainActivity.this, xChangeConfirmationActivity.class);
+                intent.putExtra("XCHANGE_ID", currentNotification.getXChangeId()); // Assuming the notification includes this
+                intent.putExtra("USER", currentUser);
+                startActivity(intent);
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+            builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else if (currentNotification.getMessage().toLowerCase().contains("rejected")) {
+            // Rejection notification: inform the user that their request/counteroffer was rejected.
+            // Here, we provide a simple dismiss-only dialog.
+            builder.setPositiveButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else if (currentNotification.getMessage().contains("requested")) {
+            // Plain request notification: add a button for viewing the requested item.
+            builder.setPositiveButton("View Requested Item", (dialog, which) -> {
+                Intent intent = new Intent(MainActivity.this, ItemDetailActivity.class);
+                intent.putExtra("ITEM_ID", currentNotification.getItemId());
+                intent.putExtra("USER", currentUser);
+                startActivity(intent);
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+            builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else if (currentNotification.getMessage().contains("counteroffer")) {
+            // Counteroffer notification: add a button for viewing the counteroffer.
+            builder.setPositiveButton("View Counteroffer", (dialog, which) -> {
+                Intent intent = new Intent(MainActivity.this, ItemDetailActivity.class);
+                intent.putExtra("XCHANGE_ID", currentNotification.getXChangeId());
+                intent.putExtra("HAS_COUNTEROFFER", true);
+                intent.putExtra("ITEM_ID", currentNotification.getItemId());
+                intent.putExtra("USER", currentUser);
+                startActivity(intent);
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+            builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else if (currentNotification.getMessage().contains("cancelled")) {
+            // Request cancellation notification: only a dismiss button.
+            builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        } else {
+            // Default notification type: only a dismiss button.
+            builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                dialog.dismiss();
+                showNotificationDialogsSequentially(notifications);
+            });
+        }
 
         builder.show();
     }
+
+
+
 
     /**
      * Returns the current logged-in user.

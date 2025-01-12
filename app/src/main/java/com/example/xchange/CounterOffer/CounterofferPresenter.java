@@ -2,14 +2,11 @@ package com.example.xchange.CounterOffer;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
-
 import com.example.xchange.Item;
 import com.example.xchange.Request;
 import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
-
 import java.util.List;
 
 /**
@@ -30,12 +27,12 @@ public class CounterofferPresenter {
      * Constructs a CounterofferPresenter.
      *
      * @param requesterText     LiveData to hold the requester's text.
-     * @param requesteeText      LiveData to hold the requestee's text.
-     * @param requestedItemText  LiveData to hold the requested item's text.
-     * @param spinnerItems       LiveData to hold the spinner's items.
-     * @param selectedItemText   LiveData to hold the selected item's text.
-     * @param errorMessage       LiveData to hold error messages.
-     * @param context            The context to initialize the UserRepository.
+     * @param requesteeText     LiveData to hold the requestee's text.
+     * @param requestedItemText LiveData to hold the requested item's text.
+     * @param spinnerItems      LiveData to hold the spinner's items.
+     * @param selectedItemText  LiveData to hold the selected item's text.
+     * @param errorMessage      LiveData to hold error messages.
+     * @param context           The context to initialize the UserRepository.
      */
     public CounterofferPresenter(MutableLiveData<String> requesterText, MutableLiveData<String> requesteeText, MutableLiveData<String> requestedItemText, MutableLiveData<List<Item>> spinnerItems, MutableLiveData<String> selectedItemText, MutableLiveData<String> errorMessage, Context context) {
         this.requesterText = requesterText;
@@ -44,7 +41,7 @@ public class CounterofferPresenter {
         this.spinnerItems = spinnerItems;
         this.selectedItemText = selectedItemText;
         this.errorMessage = errorMessage;
-        this.userRepository=new UserRepository(context);
+        this.userRepository = new UserRepository(context);
     }
 
     /**
@@ -128,6 +125,9 @@ public class CounterofferPresenter {
     /**
      * Creates a counteroffer for a specific request using a given item and xChanger.
      *
+     * Note: The actual sending of the notification for a counteroffer is handled in the UI (Activity)
+     * after successfully calling this method.
+     *
      * @param request     The original request.
      * @param counterItem The item offered as a counteroffer.
      * @param xchanger    The xChanger instance performing the counteroffer.
@@ -143,7 +143,4 @@ public class CounterofferPresenter {
             Log.e("CounterofferPresenter", "Invalid data for creating counteroffer");
         }
     }
-
-
-
 }

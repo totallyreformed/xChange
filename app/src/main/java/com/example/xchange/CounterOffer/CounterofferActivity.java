@@ -16,9 +16,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.Item;
 import com.example.xchange.MainActivity.MainActivity;
+import com.example.xchange.Notification;
 import com.example.xchange.R;
 import com.example.xchange.Request;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
+import com.example.xchange.database.UserRepository;
 import com.example.xchange.xChanger;
 
 import java.util.ArrayList;
@@ -168,12 +171,56 @@ public class CounterofferActivity extends AppCompatActivity {
                 if (found && foundRequest != null) {
                     xChanger xchanger = new xChanger(user.getUsername(), user.getEmail(), user.getJoin_Date(), user.getPassword(), user.getLocation());
                     viewModel.initializeCounterRequest(foundRequest, selectedItem, xchanger);
+
+                    // Send notification to the original requester that a counteroffer has been made.
+                    sendCounterofferNotification(
+                            request.getRequester().getUsername(),
+                            "Your request has received a counteroffer from " + user.getUsername(),
+                            foundRequest.getRequestId(),  // Using the request id as the xChangeId for context.
+                            request.getRequestedItem().getItemId()
+                    );
+
                     Toast.makeText(this, "Counter offer initialized", Toast.LENGTH_SHORT).show();
                     navigateToMainActivity(user, selectedItem);
                 } else {
                     Toast.makeText(this, "No matching request found!", Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+    }
+
+    /**
+     * Sends a counteroffer notification to the given recipient.
+     *
+     * @param recipientUsername The username of the recipient.
+     * @param message           The notification message.
+     * @param xChangeId         The ID representing the associated xChange (or request).
+     * @param itemId            The ID of the item offered as a counteroffer.
+     */
+    private void sendCounterofferNotification(String recipientUsername, String message, long xChangeId, long itemId) {
+        Notification notification = new Notification(
+                recipientUsername,
+                message,
+                SimpleCalendar.today(),
+                xChangeId,
+                itemId
+        );
+        UserRepository userRepository = new UserRepository(getApplication());
+        userRepository.addNotification(notification, new UserRepository.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                // Log success (UI updates such as Toasts should not be called here because this may not be the main thread)
+                runOnUiThread(() ->
+                        Toast.makeText(CounterofferActivity.this, "Counteroffer notification sent.", Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            @Override
+            public void onFailure(String message) {
+                runOnUiThread(() ->
+                        Toast.makeText(CounterofferActivity.this, "Failed to send notification: " + message, Toast.LENGTH_SHORT).show()
+                );
+            }
         });
     }
 

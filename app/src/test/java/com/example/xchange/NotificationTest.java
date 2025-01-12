@@ -11,7 +11,7 @@ class NotificationTest {
 
     @BeforeEach
     void setUp() {
-        notification = new Notification("user1", "Test message", cal, 777L);
+        notification = new Notification("user1", "Test message", cal, 777L, 123L);
         notification.setId(55L);
     }
 
@@ -22,14 +22,17 @@ class NotificationTest {
         assertEquals("Test message", notification.getMessage());
         assertEquals(cal, notification.getTimestamp());
         assertEquals(777L, notification.getXChangeId());
+        assertEquals(123L, notification.getItemId());
 
         // Updating fields
         notification.setUsername("newUser");
         notification.setMessage("Updated message");
         notification.setXChangeId(999L);
+        notification.setItemId(456L);
 
         assertEquals("newUser", notification.getUsername());
         assertEquals("Updated message", notification.getMessage());
         assertEquals(999L, notification.getXChangeId());
+        assertEquals(456L, notification.getItemId());
     }
 }

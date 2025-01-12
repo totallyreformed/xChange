@@ -3,6 +3,11 @@ package com.example.xchange;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 /**
  * Represents a rating in the xChange application.
  * <p>
@@ -11,11 +16,25 @@ import android.os.Parcelable;
  * This class implements {@link Parcelable} for data transfer.
  * </p>
  */
+@Entity(tableName = "ratings")
 public class Rating implements Parcelable {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "rating_id")
+    private Long ratingId;
+
+    @ColumnInfo(name = "rating")
     private float rating;
+    @ColumnInfo(name = "rater")
+    private String raterUsername;
+    @ColumnInfo(name = "ratee")
+    private String rateeUsername;
+    @Ignore
     private transient xChanger rater; // Excluded from parceling
+    @Ignore
     private transient xChanger ratee; // Excluded from parceling
+    @Ignore
     private Request request;
+    @Ignore
     private xChange xChange;
 
     /**
@@ -29,10 +48,16 @@ public class Rating implements Parcelable {
      */
     public Rating(float rating, xChanger rater, xChanger ratee, Request request, xChange xChange) {
         this.rating = rating;
+        this.raterUsername = rater.getUsername();
+        this.rateeUsername = ratee.getUsername();
         this.rater = rater;
         this.ratee = ratee;
         this.request = request;
         this.xChange = xChange;
+    }
+
+    // Default Room Constructor
+    public Rating() {
     }
 
     /**
@@ -42,8 +67,11 @@ public class Rating implements Parcelable {
      */
     protected Rating(Parcel in) {
         rating = in.readFloat();
+        ratingId = in.readLong();
         request = in.readParcelable(Request.class.getClassLoader());
         xChange = in.readParcelable(xChange.class.getClassLoader());
+        raterUsername = in.readString();
+        rateeUsername = in.readString();
         // Excluded: rater and ratee
         this.rater = null;
         this.ratee = null;
@@ -73,8 +101,11 @@ public class Rating implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeFloat(rating);
+        dest.writeLong(ratingId);
         dest.writeParcelable(request, flags);
         dest.writeParcelable(xChange, flags);
+        dest.writeString(raterUsername);
+        dest.writeString(rateeUsername);
         // Excluded: rater and ratee
     }
 
@@ -95,6 +126,24 @@ public class Rating implements Parcelable {
      */
     public float getRating() {
         return rating;
+    }
+
+    /**
+     * Gets the rating ID.
+     *
+     * @return The rating ID.
+     */
+    public Long getRatingId() {
+        return ratingId;
+    }
+
+    /**
+     * Sets the rating ID.
+     *
+     * @param ratingId The rating ID.
+     */
+    public void setRatingId(Long ratingId) {
+        this.ratingId = ratingId;
     }
 
     /**
@@ -127,6 +176,43 @@ public class Rating implements Parcelable {
      */
     public xChanger getRatee() {
         return ratee;
+    }
+
+    /**
+     * Gets the username of the {@link xChanger} who gives the rating.
+     *
+     * @return The username of the rater.
+     */
+    public String getRaterUsername() {
+        return raterUsername;
+    }
+
+    /**
+     * Sets the username of the {@link xChanger} who gives the rating.
+     *
+     * @param raterUsername The username of the rater.
+     */
+    public void setRaterUsername(String raterUsername) {
+        this.raterUsername = raterUsername;
+    }
+
+
+    /**
+     * Gets the username of the {@link xChanger} who receives the rating.
+     *
+     * @return The username of the ratee.
+     */
+    public String getRateeUsername() {
+        return rateeUsername;
+    }
+
+    /**
+     * Sets the username of the {@link xChanger} who receives the rating.
+     *
+     * @param rateeUsername The username of the ratee.
+     */
+    public void setRateeUsername(String rateeUsername) {
+        this.rateeUsername = rateeUsername;
     }
 
     /**

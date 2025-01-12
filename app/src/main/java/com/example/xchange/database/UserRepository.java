@@ -12,11 +12,13 @@ import androidx.lifecycle.Observer;
 import com.example.xchange.Category;
 import com.example.xchange.Counteroffer;
 import com.example.xchange.Item;
+import com.example.xchange.Rating;
 import com.example.xchange.Request;
 import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
+import com.example.xchange.database.dao.RatingDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
 import com.example.xchange.database.dao.xChangeDao;
@@ -42,6 +44,7 @@ public class UserRepository {
     private final RequestDao requestDao;
     private final CounterofferDao counterofferDao;
     private final xChangeDao xChangeDao;
+    private final RatingDao ratingDao;
     private final ExecutorService executor;
 
     /**
@@ -56,6 +59,7 @@ public class UserRepository {
         requestDao = db.requestDao();
         counterofferDao = db.getCounterofferDao();
         xChangeDao = db.xChangeDao();
+        ratingDao = db.ratingDao();
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -77,6 +81,16 @@ public class UserRepository {
         void onFailure(String message);
     }
 
+    public interface UserCallback {
+        void onSuccess(User user);
+        void onFailure(String message);
+    }
+
+    public interface UserRatingCallback {
+        void onSuccess(float averageRating, int totalRatings);
+        void onFailure(String message);
+    }
+
     /**
      * Callback interface for handling notifications.
      */
@@ -92,6 +106,14 @@ public class UserRepository {
          *
          * @param message a descriptive error message.
          */
+        void onFailure(String message);
+    }
+
+    /**
+     * Callback interface for loading a counteroffer.
+     */
+    public interface LoadCounterofferCallback {
+        void onSuccess(Counteroffer counteroffer);
         void onFailure(String message);
     }
 
@@ -427,6 +449,43 @@ public class UserRepository {
         return userDao.findByUsername(username);
     }
 
+    public void getUserRating(String username, UserRatingCallback callback) {
+        executor.execute(() -> {
+            try {
+                float avgRating = ratingDao.getAverageRating(username);
+                int totalRatings = ratingDao.getTotalRatings(username);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    callback.onSuccess(avgRating, totalRatings);
+                });
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    callback.onFailure(e.getMessage());
+                });
+            }
+        });
+    }
+
+    public void getUserByUsername_Rating(String username, UserCallback callback) {
+        executor.execute(() -> {
+            try {
+                User user = userDao.findByUsername_initial(username);
+
+                // Post the result on the main thread:
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (user != null) {
+                        callback.onSuccess(user);
+                    } else {
+                        callback.onFailure("User not found");
+                    }
+                });
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() ->
+                        callback.onFailure(e.getMessage())
+                );
+            }
+        });
+    }
+
     /**
      * Retrieves user statistics such as item count.
      *
@@ -479,11 +538,19 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
+
+                xChanger requester = request.getRequester();
+                userDao.updateUser(requester);
+
                 newXChange.acceptOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
 
                 xChangeDao.updateXChange(newXChange);
+
+                Rating newRating = new Rating(rating, requestee, requester, request, null);
+                ratingDao.insertRating(newRating);
+
                 callback.onSuccess(xChangeId);
                 // Pass the xChangeId to the callback
             } catch (Exception e) {
@@ -504,17 +571,24 @@ public class UserRepository {
         executor.execute(() -> {
             try {
                 xChanger counterofferee = counteroffer.getCounterofferee();
-                counterofferee.acceptCounteroffer(counteroffer, 0);
+                counterofferee.acceptCounteroffer(counteroffer, rating);
                 userDao.updateUser(counterofferee);
 
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(counteroffer.getRequest(), counteroffer, today);
                 requestDao.deleteRequest(counteroffer.getRequest());
+
+                xChanger counterofferer = counteroffer.getCounterofferer();
+                userDao.updateUser(counterofferer);
+
                 counterofferDao.deleteCounteroffer(counteroffer);
 
                 newXChange.acceptOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
+
+                Rating newRating = new Rating(rating, counterofferee, counterofferer, counteroffer.getRequest(), null);
+                ratingDao.insertRating(newRating);
 
                 callback.onSuccess(xChangeId);
             } catch (Exception e) {
@@ -531,10 +605,10 @@ public class UserRepository {
      * @param request  the {@link Request} to reject.
      * @param callback the callback to handle success or failure.
      */
-    public void rejectRequest(xChanger xchanger, Request request, RejectRequestCallback callback) {
+    public void rejectRequest(xChanger xchanger, Request request, float rating, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
-                xchanger.rejectRequest(request, 0);
+                xchanger.rejectRequest(request, rating);
                 requestDao.deleteRequest(request);
 
                 xChanger requester = request.getRequester();
@@ -545,9 +619,13 @@ public class UserRepository {
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(request, null, today);
                 requestDao.deleteRequest(request);
-                newXChange.rejectOffer(0.0f);
+
+                newXChange.rejectOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
+
+                Rating newRating = new Rating(rating, requestee, requester, request, null);
+                ratingDao.insertRating(newRating);
 
                 callback.onSuccess();
             } catch (Exception e) {
@@ -563,20 +641,27 @@ public class UserRepository {
      * @param counteroffer the {@link Counteroffer} to reject.
      * @param callback     the callback to handle success or failure.
      */
-    public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestCallback callback) {
+    public void rejectCounteroffer(Counteroffer counteroffer, float rating, RejectRequestCallback callback) {
         executor.execute(() -> {
             try {
                 xChanger counterofferee = counteroffer.getCounterofferee();
                 counterofferee.rejectCounteroffer(counteroffer, 0);
                 counterofferDao.deleteCounteroffer(counteroffer);
                 requestDao.deleteRequest(counteroffer.getRequest());
+
                 userDao.updateUser(counterofferee);
+                userDao.updateUser(counteroffer.getCounterofferer());
+
                 SimpleCalendar today = SimpleCalendar.today();
                 xChange newXChange = new xChange(counteroffer.getRequest(), counteroffer, today);
                 requestDao.deleteRequest(counteroffer.getRequest());
-                newXChange.rejectOffer(0.0f);
+
+                newXChange.rejectOffer(rating);
                 long xChangeId = xChangeDao.insertXChange(newXChange);
                 newXChange.setXChangeId(xChangeId);
+
+                Rating newRating = new Rating(rating, counterofferee, counteroffer.getCounterofferer(), counteroffer.getRequest(), null);
+                ratingDao.insertRating(newRating);
 
                 callback.onSuccess();
             }
@@ -600,28 +685,6 @@ public class UserRepository {
                 callback.onSuccess(stats);
             } catch (Exception e) {
                 callback.onFailure("Failed to retrieve total categories");
-            }
-        });
-    }
-
-    /**
-     * Stores a notification for a user.
-     *
-     * @param username   the username of the user.
-     * @param message    the notification message.
-     * @param xChangeId  the ID of the associated {@link xChange}.
-     * @param callback   the callback to handle success or failure.
-     */
-    public void storeNotification(String username, String message, long xChangeId, OperationCallback callback) {
-        executor.execute(() -> {
-            try {
-                // Create a notification object (or use a simple database table)
-                Notification notification = new Notification(username, message, SimpleCalendar.today(), xChangeId);
-                AppDatabase.getNotificationDao().insertNotification(notification);
-                callback.onSuccess();
-            } catch (Exception e) {
-                Log.e("UserRepository", "Error storing notification", e);
-                callback.onFailure("Failed to store notification.");
             }
         });
     }
@@ -1156,6 +1219,32 @@ public class UserRepository {
                         }
                         if (tobedeleted != null) {
                             requestDao.deleteRequest(tobedeleted);
+
+                            // Build and send the cancellation notification.
+                            String recipientUsername = tobedeleted.getRequestee().getUsername();
+                            String notificationMessage = "Your request for your item '"
+                                    + tobedeleted.getRequestedItem().getItemName()
+                                    + "' has been cancelled by " + username;
+                            Notification cancellationNotification = new Notification(
+                                    recipientUsername,
+                                    notificationMessage,
+                                    SimpleCalendar.today(),
+                                    tobedeleted.getRequestId(),                // Use request's ID as context.
+                                    tobedeleted.getRequestedItem().getItemId()    // The requested item's ID.
+                            );
+
+                            // Send the cancellation notification.
+                            addNotification(cancellationNotification, new OperationCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d("UserRepository", "Cancellation notification sent successfully.");
+                                }
+
+                                @Override
+                                public void onFailure(String message) {
+                                    Log.e("UserRepository", "Failed to send cancellation notification: " + message);
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         Log.e("UserRepository", "Error canceling request: ", e);

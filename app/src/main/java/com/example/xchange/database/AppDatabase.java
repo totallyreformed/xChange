@@ -14,6 +14,7 @@ import com.example.xchange.Counteroffer;
 import com.example.xchange.Image;
 import com.example.xchange.Item;
 import com.example.xchange.Notification;
+import com.example.xchange.Rating;
 import com.example.xchange.Request;
 import com.example.xchange.R;
 import com.example.xchange.SimpleCalendar;
@@ -22,6 +23,7 @@ import com.example.xchange.User;
 import com.example.xchange.database.dao.CounterofferDao;
 import com.example.xchange.database.dao.ItemDao;
 import com.example.xchange.database.dao.NotificationDao;
+import com.example.xchange.database.dao.RatingDao;
 import com.example.xchange.database.dao.RequestDao;
 import com.example.xchange.database.dao.UserDao;
 import com.example.xchange.database.dao.xChangeDao;
@@ -36,7 +38,7 @@ import java.util.concurrent.Executors;
  * Uses Room to manage entities and DAOs for interacting with the database.
  * Includes a prepopulate callback to initialize the database with default data.
  */
-@Database(entities = {User.class, Item.class, Request.class, Counteroffer.class, xChange.class, Notification.class}, version = 2, exportSchema = false)
+@Database(entities = {User.class, Item.class, Request.class, Counteroffer.class, xChange.class, Notification.class, Rating.class}, version = 2, exportSchema = false)
 @TypeConverters({CalendarConverter.class, ImageConverter.class, CategoryConverter.class, RequestConverter.class, CounterofferConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -85,6 +87,13 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract NotificationDao notificationDao();
 
     /**
+     * DAO for managing rating-related operations.
+     *
+     * @return RatingDao instance.
+     */
+    public abstract RatingDao ratingDao();
+
+    /**
      * Singleton instance for accessing the database.
      *
      * @param context Application context.
@@ -95,7 +104,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v12.db")
+                                    AppDatabase.class, "xchange_database_v14.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
@@ -200,4 +209,11 @@ public abstract class AppDatabase extends RoomDatabase {
      * @return NotificationDao instance.
      */
     public static NotificationDao getNotificationDao() { return INSTANCE.notificationDao(); }
+
+    /**
+     * Static helper method for retrieving the RatingDao instance.
+     *
+     * @return RatingDao instance.
+     */
+    public static RatingDao getRatingDao() { return INSTANCE.ratingDao(); }
 }

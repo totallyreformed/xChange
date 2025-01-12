@@ -38,8 +38,8 @@ public class RejectRequestPresenter {
      * @param request   The request to be rejected.
      * @param callback  The callback to notify of success or failure.
      */
-    public void rejectRequest(xChanger xchanger, Request request, RejectRequestViewModel.RejectRequestCallback callback) {
-        userRepository.rejectRequest(xchanger, request, new UserRepository.RejectRequestCallback() {
+    public void rejectRequest(xChanger xchanger, Request request, float rating, RejectRequestViewModel.RejectRequestCallback callback) {
+        userRepository.rejectRequest(xchanger, request, rating, new UserRepository.RejectRequestCallback() {
             @Override
             public void onSuccess() {
                 // Post result back to the main thread.
@@ -59,8 +59,8 @@ public class RejectRequestPresenter {
      * @param counteroffer The counteroffer to be rejected.
      * @param callback     The callback to notify of success or failure.
      */
-    public void rejectCounteroffer(Counteroffer counteroffer, RejectRequestViewModel.RejectRequestCallback callback) {
-        userRepository.rejectCounteroffer(counteroffer, new UserRepository.RejectRequestCallback() {
+    public void rejectCounteroffer(Counteroffer counteroffer, float rating, RejectRequestViewModel.RejectRequestCallback callback) {
+        userRepository.rejectCounteroffer(counteroffer, rating, new UserRepository.RejectRequestCallback() {
             @Override
             public void onSuccess() {
                 mainThreadHandler.post(callback::onSuccess);

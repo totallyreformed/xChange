@@ -21,6 +21,7 @@ import com.example.xchange.Request;
 import com.example.xchange.Search.SearchActivity;
 import com.example.xchange.User;
 import com.example.xchange.xChange;
+import com.example.xchange.xChanger;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import java.util.Objects;
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView usernameTextView, emailTextView, userTypeTextView, locationTextView, statsTextView,
+    private TextView usernameTextView, emailTextView, userTypeTextView, ratingTextView, locationTextView, statsTextView,
             requestsSentCountTextView, requestsReceivedCountTextView,
             counterOffersSentCountTextView, counterOffersReceivedCountTextView, totalExchangesTextView;
 
@@ -64,6 +65,13 @@ public class ProfileActivity extends AppCompatActivity {
         loadInitialData();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.loadUpdatedUser();
+        viewModel.loadUserRating();
+    }
+
     /**
      * Initializes UI components such as TextViews and buttons.
      */
@@ -71,6 +79,7 @@ public class ProfileActivity extends AppCompatActivity {
         usernameTextView = findViewById(R.id.profileUsernameTextView);
         emailTextView = findViewById(R.id.profileEmailTextView);
         userTypeTextView = findViewById(R.id.profileUserTypeTextView);
+        ratingTextView = findViewById(R.id.profileRatingTextView);
         locationTextView = findViewById(R.id.profileLocationTextView);
         statsTextView = findViewById(R.id.profileStatsTextView);
         requestsSentCountTextView = findViewById(R.id.requestsSentCountTextView);
@@ -147,6 +156,8 @@ public class ProfileActivity extends AppCompatActivity {
         viewModel.getCounterOffersReceivedCount().observe(this, count -> counterOffersReceivedCountTextView.setText(count + " Counter Offers Received"));
 
         viewModel.getUserXChanges().observe(this, xChanges -> totalExchangesTextView.setText(xChanges.size() + " xChanges"));
+
+        viewModel.getRating().observe(this, rating -> ratingTextView.setText("Rating: " + rating));
     }
 
     /**
@@ -159,6 +170,8 @@ public class ProfileActivity extends AppCompatActivity {
         usernameTextView.setText("Username: " + user.getUsername());
         emailTextView.setText("Email: " + user.getEmail());
         userTypeTextView.setText("User Type: " + user.getUser_type());
+
+
         locationTextView.setText("Location: " + user.getLocation());
     }
 

@@ -44,6 +44,14 @@ public class ProfilePresenter {
          * @param items The list of items belonging to the user.
          */
         void onUserItemsLoaded(List<Item> items);
+
+        /**
+         * Called when user rating is successfully loaded.
+         *
+         * @param rating The user's rating.
+         */
+        void onUserRatingLoaded(String rating);
+
         /**
          * Called when loading user items fails.
          *
@@ -176,6 +184,39 @@ public class ProfilePresenter {
                 view.onProfileDataFailed(message);
             }
         });
+    }
+
+    public void loadUpdatedUser() {
+        userRepository.getUserByUsername_Rating(user.getUsername(), new UserRepository.UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                view.onProfileDataLoaded(user, "");
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.onProfileDataFailed(message);
+            }
+        });
+    }
+
+    public void loadUserRating() {
+        if (user.getUser_type().equals("xChanger")) {
+            userRepository.getUserRating(user.getUsername(), new UserRepository.UserRatingCallback() {
+                @Override
+                public void onSuccess(float averageRating, int totalRatings) {
+                    String formatted = String.format("Rating: %.1f (%d reviews)", averageRating, totalRatings);
+                    view.onUserRatingLoaded(formatted);
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    view.onUserRatingLoaded("Rating: N/A");
+                }
+            });
+        } else {
+            view.onUserRatingLoaded("Rating: N/A");
+        }
     }
 
     /**
