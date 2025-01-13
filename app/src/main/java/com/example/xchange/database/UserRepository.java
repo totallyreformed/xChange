@@ -531,6 +531,12 @@ public class UserRepository {
     public void acceptRequest(Request request, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
+                // Validate the rating
+                if (rating < 0 || rating > 5) {
+                    callback.onFailure("Invalid rating: Rating must be between 0 and 5.");
+                    return;
+                }
+
                 xChanger requestee = request.getRequestee();
                 requestee.acceptRequest(request, rating);
                 userDao.updateUser(requestee);
@@ -552,7 +558,6 @@ public class UserRepository {
                 ratingDao.insertRating(newRating);
 
                 callback.onSuccess(xChangeId);
-                // Pass the xChangeId to the callback
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
                 callback.onFailure("Failed to accept request.");
@@ -570,6 +575,12 @@ public class UserRepository {
     public void acceptCounteroffer(Counteroffer counteroffer, float rating, AcceptRequestCallback callback) {
         executor.execute(() -> {
             try {
+                // Validate rating
+                if (rating < 0 || rating > 5) {
+                    callback.onFailure("Invalid rating: Rating must be between 0 and 5.");
+                    return;
+                }
+
                 xChanger counterofferee = counteroffer.getCounterofferee();
                 counterofferee.acceptCounteroffer(counteroffer, rating);
                 userDao.updateUser(counterofferee);
@@ -592,8 +603,7 @@ public class UserRepository {
 
                 callback.onSuccess(xChangeId);
             } catch (Exception e) {
-                Log.e("UserRepository", "Error accepting counteroffer", e);
-                callback.onFailure("Failed to accept counteroffer.");
+                callback.onFailure("Failed to accept counteroffer: " + e.getMessage());
             }
         });
     }
@@ -1497,5 +1507,4 @@ public class UserRepository {
             }
         });
     }
-
 }

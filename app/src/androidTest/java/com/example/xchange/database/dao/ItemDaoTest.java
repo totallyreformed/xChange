@@ -2,6 +2,8 @@ package com.example.xchange.database.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
@@ -45,11 +47,11 @@ public class ItemDaoTest {
     @After
     public void tearDown() {
         database.close();
+        database.close();
     }
 
     @Test
     public void testInsertAndRetrieveItem() throws InterruptedException {
-        // Create a new item
         Item item = new Item(
                 "xChangerName",
                 "Test Item",
@@ -59,11 +61,9 @@ public class ItemDaoTest {
                 new ArrayList<>()
         );
 
-        // Insert the item
         long itemId = itemDao.insertItem(item);
         assertNotNull(itemId);
 
-        // Retrieve the item by ID
         LiveData<Item> retrievedItem = itemDao.getItemById(itemId);
         Item itemFromDb = getValue(retrievedItem);
 
@@ -75,14 +75,12 @@ public class ItemDaoTest {
 
     @Test
     public void testSearchItemsByName() {
-        // Create and insert items
         Item item1 = new Item("xChangerName", "Test Item 1", "Description 1", Category.fromDisplayName("Electronics"), "New", new ArrayList<>());
         Item item2 = new Item("xChangerName", "Another Item", "Description 2", Category.fromDisplayName("Fashion"), "Used", new ArrayList<>());
 
         itemDao.insertItem(item1);
         itemDao.insertItem(item2);
 
-        // Search for items by name
         List<Item> results = itemDao.searchItemsByName("Test");
         assertEquals(1, results.size());
         assertEquals(item1.getItemName(), results.get(0).getItemName());
@@ -90,36 +88,88 @@ public class ItemDaoTest {
 
     @Test
     public void testFilterItemsByCategory() {
-        // Create and insert items
         Item item1 = new Item("xChangerName", "Test Item 1", "Description 1", Category.fromDisplayName("Electronics"), "New", new ArrayList<>());
         Item item2 = new Item("xChangerName", "Another Item", "Description 2", Category.fromDisplayName("Fashion"), "Used", new ArrayList<>());
 
         itemDao.insertItem(item1);
         itemDao.insertItem(item2);
 
-        // Filter items by category
         List<Item> electronicsItems = itemDao.filterItemsByCategory(Category.fromDisplayName("Electronics"));
         assertEquals(1, electronicsItems.size());
         assertEquals(item1.getItemCategory(), electronicsItems.get(0).getItemCategory());
     }
 
     @Test
+    public void testUpdateItem() throws InterruptedException {
+        // Insert an item into the database
+        Item item = new Item("xChangerName", "Test Item", "Description", Category.fromDisplayName("Fashion"), "New", new ArrayList<>());
+        long itemId = itemDao.insertItem(item);
+        item.setItemId(itemId); // Set the generated ID to the item object
+
+        // Update the item's fields
+        item.setItemName("Updated Item");
+        item.setItemDescription("Updated Description");
+        item.setItemCategory(Category.fromDisplayName("Electronics"));
+
+        // Perform the update operation
+        itemDao.updateItem(item);
+
+        // Retrieve the updated item from the database
+        LiveData<Item> updatedItem = itemDao.getItemById(itemId);
+        Item itemFromDb = getValue(updatedItem);
+
+        // Assertions to verify the update
+        assertNotNull(itemFromDb);
+        assertEquals("Updated Item", itemFromDb.getItemName());
+        assertEquals("Updated Description", itemFromDb.getItemDescription());
+        assertEquals(Category.fromDisplayName("Electronics"), itemFromDb.getItemCategory());
+    }
+
+    @Test
     public void testDeleteItemById() throws InterruptedException {
-        // Create and insert an item
         Item item = new Item("xChangerName", "Test Item", "Description", Category.fromDisplayName("Fashion"), "New", new ArrayList<>());
         long itemId = itemDao.insertItem(item);
 
-        // Verify item exists
         LiveData<Item> retrievedItem = itemDao.getItemById(itemId);
         assertNotNull(getValue(retrievedItem));
 
-        // Delete the item
         itemDao.deleteItemById(itemId);
 
-        // Verify item no longer exists
         LiveData<Item> deletedItem = itemDao.getItemById(itemId);
-        assertNotNull(deletedItem);
         assertEquals(null, getValue(deletedItem));
+    }
+
+    @Test
+    public void testDeleteAllItems() throws InterruptedException {
+        // Create and insert items
+        Item item1 = new Item("xChangerName", "Test Item 1", "Description 1", Category.fromDisplayName("Electronics"), "New", new ArrayList<>());
+        Item item2 = new Item("xChangerName", "Test Item 2", "Description 2", Category.fromDisplayName("Fashion"), "Used", new ArrayList<>());
+
+        itemDao.insertItem(item1);
+        itemDao.insertItem(item2);
+
+        List<Item> allItems = getValue(itemDao.getAllItems());
+        assertNotNull(allItems);
+        assertEquals(2, allItems.size());
+        itemDao.deleteAllItems();
+
+        List<Item> afterDeletion = getValue(itemDao.getAllItems());
+        assertNotNull(afterDeletion); // LiveData should not be null
+        assertTrue(afterDeletion.isEmpty());
+    }
+
+
+    @Test
+    public void testGetItemsByXChanger() {
+        Item item1 = new Item("xChanger1", "Item 1", "Description 1", Category.fromDisplayName("Fashion"), "New", new ArrayList<>());
+        Item item2 = new Item("xChanger2", "Item 2", "Description 2", Category.fromDisplayName("Electronics"), "Used", new ArrayList<>());
+
+        itemDao.insertItem(item1);
+        itemDao.insertItem(item2);
+
+        List<Item> itemsForXChanger1 = itemDao.getItemsByXChanger("xChanger1");
+        assertEquals(1, itemsForXChanger1.size());
+        assertEquals(item1.getItemName(), itemsForXChanger1.get(0).getItemName());
     }
 
     // Helper to get LiveData value synchronously
