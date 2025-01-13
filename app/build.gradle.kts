@@ -73,6 +73,5 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.glide)
     annotationProcessor (libs.compiler)
-    testImplementation(libs.robolectric.v4103)
 
 }

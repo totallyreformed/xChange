@@ -1,16 +1,24 @@
 package com.example.xchange;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.xchange.ItemDetail.ItemDetailActivity;
+import com.example.xchange.database.AppDatabase;
+import com.example.xchange.database.dao.UserDao;
+
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Adapter class for managing and displaying a list of {@link Item} objects in a {@link RecyclerView}.

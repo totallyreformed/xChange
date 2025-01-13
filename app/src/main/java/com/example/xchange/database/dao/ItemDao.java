@@ -22,9 +22,6 @@ public interface ItemDao {
     @Query("SELECT * FROM items")
     LiveData<List<Item>> getAllItems();
 
-    @Query("SELECT * FROM items")
-    List<Item> getAllItemsSync();
-
     @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%'")
     List<Item> searchItemsByName(String query);
 
@@ -38,9 +35,6 @@ public interface ItemDao {
     // Retrieve an item by ID
     @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")
     LiveData<Item> getItemById(long itemId);
-
-    @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")
-    Item getItemByIdObj(long itemId);
 
     @Update
     void update(Item item);

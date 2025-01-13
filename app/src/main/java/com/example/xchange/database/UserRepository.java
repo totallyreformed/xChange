@@ -655,7 +655,7 @@ public class UserRepository {
         executor.execute(() -> {
             try {
                 xChanger counterofferee = counteroffer.getCounterofferee();
-                counterofferee.rejectCounteroffer(counteroffer, 0);
+                counterofferee.rejectCounteroffer(counteroffer, rating);
                 counterofferDao.deleteCounteroffer(counteroffer);
                 requestDao.deleteRequest(counteroffer.getRequest());
 
