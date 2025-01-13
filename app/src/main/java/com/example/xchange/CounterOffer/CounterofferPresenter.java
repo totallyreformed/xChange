@@ -124,7 +124,7 @@ public class CounterofferPresenter {
 
     /**
      * Creates a counteroffer for a specific request using a given item and xChanger.
-     * <p>
+     *
      * Note: The actual sending of the notification for a counteroffer is handled in the UI (Activity)
      * after successfully calling this method.
      *
@@ -133,17 +133,14 @@ public class CounterofferPresenter {
      * @param xchanger    The xChanger instance performing the counteroffer.
      */
     public void createCounterOffer(Request request, Item counterItem, xChanger xchanger) {
-        if (request == null || counterItem == null || xchanger == null) {
-            throw new IllegalArgumentException("Item, message, or request cannot be null.");
-        }
-        if (xchanger.getCounterOffers().stream().anyMatch(co -> co.getRequest().equals(request) && co.getOfferedItem().equals(counterItem))) {
-            throw new IllegalArgumentException("Duplicate counteroffer detected.");
-        }
-
-        try {
-            xchanger.counterOffer(counterItem, request);
-        } catch (Exception e) {
-            Log.e("CounterofferPresenter", "Error creating counteroffer", e);
+        if (request != null && counterItem != null) {
+            try {
+                xchanger.counterOffer(counterItem, request);
+            } catch (Exception e) {
+                Log.e("CounterofferPresenter", "Error creating counteroffer", e);
+            }
+        } else {
+            Log.e("CounterofferPresenter", "Invalid data for creating counteroffer");
         }
     }
 }

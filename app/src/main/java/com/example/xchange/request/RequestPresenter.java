@@ -67,9 +67,6 @@ public class RequestPresenter {
      * @param requestedItem The item being requested from the requestee.
      */
     public void createRequest(xChanger requester, xChanger requestee, Item offeredItem, Item requestedItem) {
-        if (requester == null || requestee == null || offeredItem == null || requestedItem == null) {
-            throw new IllegalArgumentException("Offered item and requested item must not be null.");
-        }
         Request request = new Request(
                 requester,
                 requestee,
@@ -115,4 +112,6 @@ public class RequestPresenter {
             }
         });
     }
+
+
 }

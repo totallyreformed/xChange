@@ -46,12 +46,6 @@ public class EditItemPresenter {
      * @param images      The updated list of images associated with the item.
      */
     public void updateItem(Item item, String name, String description, String condition, String category, ArrayList<Image> images) {
-        if (item == null) {
-            throw new IllegalArgumentException("Item cannot be null");
-        }
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Item name cannot be empty");
-        }
         executor.execute(() -> {
             try {
                 Category itemCategory = Category.fromDisplayName(category);
