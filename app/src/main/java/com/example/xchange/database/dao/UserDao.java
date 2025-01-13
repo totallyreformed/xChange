@@ -2,6 +2,7 @@ package com.example.xchange.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -53,9 +54,12 @@ public interface UserDao {
     @Query("SELECT COUNT(DISTINCT item_category) FROM items")
     int getTotalCategories();
 
+
     @Update
     void updateUser(User user);
 
     @Query("SELECT COUNT() FROM users")
     int getTotalUsers();
+    @Delete
+    void deleteUser(User user);
 }

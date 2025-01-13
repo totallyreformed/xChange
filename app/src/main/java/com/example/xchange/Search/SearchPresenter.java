@@ -7,6 +7,7 @@ import com.example.xchange.Category;
 import com.example.xchange.Item;
 import com.example.xchange.database.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +58,11 @@ public class SearchPresenter {
      * @param category The category filter for the search. If null, the search is performed by name only.
      */
     public void performSearch(String query, Category category) {
+        if (query == null || query.trim().isEmpty()) {
+            // Return an empty list when the query is empty
+            view.onSearchResultsLoaded(new ArrayList<>());
+            return;
+        }
         if (category == null) {
             // Perform search by name only
             userRepository.searchItemsByName(query, new UserRepository.UserItemsCallback() {
