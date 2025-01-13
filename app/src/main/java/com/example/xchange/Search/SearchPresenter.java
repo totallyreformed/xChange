@@ -58,34 +58,38 @@ public class SearchPresenter {
      * @param category The category filter for the search. If null, the search is performed by name only.
      */
     public void performSearch(String query, Category category) {
+        Log.d("PresenterPerformSearch", "Query: " + query + ", Category: " + (category != null ? category.getDisplayName() : "null"));
+
         if (query == null || query.trim().isEmpty()) {
-            // Return an empty list when the query is empty
             view.onSearchResultsLoaded(new ArrayList<>());
             return;
         }
+
         if (category == null) {
-            // Perform search by name only
             userRepository.searchItemsByName(query, new UserRepository.UserItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
+                    Log.d("PresenterPerformSearch", "Search by name returned: " + items.size() + " items");
                     view.onSearchResultsLoaded(items);
                 }
 
                 @Override
                 public void onFailure(String message) {
+                    Log.d("PresenterPerformSearch", "Search by name failed: " + message);
                     view.onSearchFailed(message);
                 }
             });
         } else {
-            // Perform search with category filter
             userRepository.searchItemsByNameAndCategory(query, category, new UserRepository.UserItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
+                    Log.d("PresenterPerformSearch", "Search by name and category returned: " + items.size() + " items");
                     view.onSearchResultsLoaded(items);
                 }
 
                 @Override
                 public void onFailure(String message) {
+                    Log.d("PresenterPerformSearch", "Search by name and category failed: " + message);
                     view.onSearchFailed(message);
                 }
             });
