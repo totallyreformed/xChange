@@ -38,6 +38,9 @@ public class UploadPresenter {
      * @param onFailure       A callback to execute with an error message when the upload fails.
      */
     public void uploadItem(String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImage, Runnable onSuccess, Consumer<String> onFailure) {
+        if (itemName == null || itemName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Item name cannot be empty.");
+        }
         try {
             xchanger.UploadItem(itemName, itemDescription, itemCategory, itemCondition, itemImage);
             onSuccess.run();

@@ -2,6 +2,7 @@ package com.example.xchange.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -58,4 +59,12 @@ public interface UserDao {
 
     @Query("SELECT COUNT() FROM users")
     int getTotalUsers();
+
+    @Delete
+    void deleteUser(User user);
+    @Query("DELETE FROM users")
+    void deleteAllUsers();
+    @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
+    User findByUsernameSync(String username);
+
 }

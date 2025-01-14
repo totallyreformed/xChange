@@ -281,6 +281,7 @@ public class xChanger extends User implements Parcelable {
      * @param itemCondition   The condition of the item.
      * @param itemImages      A list of {@link Image} objects associated with the item.
      */
+
     public void UploadItem(String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImages) {
         Item item = new Item(this.getUsername(), itemName, itemDescription, itemCategory, itemCondition, itemImages);
         this.items.add(item);

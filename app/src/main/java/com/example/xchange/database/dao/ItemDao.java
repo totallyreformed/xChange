@@ -21,6 +21,8 @@ public interface ItemDao {
 
     @Query("SELECT * FROM items")
     LiveData<List<Item>> getAllItems();
+    @Query("SELECT * FROM items")
+    List<Item> getAllItemsSync();
 
     @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%'")
     List<Item> searchItemsByName(String query);

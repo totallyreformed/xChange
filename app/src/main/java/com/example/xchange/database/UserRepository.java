@@ -428,16 +428,28 @@ public class UserRepository {
             try {
                 User existingUser = userDao.findByUsername_initial(newUser.getUsername());
                 if (existingUser != null) {
-                    callback.onFailure("Username already exists");
+                    // Log and notify failure
+                    Log.d("TEST", "User exists: " + existingUser.getUsername());
+                    new Handler(Looper.getMainLooper()).post(() ->
+                            callback.onFailure("Username already exists")
+                    );
                 } else {
+                    // Insert the new user
                     userDao.insertUser(newUser);
-                    callback.onSuccess();
+                    Log.d("TEST", "User registered successfully: " + newUser.getUsername());
+                    new Handler(Looper.getMainLooper()).post(callback::onSuccess);
                 }
             } catch (Exception e) {
-                callback.onFailure("Registration failed: " + e.getMessage());
+                // Handle any exceptions
+                Log.e("TEST", "Error during registration", e);
+                new Handler(Looper.getMainLooper()).post(() ->
+                        callback.onFailure("Registration failed: " + e.getMessage())
+                );
             }
         });
     }
+
+
 
     /**
      * Retrieves a user by username.

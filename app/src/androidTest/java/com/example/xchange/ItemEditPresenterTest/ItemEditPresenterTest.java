@@ -1,6 +1,7 @@
 package com.example.xchange.ItemEditPresenterTest;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -16,8 +17,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -30,26 +33,37 @@ public class ItemEditPresenterTest {
     private Item testItem;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         Context context = ApplicationProvider.getApplicationContext();
         AppDatabase db = AppDatabase.getInstance(context);
         itemDao = db.itemDao();
         executor = Executors.newSingleThreadExecutor();
         presenter = new EditItemPresenter(itemDao, executor);
 
-        // Initialize a test item
         testItem = new Item("testUser", "Test Item", "Test Description", Category.TECHNOLOGY, "New", null);
-        executor.execute(() -> itemDao.insertItem(testItem));
+        CountDownLatch latch = new CountDownLatch(1);
+        executor.execute(() -> {
+            long id = itemDao.insertItem(testItem);
+            testItem.setItemId(id); // Ensure ID is set after insertion
+            latch.countDown();
+        });
+        latch.await(); // Wait for the insertion to complete
     }
+
 
     @After
-    public void tearDown() {
-        executor.execute(() -> itemDao.deleteItem(testItem));
+    public void tearDown() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        executor.execute(() -> {
+            itemDao.deleteItem(testItem);
+            latch.countDown();
+        });
+        latch.await(); // Wait for deletion
         executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
     }
-
     @Test
-    public void testUpdateItem_ValidData() {
+    public void testUpdateItem_ValidData() throws InterruptedException {
         // Arrange
         String updatedName = "Updated Item Name";
         String updatedDescription = "Updated Description";
@@ -58,10 +72,17 @@ public class ItemEditPresenterTest {
         ArrayList<Image> updatedImages = new ArrayList<>();
         updatedImages.add(new Image("/path/to/image.jpg", "Updated image"));
 
-        // Act
-        presenter.updateItem(testItem, updatedName, updatedDescription, updatedCondition, updatedCategory, updatedImages);
+        CountDownLatch latch = new CountDownLatch(1);
 
-        // Verify
+        // Act
+        executor.execute(() -> {
+            presenter.updateItem(testItem, updatedName, updatedDescription, updatedCondition, updatedCategory, updatedImages);
+            latch.countDown(); // Signal update completion
+        });
+
+        latch.await(); // Wait for the update to complete
+
+        // Assert
         executor.execute(() -> {
             Item updatedItem = itemDao.getItemByIdSync(testItem.getItemId());
             assertNotNull(updatedItem);
@@ -69,24 +90,24 @@ public class ItemEditPresenterTest {
             assertEquals(updatedDescription, updatedItem.getItemDescription());
             assertEquals(updatedCondition, updatedItem.getItemCondition());
             assertEquals(Category.BOOKS, updatedItem.getItemCategory());
-            assertEquals(updatedImages, updatedItem.getItemImages());
+
+            assertEquals(updatedImages.size(), updatedItem.getItemImages().size());
+            for (int i = 0; i < updatedImages.size(); i++) {
+                assertEquals(updatedImages.get(i).getFilePath(), updatedItem.getItemImages().get(i).getFilePath());
+                assertEquals(updatedImages.get(i).getDescription(), updatedItem.getItemImages().get(i).getDescription());
+            }
         });
     }
 
     @Test
     public void testUpdateItem_InvalidCategory() {
-        // Arrange
         String invalidCategory = "InvalidCategory";
-
-        // Act
         presenter.updateItem(testItem, "Test", "Test", "Used", invalidCategory, new ArrayList<>());
-
-        // Verify
-        executor.execute(() -> {
-            Item updatedItem = itemDao.getItemByIdSync(testItem.getItemId());
-            assertEquals(Category.TECHNOLOGY, updatedItem.getItemCategory()); // Category should remain unchanged
-        });
+        Item updatedItem = itemDao.getItemByIdSync(testItem.getItemId());
+        assertNotNull(updatedItem);
+        assertEquals(Category.TECHNOLOGY, updatedItem.getItemCategory());
     }
+
 
     @Test
     public void testUpdateItem_NullItem() {
@@ -103,8 +124,6 @@ public class ItemEditPresenterTest {
     public void testUpdateItem_EmptyName() {
         // Arrange
         String emptyName = "";
-
-        // Act
         try {
             presenter.updateItem(testItem, emptyName, "Description", "New", "Technology", new ArrayList<>());
             fail("Expected IllegalArgumentException for empty name.");

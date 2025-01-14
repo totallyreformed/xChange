@@ -55,11 +55,7 @@ public class EditItemPresenter {
         executor.execute(() -> {
             try {
                 Category itemCategory = Category.fromDisplayName(category);
-                item.setItemName(name);
-                item.setItemDescription(description);
-                item.setItemCondition(condition);
-                item.setItemCategory(itemCategory);
-                item.setItemImages(images); // Assuming `setItemImages` exists in your `Item` class
+                item.editItem(name,description, String.valueOf(itemCategory),condition,images);
                 itemDao.updateItem(item);
             } catch (IllegalArgumentException e) {
                 Log.e("EditItemPresenter", "Invalid category: " + category, e);

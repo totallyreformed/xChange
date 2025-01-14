@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.example.xchange.Category;
@@ -17,6 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -26,23 +28,37 @@ public class SearchPresenterTest {
     private SearchPresenter presenter;
     private UserRepository userRepository;
     private TestSearchView testView;
+    private AppDatabase database;
     private Context context;
 
     @Before
     public void setUp() {
-        context = ApplicationProvider.getApplicationContext();
+        context = ApplicationProvider.getApplicationContext(); // Initialize context first
+        Log.d("TestSetup", "Context: " + context);
+
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                .allowMainThreadQueries()
+                .build();
+
+        Log.d("TestSetup", "Database is null: " + (database == null));
         testView = new TestSearchView();
         userRepository = new UserRepository(context);
         presenter = new SearchPresenter(context, testView);
 
-        // Populate the database with test data
-        populateTestData();
+        // Populate database with test data
+        database.itemDao().insertItem(new Item("user1", "Book 1", "Description", Category.BOOKS, "New", new ArrayList<>()));
+        database.itemDao().insertItem(new Item("user2", "Book 2", "Another Description", Category.BOOKS, "Used", new ArrayList<>()));
     }
 
     @After
     public void tearDown() {
         // Clear test data from the database
         clearTestData();
+        if (database != null) {
+            database.close();
+        }
+        presenter = null;
+        userRepository = null;
     }
 
     @Test
@@ -122,15 +138,6 @@ public class SearchPresenterTest {
         assertEquals("Test Item 2", results.get(0).getItemName());
         assertEquals(Category.TECHNOLOGY, results.get(0).getItemCategory());
     }
-
-    private void populateTestData() {
-        Item bookItem = new Item("testUser1", "Test Item 1", "Description", Category.BOOKS, "New", null);
-        Item techItem = new Item("testUser1", "Test Item 2", "Description", Category.TECHNOLOGY, "New", null);
-        AppDatabase.getItemDao().insertItem(bookItem);
-        AppDatabase.getItemDao().insertItem(techItem);
-
-    }
-
 
     private void clearTestData() {
         AppDatabase.getItemDao().deleteAllItems();

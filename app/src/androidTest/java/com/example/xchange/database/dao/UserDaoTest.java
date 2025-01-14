@@ -55,7 +55,7 @@ public class UserDaoTest {
         User user = new User("uniqueUser", "unique@example.com", null, "password123", "TestLocation", "xChanger");
         userDao.insertUser(user);
 
-        User foundUser = userDao.findByUsername("uniqueUser").getValue();
+        User foundUser = userDao.findByUsernameSync("uniqueUser");
         assertNotNull(foundUser);
         assertEquals("unique@example.com", foundUser.getEmail());
     }

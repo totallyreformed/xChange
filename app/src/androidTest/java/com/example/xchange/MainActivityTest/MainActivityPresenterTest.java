@@ -41,22 +41,21 @@ public class MainActivityPresenterTest {
 
     @After
     public void tearDown() {
-        // Clean up resources if needed.
         userRepository.shutdownExecutor();
+        userRepository = null;
+        presenter = null;
     }
 
     @Test
     public void testLoadItems() throws InterruptedException {
         // Simulate loading items.
         CountDownLatch latch = new CountDownLatch(1);
-
         LiveData<List<Item>> itemsLiveData = presenter.loadItems();
         itemsLiveData.observeForever(items -> {
             if (items != null) {
                 latch.countDown();
             }
         });
-
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
@@ -70,23 +69,21 @@ public class MainActivityPresenterTest {
         presenter.loadUser(null);
         assertEquals("Guest", viewModel.getUsername().getValue());
     }
-
     @Test
     public void testFetchTotalRequests() throws InterruptedException {
-        // Simulate fetching total requests.
         MutableLiveData<Integer> liveData = new MutableLiveData<>();
         CountDownLatch latch = new CountDownLatch(1);
 
+        // Observe the LiveData
         liveData.observeForever(count -> {
             if (count != null) {
-                latch.countDown();
+                latch.countDown(); // Signal when data is received
             }
         });
 
         presenter.fetchTotalRequests(liveData);
-        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue("Timed out waiting for LiveData update", latch.await(5, TimeUnit.SECONDS));
     }
-
     @Test
     public void testDeleteNotificationsForUser() {
         // Simulate deleting notifications for a user.

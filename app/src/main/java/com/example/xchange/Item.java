@@ -242,13 +242,19 @@ public class Item implements Parcelable {
      * @param itemCondition  The new condition of the item.
      * @param itemImages     The new list of images.
      */
-    public void editItem(String itemName, String itemDescription, Category itemCategory, String itemCondition, ArrayList<Image> itemImages) {
+    public void editItem(String itemName, String itemDescription, String itemCategory, String itemCondition, ArrayList<Image> itemImages) {
         this.setItemName(itemName);
         this.setItemDescription(itemDescription);
-        this.setItemCategory(itemCategory);
+        Category category = Category.fromDisplayName(itemCategory);
+        if (category == Category.ALL && !"All".equalsIgnoreCase(itemCategory)) {
+            category = this.getItemCategory();
+        }
+        this.setItemCategory(category);
+
         this.setItemCondition(itemCondition);
         this.setItemImages(itemImages);
     }
+
 
     /**
      * Constructs an {@link Item} from a {@link Parcel}.
