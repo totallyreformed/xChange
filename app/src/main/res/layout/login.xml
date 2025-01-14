@@ -31,6 +31,7 @@
         android:id="@+id/login_card"
         android:layout_width="358dp"
         android:layout_height="393dp"
+        android:layout_centerInParent="true"
         android:layout_below="@id/top_section"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="-230dp"

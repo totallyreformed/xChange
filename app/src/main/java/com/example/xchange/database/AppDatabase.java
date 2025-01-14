@@ -104,7 +104,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "xchange_database_v14.db")
+                                    AppDatabase.class, "xchange_database_v16.db")
                             .fallbackToDestructiveMigration()
                             .addCallback(prepopulateCallback) // Add prepopulate callback
                             .build();
@@ -127,12 +127,12 @@ public abstract class AppDatabase extends RoomDatabase {
                 RequestDao requestDao = INSTANCE.requestDao();
 
                 // Admin user
-                userDao.insertUser(new User("admin", "admin@example.com", null, "admin", "HQ", "admin"));
+                userDao.insertUser(new User("admin", "admin@example.com", SimpleCalendar.fromString("2024-12-31"), "admin", "HQ", "admin"));
 
                 // xChangers
-                xChanger testXchanger = new xChanger("testXChanger", "xchanger@example.com", null, "password123", "NY");
+                xChanger testXchanger = new xChanger("testXChanger", "xchanger@example.com", SimpleCalendar.fromString("2023-06-25"), "password123", "NY");
                 userDao.insertUser(testXchanger);
-                xChanger swkratis = new xChanger("swkratis", "swkratis@example.com", null, "swk", "Piraeus");
+                xChanger swkratis = new xChanger("swkratis", "swkratis@example.com", SimpleCalendar.fromString("2024-11-12"), "swk", "Piraeus");
                 userDao.insertUser(swkratis);
 
                 // Items

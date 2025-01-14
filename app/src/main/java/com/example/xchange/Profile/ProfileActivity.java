@@ -39,7 +39,7 @@ import java.util.Objects;
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView usernameTextView, emailTextView, userTypeTextView, ratingTextView, locationTextView, statsTextView,
+    private TextView usernameTextView, emailTextView, userTypeTextView, ratingTextView, joinedDateTextView, locationTextView, statsTextView,
             requestsSentCountTextView, requestsReceivedCountTextView,
             counterOffersSentCountTextView, counterOffersReceivedCountTextView, totalExchangesTextView;
 
@@ -80,6 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
         emailTextView = findViewById(R.id.profileEmailTextView);
         userTypeTextView = findViewById(R.id.profileUserTypeTextView);
         ratingTextView = findViewById(R.id.profileRatingTextView);
+        joinedDateTextView = findViewById(R.id.profileJoinedDateTextView);
         locationTextView = findViewById(R.id.profileLocationTextView);
         statsTextView = findViewById(R.id.profileStatsTextView);
         requestsSentCountTextView = findViewById(R.id.requestsSentCountTextView);
@@ -170,8 +171,7 @@ public class ProfileActivity extends AppCompatActivity {
         usernameTextView.setText("Username: " + user.getUsername());
         emailTextView.setText("Email: " + user.getEmail());
         userTypeTextView.setText("User Type: " + user.getUser_type());
-
-
+        joinedDateTextView.setText("Joined Date: " + user.getJoin_Date());
         locationTextView.setText("Location: " + user.getLocation());
     }
 

@@ -30,9 +30,10 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/login_card"
         android:layout_width="355dp"
-        android:layout_height="464dp"
+        android:layout_height="480dp"
+        android:layout_centerInParent="true"
         android:layout_below="@id/top_section"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="-290dp"
         android:layout_marginRight="20dp"
@@ -44,7 +45,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="451dp"
+            android:layout_height="470dp"
             android:orientation="vertical">
 
             <TextView
@@ -78,6 +79,15 @@
                 android:inputType="text" />
 
             <EditText
+                android:id="@+id/location"
+                android:layout_width="312dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:hint="Location"
+                android:inputType="text" />
+
+            <EditText
                 android:id="@+id/password"
                 android:layout_width="312dp"
                 android:layout_height="48dp"
@@ -94,12 +104,6 @@
                 android:layout_marginTop="10dp"
                 android:hint="Confirm Password"
                 android:inputType="textPassword" />
-
-            <Spinner
-                android:id="@+id/roleSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
 
             <Button
                 android:id="@+id/login_button"

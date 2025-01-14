@@ -125,7 +125,10 @@ public class SimpleCalendar implements Parcelable {
      */
     @Override
     public String toString() {
-        return year + "-" + (month + 1) + "-" + day;
+        if (month == 0) {
+            return year + "-" + (month + 1) + "-" + day;
+        }
+        return year + "-" + (month) + "-" + day;
     }
 
     /**
@@ -143,9 +146,12 @@ public class SimpleCalendar implements Parcelable {
         try {
             String[] dateParts = dateString.split("-");
             int year = Integer.parseInt(dateParts[0]);
-            int month = Integer.parseInt(dateParts[1]) - 1; // Months are 0-based in Calendar
+            int month = Integer.parseInt(dateParts[1]); // Months are 0-based in Calendar
             int day = Integer.parseInt(dateParts[2]);
 
+            if (month == 0) {
+                return new SimpleCalendar(year, month + 1, day);
+            }
             return new SimpleCalendar(year, month, day);
         } catch (Exception e) {
             e.printStackTrace();

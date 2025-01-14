@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.xchange.Login.LoginActivity;
 import com.example.xchange.R;
+import com.example.xchange.SimpleCalendar;
 import com.example.xchange.User;
 
 /**
@@ -24,7 +25,7 @@ import com.example.xchange.User;
 public class RegisterActivity extends AppCompatActivity {
 
     private RegisterViewModel viewModel;
-    private EditText usernameEditText, emailEditText, passwordEditText, confirmPasswordEditText;
+    private EditText usernameEditText, emailEditText, locationEditText, passwordEditText, confirmPasswordEditText;
 
     /**
      * Initializes the activity, sets up UI components, and handles user interactions.
@@ -42,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Initialize UI elements
         usernameEditText = findViewById(R.id.username);
         emailEditText = findViewById(R.id.email);
+        locationEditText = findViewById(R.id.location);
         passwordEditText = findViewById(R.id.password);
         confirmPasswordEditText = findViewById(R.id.confirm_password);
         Button registerButton = findViewById(R.id.login_button);
@@ -62,6 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString();
             String email = emailEditText.getText().toString();
+            String location = locationEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String confirmPassword = confirmPasswordEditText.getText().toString();
 
@@ -70,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
             } else if (!password.equals(confirmPassword)) {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             } else {
-                User newUser = new User(username, email, null, password, "Default Location", "xChanger");
+                User newUser = new User(username, email, SimpleCalendar.today(), password, location, "xChanger");
                 viewModel.registerUser(newUser);
             }
         });
