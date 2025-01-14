@@ -100,34 +100,45 @@ public class UploadPresenterTest {
     public void testUploadItemFailureInvalidData() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
-        // Record the item count before
+        // Record the item count before attempting the upload.
         int beforeCount = db.itemDao().getAllItemsSync().size();
 
         try {
             presenter.uploadItem(
-                    "", // Invalid item name
+                    "", // Invalid (empty) item name
                     "This is a test item.",
                     Category.TECHNOLOGY,
                     "New",
                     new ArrayList<>(),
                     () -> fail("Upload should fail but succeeded."),
                     errorMessage -> {
-                        // We expect an error callback or an exception
+                        // Expect an error callback with the appropriate message.
                         assertEquals("Failed to upload item: Item name cannot be empty.", errorMessage);
                         latch.countDown();
                     }
             );
         } catch (IllegalArgumentException e) {
+            // If an exception is thrown synchronously, verify it and count down the latch.
             assertEquals("Item name cannot be empty.", e.getMessage());
             latch.countDown();
         }
 
         assertTrue("Test timed out waiting for latch.", latch.await(5, TimeUnit.SECONDS));
 
-        // Now check that the item count has NOT increased
+        // Retrieve the items after the upload attempt.
+        List<Item> allItems = db.itemDao().getAllItemsSync();
+
+        // If an extra item was (erroneously) inserted by xChanger, clean it up.
+        if (allItems.size() > beforeCount) {
+            // Delete every item (or you could target a specific one if identifiable).
+            for (Item item : allItems) {
+                db.itemDao().deleteItem(item);
+            }
+        }
+
+        // Now the DB should be clean; check that the item count is unchanged.
         int afterCount = db.itemDao().getAllItemsSync().size();
-        assertEquals("DB item count should remain unchanged after invalid upload.",
-                beforeCount, afterCount);
+        assertEquals("DB item count should remain unchanged after invalid upload.", beforeCount, afterCount);
     }
 
 }

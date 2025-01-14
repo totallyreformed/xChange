@@ -48,21 +48,27 @@ public class SearchPresenterTest {
     }
 
     @Test
-    public void testDaoSearchItemsByCategory() {
-        // Insert test items
-        AppDatabase.getItemDao().insertItem(new Item("user1", "Book 1", "Description", Category.BOOKS, "New", new ArrayList<>()));
-        AppDatabase.getItemDao().insertItem(new Item("user2", "Book 2", "Another Description", Category.BOOKS, "Used", new ArrayList<>()));
+    public void testDaoSearchItemsByCategory() throws InterruptedException {
+        // Insert an extra test item in a different category
         AppDatabase.getItemDao().insertItem(new Item("user3", "Toy 1", "Toy Description", Category.TOYS, "New", new ArrayList<>()));
 
-        // Perform search
-        presenter.performSearch(null, Category.BOOKS);
-        List<Item> books = testView.getResults();
+        // Setup latch to wait for the asynchronous callback.
+        CountDownLatch latch = new CountDownLatch(1);
+        testView.setLatch(latch);
 
-        // Validate results
+        // Perform search: since query is null, the presenter will filter by category only.
+        presenter.performSearch(null, Category.BOOKS);
+
+        // Wait for the callback (with a 5 second timeout)
+        assertTrue("Latch timed out!", latch.await(5, TimeUnit.SECONDS));
+
+        // Now get the results and run validations.
+        List<Item> books = testView.getResults();
         assertNotNull("Results should not be null", books);
         assertFalse("Results should not be empty", books.isEmpty());
         assertEquals("Expected 2 items in the Books category", 2, books.size());
     }
+
 
     @Test
     public void testPerformSearchByNameNoResults() throws InterruptedException {
@@ -79,20 +85,30 @@ public class SearchPresenterTest {
 
     @Test
     public void testPerformSearchByCategorySuccess() throws InterruptedException {
-        List<Item> items=AppDatabase.getItemDao().filterItemsByCategory(Category.BOOKS);
-        Log.d("TestDebug",String.valueOf(items.size()));
+        // Setup latch to wait for the asynchronous callback.
+        CountDownLatch latch = new CountDownLatch(1);
+        testView.setLatch(latch);
+
+        // Perform the search for the Books category.
+        presenter.performSearch(null, Category.BOOKS);
+
+        // Wait for the callback (with a 5 second timeout)
+        assertTrue("Latch timed out!", latch.await(5, TimeUnit.SECONDS));
+
+        // Retrieve the results from the test view.
         List<Item> results = testView.getResults();
 
-        // Validate the results
+        // Validate the results.
         assertNotNull("Results should not be null", results);
         assertFalse("Results should not be empty", results.isEmpty());
         assertEquals("Expected 2 items in the Books category", 2, results.size());
 
-        // Log results for debugging
+        // Optionally log the results for debugging purposes.
         for (Item item : results) {
             Log.d("TestDebug", "Retrieved Item: " + item.getItemName() + ", Category: " + item.getItemCategory());
         }
     }
+
 
     @Test
     public void testPerformSearchByCategoryNoResults() throws InterruptedException {
