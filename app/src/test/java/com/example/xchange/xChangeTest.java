@@ -73,7 +73,7 @@ class xChangeTest {
         assertFalse(counteroffer.isActive());
         assertEquals(origSucceedOfferer + 1, xchg.getOfferer().getSucceedDeals());
         assertEquals(origSucceedOfferee + 1, xchg.getOfferee().getSucceedDeals());
-        assertFalse(xchg.getOfferee().getRatings().isEmpty());
+        assertFalse(xchg.getOfferer().getRatings().isEmpty());
         assertEquals("offeree@example.com", returnedEmail);
     }
 
@@ -93,6 +93,6 @@ class xChangeTest {
         assertFalse(counteroffer.isActive());
         assertEquals(origFailedOfferer + 1, xchg.getOfferer().getFailedDeals());
         assertEquals(origFailedOfferee + 1, xchg.getOfferee().getFailedDeals());
-        assertFalse(xchg.getOfferee().getRatings().isEmpty());
+        assertFalse(xchg.getOfferer().getRatings().isEmpty());
     }
 }

@@ -38,15 +38,22 @@ public class xChangerTest {
 
     @Test
     void testAddRating() {
-        Rating rating1 = new Rating(4.0f, null, testXChanger, null, null);
-        Rating rating2 = new Rating(2.0f, null, testXChanger, null, null);
+        // Create a valid xChanger object to use as the rater.
+        xChanger rater = createXChanger("rater");
+
+        // Now pass 'rater' as the second argument (instead of null)
+        Rating rating1 = new Rating(4.0f, rater, testXChanger, null, null);
+        Rating rating2 = new Rating(2.0f, rater, testXChanger, null, null);
+
         testXChanger.addRating(rating1);
         assertEquals(1, testXChanger.getTotalRatings());
         assertEquals(4.0f, testXChanger.getAverageRating(), 0.001f);
+
         testXChanger.addRating(rating2);
         assertEquals(2, testXChanger.getTotalRatings());
         assertEquals((4.0f + 2.0f) / 2, testXChanger.getAverageRating(), 0.001f);
     }
+
 
     @Test
     void testReport() {

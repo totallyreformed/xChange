@@ -53,7 +53,7 @@ class ItemTest {
         Image newImg = new Image("pathNew", "new desc");
         ArrayList<Image> newImgs = new ArrayList<>();
         newImgs.add(newImg);
-        item.editItem("Item2", "NewDesc", Category.BOOKS, "Used", newImgs);
+        item.editItem("Item2", "NewDesc", String.valueOf(Category.BOOKS), "Used", newImgs);
         assertEquals("Item2", item.getItemName());
         assertEquals("NewDesc", item.getItemDescription());
         assertEquals(Category.BOOKS, item.getItemCategory());
