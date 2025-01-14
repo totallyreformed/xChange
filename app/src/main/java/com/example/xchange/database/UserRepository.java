@@ -427,12 +427,21 @@ public class UserRepository {
         executor.execute(() -> {
             try {
                 User existingUser = userDao.findByUsername_initial(newUser.getUsername());
+                User existingUserEmail = userDao.findByEmail(newUser.getEmail());
                 if (existingUser != null) {
-                    // Log and notify failure
-                    Log.d("TEST", "User exists: " + existingUser.getUsername());
-                    new Handler(Looper.getMainLooper()).post(() ->
-                            callback.onFailure("Username already exists")
-                    );
+                    if (existingUserEmail != null) {
+                        // Log and notify failure
+                        Log.d("TEST", "Email exists: " + existingUserEmail.getEmail());
+                        new Handler(Looper.getMainLooper()).post(() ->
+                                callback.onFailure("Email already exists")
+                        );
+                    } else {
+                        // Log and notify failure
+                        Log.d("TEST", "User exists: " + existingUser.getUsername());
+                        new Handler(Looper.getMainLooper()).post(() ->
+                                callback.onFailure("Username already exists")
+                        );
+                    }
                 } else {
                     // Insert the new user
                     userDao.insertUser(newUser);

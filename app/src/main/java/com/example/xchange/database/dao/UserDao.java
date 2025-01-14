@@ -41,6 +41,9 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     User findByUsername_initial(String username);
 
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    User findByEmail(String email);
+
     @Query("SELECT COUNT() FROM requests")
     int getTotalRequests();
 
