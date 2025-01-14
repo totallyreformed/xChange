@@ -68,9 +68,17 @@ public class SearchViewModel extends AndroidViewModel implements SearchPresenter
      */
     public void searchItems(String query, Category category) {
         if (category == null) {
+            // Perform search by name only.
             presenter.performSearch(query, null);
         } else {
-            presenter.performSearch(null, category);
+            // Category is provided.
+            if (query != null && !query.trim().isEmpty()) {
+                // Perform search both by name and category.
+                presenter.performSearch(query, category);
+            } else {
+                // Query is empty, perform search by category only.
+                presenter.performSearch(null, category);
+            }
         }
     }
 

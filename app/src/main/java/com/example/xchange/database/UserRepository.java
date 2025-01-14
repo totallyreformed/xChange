@@ -896,17 +896,45 @@ public class UserRepository {
     public void searchItemsByNameAndCategory(String query, Category category, UserItemsCallback callback) {
         new Thread(() -> {
             try {
-                List<Item> items = itemDao.searchItemsByNameAndCategory(query, category);
-                Log.d("PLEASE",String.valueOf(items.size()));
+                String searchQuery = (query == null || query.trim().isEmpty()) ? "" : query;
+                // Convert the category to a String. Adjust this if your Category class requires a different method.
+                String categoryStr = category.toString();
+                List<Item> items = itemDao.searchItemsByNameAndCategory(searchQuery, categoryStr);
                 new Handler(Looper.getMainLooper()).post(() -> {
                     callback.onSuccess(items);
                 });
-
             } catch (Exception e) {
                 new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Error searching items"));
             }
         }).start();
     }
+
+    /**
+     * Filters items by category.
+     *
+     * @param category the {@link Category} to filter by.
+     * @param callback the callback to handle success or failure.
+     */
+    public void filterItemsByCategory(Category category, UserItemsCallback callback) {
+        new Thread(() -> {
+            try {
+                // Use the DAO method to filter items by category.
+                List<Item> items = itemDao.filterItemsByCategory(category);
+                // Log the size of the returned list (optional for debugging)
+                Log.d("UserRepository", "Found " + items.size() + " items for category " + category);
+                // Post the success result back to the main thread.
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    callback.onSuccess(items);
+                });
+            } catch (Exception e) {
+                // In case of an exception, post a failure message back to the main thread.
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    callback.onFailure("Error filtering items by category: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
 
     /**
      * Saves a request to the database.

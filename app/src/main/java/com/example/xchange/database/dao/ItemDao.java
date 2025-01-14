@@ -30,9 +30,8 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE item_category = :category")
     List<Item> filterItemsByCategory(Category category);
 
-    @Query("SELECT * FROM items WHERE (:query IS NULL OR LOWER(item_name) LIKE '%' || LOWER(:query) || '%') AND item_category = :category")
-    List<Item> searchItemsByNameAndCategory(String query, Category category);
-
+    @Query("SELECT * FROM items WHERE LOWER(item_name) LIKE '%' || LOWER(:query) || '%' AND LOWER(item_category) = LOWER(:categoryStr)")
+    List<Item> searchItemsByNameAndCategory(String query, String categoryStr);
 
     // Retrieve an item by ID
     @Query("SELECT * FROM items WHERE itemId = :itemId LIMIT 1")

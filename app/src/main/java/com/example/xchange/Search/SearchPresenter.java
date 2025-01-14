@@ -58,31 +58,44 @@ public class SearchPresenter {
      */
     public void performSearch(String query, Category category) {
         if (category == null) {
-            // Perform search by name only
+            // Perform search by name only.
             userRepository.searchItemsByName(query, new UserRepository.UserItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     view.onSearchResultsLoaded(items);
                 }
-
                 @Override
                 public void onFailure(String message) {
                     view.onSearchFailed(message);
                 }
             });
         } else {
-            // Perform search with category filter
-            userRepository.searchItemsByNameAndCategory(query, category, new UserRepository.UserItemsCallback() {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    view.onSearchResultsLoaded(items);
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    view.onSearchFailed(message);
-                }
-            });
+            // Category is provided.
+            if (query != null && !query.trim().isEmpty()) {
+                // Perform search using both name and category.
+                userRepository.searchItemsByNameAndCategory(query, category, new UserRepository.UserItemsCallback() {
+                    @Override
+                    public void onSuccess(List<Item> items) {
+                        view.onSearchResultsLoaded(items);
+                    }
+                    @Override
+                    public void onFailure(String message) {
+                        view.onSearchFailed(message);
+                    }
+                });
+            } else {
+                // Query is empty; perform filter by category only.
+                userRepository.filterItemsByCategory(category, new UserRepository.UserItemsCallback() {
+                    @Override
+                    public void onSuccess(List<Item> items) {
+                        view.onSearchResultsLoaded(items);
+                    }
+                    @Override
+                    public void onFailure(String message) {
+                        view.onSearchFailed(message);
+                    }
+                });
+            }
         }
     }
 
