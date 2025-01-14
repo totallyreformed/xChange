@@ -1,4 +1,4 @@
-<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>225</x><y>90</y><w>315</w><h>189</h></coordinates><panel_attributes>lw=2
+<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>349</x><y>99</y><w>315</w><h>189</h></coordinates><panel_attributes>lw=2
 AcceptRequest
 -
 -Request request
@@ -11,14 +11,15 @@ AcceptRequest
 -showAcceptConfirmationDialog(): void
 -handleAcceptRequest(float rating): void
 -sendNotification(String username, String message, long xChangeId): void
--finish(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>288</x><y>270</y><w>72</w><h>99</h></coordinates><panel_attributes>lt=&lt;-
-includes</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>171</x><y>351</y><w>288</w><h>81</h></coordinates><panel_attributes>lw=2
+-finish(): void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>412</x><y>279</y><w>81</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
+-viewmodel
+1</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>295</x><y>351</y><w>288</w><h>81</h></coordinates><panel_attributes>lw=2
 AcceptRequestViewModel
 -
 +acceptRequest(Request request, 
 float rating, AcceptRequestCallback callback):void
 +acceptCounteroffer(Counteroffer counteroffer, 
-float rating, AcceptRequestCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>585</x><y>351</y><w>333</w><h>99</h></coordinates><panel_attributes>lw=2
+float rating, AcceptRequestCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>709</x><y>351</y><w>333</w><h>99</h></coordinates><panel_attributes>lw=2
 AcceptRequestPresenter
 -
 -Handler mainThreadHandler
@@ -26,8 +27,9 @@ AcceptRequestPresenter
 +acceptRequest(Request request, float rating, 
 AcceptRequestViewModel.AcceptRequestCallback callback):void
 +acceptCounteroffer(Counteroffer counteroffer, float rating, 
-AcceptRequestViewModel.AcceptRequestCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>378</y><w>153</w><h>36</h></coordinates><panel_attributes>lt=&lt;-
-includes</panel_attributes><additional_attributes>150;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>603</x><y>531</y><w>324</w><h>108</h></coordinates><panel_attributes>lw=2
+AcceptRequestViewModel.AcceptRequestCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>574</x><y>378</y><w>153</w><h>45</h></coordinates><panel_attributes>lt=&lt;-
+-presenter
+1</panel_attributes><additional_attributes>150;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>727</x><y>531</y><w>324</w><h>108</h></coordinates><panel_attributes>lw=2
 UserRepository
 -
 -ExecutorService executor
@@ -35,33 +37,43 @@ UserRepository
 +acceptRequest(Request request, float rating, 
 AcceptRequestCallback callback):void
 +acceptCounteroffer(Counteroffer counteroffer, float rating, 
-AcceptRequestCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>738</x><y>441</y><w>72</w><h>108</h></coordinates><panel_attributes>lt=&lt;-
-includes
-</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>549</x><y>702</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
-RequestDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>963</x><y>531</y><w>171</w><h>72</h></coordinates><panel_attributes>lw=2
+AcceptRequestCallback callback):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>862</x><y>441</y><w>81</w><h>108</h></coordinates><panel_attributes>lt=&lt;-
+-repository
+1</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>574</x><y>738</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
+RequestDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1087</x><y>531</y><w>171</w><h>72</h></coordinates><panel_attributes>lw=2
 Interface
 AcceptRequestCallback callback
 -
 void onSuccess(long xChangeId);
-void onFailure(String message);</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>657</x><y>702</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
-UserDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>567</x><y>216</y><w>207</w><h>63</h></coordinates><panel_attributes>lw=2
+void onFailure(String message);</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>736</x><y>747</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
+UserDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>691</x><y>216</y><w>207</w><h>63</h></coordinates><panel_attributes>lw=2
 AcceptRequestViewModelFactory
 -
 -Context context
 -
-create()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>630</x><y>270</y><w>72</w><h>99</h></coordinates><panel_attributes>lt=&lt;-
-includes</panel_attributes><additional_attributes>10;10;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>918</x><y>567</y><w>63</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>50;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>225</x><y>513</y><w>225</w><h>63</h></coordinates><panel_attributes>AcceptRequestCallback
+create()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>754</x><y>270</y><w>117</w><h>99</h></coordinates><panel_attributes>lt=&lt;-
+-viewmodelfactory
+1</panel_attributes><additional_attributes>10;10;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>1042</x><y>567</y><w>63</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>50;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>349</x><y>513</y><w>225</w><h>63</h></coordinates><panel_attributes>AcceptRequestCallback
 -
 -void onSuccess(long xChangeId);
 -void onFailure(String message);
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>315</x><y>423</y><w>27</w><h>108</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>UMLClass</id><coordinates><x>765</x><y>702</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
-xChangeDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>873</x><y>702</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
-CounterOfferDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>387</x><y>18</y><w>27</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>288</x><y>0</y><w>216</w><h>27</h></coordinates><panel_attributes>AppCompatActivity</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>387</y><w>126</w><h>27</h></coordinates><panel_attributes>AndroidViewModel</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>117</x><y>396</y><w>72</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>Relation</id><coordinates><x>594</x><y>630</y><w>162</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
-includes
-</panel_attributes><additional_attributes>10;80;160;10</additional_attributes></element><element><id>Relation</id><coordinates><x>711</x><y>630</y><w>81</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
-includes
-</panel_attributes><additional_attributes>10;80;30;10</additional_attributes></element><element><id>Relation</id><coordinates><x>729</x><y>630</y><w>135</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
-includes
-</panel_attributes><additional_attributes>130;80;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>729</x><y>630</y><w>234</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
-includes
-</panel_attributes><additional_attributes>240;80;10;10</additional_attributes></element></diagram>
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>439</x><y>423</y><w>27</w><h>108</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>UMLClass</id><coordinates><x>898</x><y>747</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
+xChangeDao</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1060</x><y>711</y><w>99</w><h>27</h></coordinates><panel_attributes>lw=2
+-counterOfferDao
+1</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>511</x><y>18</y><w>27</w><h>99</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;90</additional_attributes></element><element><id>UMLClass</id><coordinates><x>412</x><y>0</y><w>216</w><h>27</h></coordinates><panel_attributes>AppCompatActivity</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>124</x><y>387</y><w>126</w><h>27</h></coordinates><panel_attributes>AndroidViewModel</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>241</x><y>396</y><w>72</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>Relation</id><coordinates><x>619</x><y>630</y><w>261</w><h>126</h></coordinates><panel_attributes>lt=&lt;-
+-requestDao
+1
+</panel_attributes><additional_attributes>10;120;270;10</additional_attributes></element><element><id>Relation</id><coordinates><x>790</x><y>630</y><w>108</w><h>135</h></coordinates><panel_attributes>lt=&lt;-
+-userDao
+1</panel_attributes><additional_attributes>10;130;80;10</additional_attributes></element><element><id>Relation</id><coordinates><x>853</x><y>630</y><w>135</w><h>135</h></coordinates><panel_attributes>lt=&lt;-
+-xChangeDao
+1</panel_attributes><additional_attributes>110;130;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>853</x><y>630</y><w>279</w><h>99</h></coordinates><panel_attributes>lt=&lt;-
+-counterofferDao
+1
+</panel_attributes><additional_attributes>290;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>88</x><y>216</y><w>90</w><h>27</h></coordinates><panel_attributes>CounterOffer</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>88</x><y>162</y><w>90</w><h>27</h></coordinates><panel_attributes>Request</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>169</x><y>216</y><w>207</w><h>45</h></coordinates><panel_attributes>lt=&lt;-
+-counteroffer
+1</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>88</x><y>108</y><w>90</w><h>27</h></coordinates><panel_attributes>User</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>169</x><y>108</y><w>198</w><h>45</h></coordinates><panel_attributes>lt=&lt;-
+-currentuser
+1</panel_attributes><additional_attributes>10;20;200;20</additional_attributes></element><element><id>Relation</id><coordinates><x>169</x><y>162</y><w>198</w><h>45</h></coordinates><panel_attributes>lt=&lt;-
+-request
+1</panel_attributes><additional_attributes>10;20;200;20</additional_attributes></element></diagram>
