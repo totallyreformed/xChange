@@ -1,7 +1,6 @@
 package com.example.xchange;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.xchange.AcceptRequest.AcceptRequestActivity;
-
+import com.example.xchange.Request;
+import com.example.xchange.R;
 import java.util.List;
 
 /**
@@ -24,9 +23,7 @@ import java.util.List;
 public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.RequestViewHolder> {
 
     private List<Request> requests;
-    private User currentUser;
     private final OnRequestClickListener clickListener;
-    private Context context;
 
     /**
      * Interface for handling click events on request cards.
@@ -43,16 +40,14 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
     /**
      * Constructs a new {@link RequestsAdapter}.
      *
-     * @param requests     The list of {@link Request} objects to display.
-     * @param currentUser  The currently logged-in {@link User}.
+     * @param requests      The list of {@link Request} objects to display.
+     * @param currentUser   The currently logged-in {@link User}.
      * @param clickListener The listener to handle request click events.
-     * @param context      The context in which the adapter is used.
+     * @param context       The context in which the adapter is used.
      */
     public RequestsAdapter(List<Request> requests, User currentUser, OnRequestClickListener clickListener, Context context) {
         this.requests = requests;
-        this.currentUser = currentUser;
         this.clickListener = clickListener;
-        this.context = context;
     }
 
     /**
@@ -97,14 +92,11 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
         holder.requestedItemTextView.setText("Requested Item: " + request.getRequestedItem().getItemName());
         holder.offeredItemTextView.setText("Offered Item: " + request.getOfferedItem().getItemName());
 
-        // Set the click listener for the entire itemView
-        // Set the click listener for the entire itemView
+        // Instead of launching an activity directly, invoke the click listener:
         holder.itemView.setOnClickListener(v -> {
-            // Start AcceptRequestActivity
-            Intent intent = new Intent(context, AcceptRequestActivity.class);
-            intent.putExtra("REQUEST", request);
-            intent.putExtra("USER", currentUser);
-            context.startActivity(intent);
+            if (clickListener != null) {
+                clickListener.onRequestClicked(request);
+            }
         });
     }
 

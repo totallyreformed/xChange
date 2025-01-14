@@ -229,8 +229,20 @@ public class ProfileActivity extends AppCompatActivity {
         Button requestsSentButton = findViewById(R.id.requestsSentButton);
         Button requestsReceivedButton = findViewById(R.id.requestsReceivedButton);
 
-        requestsSentButton.setOnClickListener(v -> navigateToRequestsActivity("SENT", user, viewModel.getRequestsSent().getValue()));
-        requestsReceivedButton.setOnClickListener(v -> navigateToRequestsActivity("RECEIVED", user, viewModel.getRequestsReceived().getValue()));
+        requestsSentButton.setOnClickListener(v -> {
+            List<Request> sentRequests = viewModel.getRequestsSent().getValue();
+            if (sentRequests == null) {
+                sentRequests = new ArrayList<>();
+            }
+            navigateToRequestsActivity("SENT", user, sentRequests);
+        });
+        requestsReceivedButton.setOnClickListener(v -> {
+            List<Request> receivedRequests = viewModel.getRequestsReceived().getValue();
+            if (receivedRequests == null) {
+                receivedRequests = new ArrayList<>();
+            }
+            navigateToRequestsActivity("RECEIVED", user, receivedRequests);
+        });
     }
 
     /**
@@ -241,6 +253,15 @@ public class ProfileActivity extends AppCompatActivity {
      * @param requests    The list of requests.
      */
     private void navigateToRequestsActivity(String requestType, User user, List<Request> requests) {
+        // Ensure user and requestType are non-null.
+        if (user == null || requestType == null) {
+            Toast.makeText(this, "Invalid user or request type", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // If requests is null, use an empty list.
+        if (requests == null) {
+            requests = new ArrayList<>();
+        }
         Intent intent = new Intent(ProfileActivity.this, RequestsActivity.class);
         intent.putExtra("REQUEST_TYPE", requestType);
         intent.putExtra("USER", user);
