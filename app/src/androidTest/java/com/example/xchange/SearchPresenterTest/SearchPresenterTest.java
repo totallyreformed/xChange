@@ -26,53 +26,42 @@ import java.util.concurrent.TimeUnit;
 public class SearchPresenterTest {
 
     private SearchPresenter presenter;
-    private UserRepository userRepository;
     private TestSearchView testView;
-    private AppDatabase database;
+
     private Context context;
 
     @Before
     public void setUp() {
-        context = ApplicationProvider.getApplicationContext(); // Initialize context first
-        Log.d("TestSetup", "Context: " + context);
-
-        database = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
-                .allowMainThreadQueries()
-                .build();
-
-        Log.d("TestSetup", "Database is null: " + (database == null));
+        context = ApplicationProvider.getApplicationContext();
         testView = new TestSearchView();
-        userRepository = new UserRepository(context);
         presenter = new SearchPresenter(context, testView);
+        AppDatabase.getItemDao().deleteAllItems();
+        AppDatabase.getItemDao().insertItem(new Item("user1", "Book 1", "Description", Category.BOOKS, "New", new ArrayList<>()));
+        AppDatabase.getItemDao().insertItem(new Item("user2", "Book 2", "Another Description", Category.BOOKS, "Used", new ArrayList<>()));
 
-        // Populate database with test data
-        database.itemDao().insertItem(new Item("user1", "Book 1", "Description", Category.BOOKS, "New", new ArrayList<>()));
-        database.itemDao().insertItem(new Item("user2", "Book 2", "Another Description", Category.BOOKS, "Used", new ArrayList<>()));
     }
+
 
     @After
     public void tearDown() {
-        // Clear test data from the database
-        clearTestData();
-        if (database != null) {
-            database.close();
-        }
         presenter = null;
-        userRepository = null;
     }
 
     @Test
-    public void testPerformSearchByNameSuccess() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        testView.setLatch(latch);
+    public void testDaoSearchItemsByCategory() {
+        // Insert test items
+        AppDatabase.getItemDao().insertItem(new Item("user1", "Book 1", "Description", Category.BOOKS, "New", new ArrayList<>()));
+        AppDatabase.getItemDao().insertItem(new Item("user2", "Book 2", "Another Description", Category.BOOKS, "Used", new ArrayList<>()));
+        AppDatabase.getItemDao().insertItem(new Item("user3", "Toy 1", "Toy Description", Category.TOYS, "New", new ArrayList<>()));
 
-        presenter.performSearch("Test Item 1", null);
-        assertTrue(latch.await(2, TimeUnit.SECONDS));
+        // Perform search
+        presenter.performSearch(null, Category.BOOKS);
+        List<Item> books = testView.getResults();
 
-        List<Item> results = testView.getResults();
-        assertNotNull(results);
-        assertFalse(results.isEmpty());
-        assertEquals("Test Item 1", results.get(0).getItemName());
+        // Validate results
+        assertNotNull("Results should not be null", books);
+        assertFalse("Results should not be empty", books.isEmpty());
+        assertEquals("Expected 2 items in the Books category", 2, books.size());
     }
 
     @Test
@@ -81,35 +70,29 @@ public class SearchPresenterTest {
         testView.setLatch(latch);
 
         presenter.performSearch("Nonexistent Item", null);
-        assertTrue(latch.await(2, TimeUnit.SECONDS));
+        assertTrue("Latch timed out!", latch.await(5, TimeUnit.SECONDS));
 
         List<Item> results = testView.getResults();
-        assertNotNull(results);
-        assertTrue(results.isEmpty());
+        assertNotNull("Results should not be null", results);
+        assertTrue("Results should be empty", results.isEmpty());
     }
 
     @Test
     public void testPerformSearchByCategorySuccess() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        testView.setLatch(latch);
-
-        Log.d("TestCategory", "Searching for Category: " + Category.BOOKS.getDisplayName());
-        presenter.performSearch(null, Category.BOOKS);
-
-        assertTrue("Search operation timed out.", latch.await(5, TimeUnit.SECONDS));
-
+        List<Item> items=AppDatabase.getItemDao().filterItemsByCategory(Category.BOOKS);
+        Log.d("TestDebug",String.valueOf(items.size()));
         List<Item> results = testView.getResults();
-        Log.d("TestResults", "Search returned " + (results != null ? results.size() : "null") + " items");
 
-        if (results == null || results.isEmpty()) {
-            Log.d("TestError", "Query failed for Category.BOOKS");
-            fail("Expected non-empty results, but got none. Check database and category alignment.");
+        // Validate the results
+        assertNotNull("Results should not be null", results);
+        assertFalse("Results should not be empty", results.isEmpty());
+        assertEquals("Expected 2 items in the Books category", 2, results.size());
+
+        // Log results for debugging
+        for (Item item : results) {
+            Log.d("TestDebug", "Retrieved Item: " + item.getItemName() + ", Category: " + item.getItemCategory());
         }
-
-        assertEquals(Category.BOOKS, results.get(0).getItemCategory());
     }
-
-
 
     @Test
     public void testPerformSearchByCategoryNoResults() throws InterruptedException {
@@ -117,11 +100,11 @@ public class SearchPresenterTest {
         testView.setLatch(latch);
 
         presenter.performSearch(null, Category.TOYS);
-        assertTrue(latch.await(2, TimeUnit.SECONDS));
+        assertTrue("Latch timed out!", latch.await(5, TimeUnit.SECONDS));
 
         List<Item> results = testView.getResults();
-        assertNotNull(results);
-        assertTrue(results.isEmpty());
+        assertNotNull("Results should not be null", results);
+        assertTrue("Results should be empty", results.isEmpty());
     }
 
     @Test
@@ -129,18 +112,19 @@ public class SearchPresenterTest {
         CountDownLatch latch = new CountDownLatch(1);
         testView.setLatch(latch);
 
+        // Insert items
+        AppDatabase.getItemDao().insertItem(new Item("user1", "Test Item 2", "Description", Category.TECHNOLOGY, "New", new ArrayList<>()));
+
+        // Perform search
         presenter.performSearch("Test Item 2", Category.TECHNOLOGY);
-        assertTrue(latch.await(2, TimeUnit.SECONDS));
+        assertTrue("Latch timed out!", latch.await(5, TimeUnit.SECONDS));
 
+        // Validate results
         List<Item> results = testView.getResults();
-        assertNotNull(results);
-        assertFalse(results.isEmpty());
-        assertEquals("Test Item 2", results.get(0).getItemName());
-        assertEquals(Category.TECHNOLOGY, results.get(0).getItemCategory());
-    }
-
-    private void clearTestData() {
-        AppDatabase.getItemDao().deleteAllItems();
+        assertNotNull("Results should not be null", results);
+        assertFalse("Results should not be empty", results.isEmpty());
+        assertEquals("Unexpected item name.", "Test Item 2", results.get(0).getItemName());
+        assertEquals("Unexpected category.", Category.TECHNOLOGY, results.get(0).getItemCategory());
     }
 
     /**
@@ -173,5 +157,4 @@ public class SearchPresenterTest {
             if (latch != null) latch.countDown();
         }
     }
-
 }

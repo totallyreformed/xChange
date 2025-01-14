@@ -22,11 +22,10 @@ public class CategoryConverter {
      */
     @TypeConverter
     public static String fromCategory(Category category) {
-        String categoryName = (category == null) ? null : category.name();
+        String categoryName = (category == null) ? null : category.getDisplayName();
         Log.d("CategoryConverter", "Converting from Category: " + category + " to String: " + categoryName);
         return categoryName;
     }
-
     /**
      * Converts a String representation of a category to a {@link Category} object.
      *
@@ -41,13 +40,12 @@ public class CategoryConverter {
             return null;
         }
         try {
-            Category category = Category.valueOf(categoryString);
+            Category category = Category.fromDisplayName(categoryString);
             Log.d("CategoryConverter", "Converting from String: " + categoryString + " to Category: " + category);
             return category;
         } catch (IllegalArgumentException e) {
-            // Log the exception and return a default category
             Log.e("CategoryConverter", "Invalid category string: " + categoryString + ". Defaulting to ALL.", e);
-            return Category.ALL; // Default category
+            return Category.ALL;
         }
     }
 }

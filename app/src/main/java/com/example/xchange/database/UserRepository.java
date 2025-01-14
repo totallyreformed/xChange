@@ -888,6 +888,7 @@ public class UserRepository {
         new Thread(() -> {
             try {
                 List<Item> items = itemDao.searchItemsByNameAndCategory(query, category);
+                Log.d("PLEASE",String.valueOf(items.size()));
                 new Handler(Looper.getMainLooper()).post(() -> {
                     callback.onSuccess(items);
                 });

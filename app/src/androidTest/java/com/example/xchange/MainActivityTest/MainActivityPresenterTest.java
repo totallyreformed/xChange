@@ -11,6 +11,7 @@ import com.example.xchange.Item;
 import com.example.xchange.MainActivity.MainActivityPresenter;
 import com.example.xchange.MainActivity.MainActivityViewModel;
 import com.example.xchange.User;
+import com.example.xchange.database.AppDatabase;
 import com.example.xchange.database.UserRepository;
 
 import org.junit.After;
@@ -42,9 +43,9 @@ public class MainActivityPresenterTest {
     @After
     public void tearDown() {
         userRepository.shutdownExecutor();
-        userRepository = null;
-        presenter = null;
+        AppDatabase.getInstance(ApplicationProvider.getApplicationContext()).clearAllTables();
     }
+
 
     @Test
     public void testLoadItems() throws InterruptedException {

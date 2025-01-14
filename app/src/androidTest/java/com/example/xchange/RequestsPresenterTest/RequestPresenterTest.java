@@ -88,30 +88,33 @@ public class RequestPresenterTest {
         AppDatabase.getItemDao().insertItem(offeredItem);
         AppDatabase.getItemDao().insertItem(requestedItem);
 
-        CountDownLatch latch = new CountDownLatch(1);
+        CountDownLatch requestLatch = new CountDownLatch(1);
 
-        userRepository.getNotificationsForUser(requestee.getUsername(), new UserRepository.NotificationCallback() {
-            @Override
-            public void onSuccess(List<Notification> notifications) {
-                try {
-                    assertFalse("Notifications should not be empty", notifications.isEmpty());
-                    assertEquals("Your item 'Requested Item' has been requested by Requester.", notifications.get(0).getMessage());
-                } finally {
-                    latch.countDown();
-                }
-            }
-
-            @Override
-            public void onFailure(String message) {
-                fail("Notification retrieval failed: " + message);
-                latch.countDown();
-            }
-        });
-
+        // Call presenter to create the request
         presenter.createRequest(requester, requestee, offeredItem, requestedItem);
 
-        // Wait for the notification to be processed
-        assertTrue("Notification callback timed out", latch.await(5, TimeUnit.SECONDS));
+        // Allow time for notification to be processed
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            userRepository.getNotificationsForUser(requestee.getUsername(), new UserRepository.NotificationCallback() {
+                @Override
+                public void onSuccess(List<Notification> notifications) {
+                    try {
+                        assertFalse("Notifications should not be empty", notifications.isEmpty());
+                        assertEquals("Your item 'Requested Item' has been requested by Requester.", notifications.get(0).getMessage());
+                    } finally {
+                        requestLatch.countDown();
+                    }
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    fail("Notification retrieval failed: " + message);
+                    requestLatch.countDown();
+                }
+            });
+        }, 1000); // Delay to ensure `createRequest` processes
+
+        assertTrue("Notification callback timed out", requestLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
