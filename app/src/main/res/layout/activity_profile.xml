@@ -95,19 +95,20 @@
                 android:layout_marginBottom="16dp" />
 
             <!-- Statistics Header -->
+
+            <!-- View All Items Button -->
             <TextView
                 android:id="@+id/profileStatsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Items Uploaded"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/secondary_text"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:text="Items Uploaded"
+                android:textColor="@color/secondary_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-            <!-- View All Items Button -->
             <Button
                 android:id="@+id/viewAllItemsButton"
                 android:layout_width="wrap_content"

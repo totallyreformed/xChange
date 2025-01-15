@@ -138,7 +138,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         viewModel.getUserStatistics().observe(this, stats -> {
             if (stats != null) {
-                statsTextView.setText(stats);
+                int itemsCount = (viewModel.getUserItems().getValue() != null) ? viewModel.getUserItems().getValue().size() : 0;
+
+                String updatedStats = stats + "\nItems Uploaded: " + itemsCount;
+                statsTextView.setText(updatedStats);
             }
         });
 
@@ -158,7 +161,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         viewModel.getUserXChanges().observe(this, xChanges -> totalExchangesTextView.setText(xChanges.size() + " xChanges"));
 
-        viewModel.getRating().observe(this, rating -> ratingTextView.setText("Rating: " + rating));
+        viewModel.getRating().observe(this, rating -> ratingTextView.setText(rating));
     }
 
     /**

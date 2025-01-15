@@ -578,6 +578,9 @@ public class UserRepository {
                 Rating newRating = new Rating(rating, requestee, requester, request, null);
                 ratingDao.insertRating(newRating);
 
+//                itemDao.deleteItem(request.getRequestedItem());
+//                itemDao.deleteItem(request.getOfferedItem());
+
                 callback.onSuccess(xChangeId);
             } catch (Exception e) {
                 Log.e("UserRepository", "Error accepting request", e);
@@ -621,6 +624,9 @@ public class UserRepository {
 
                 Rating newRating = new Rating(rating, counterofferee, counterofferer, counteroffer.getRequest(), null);
                 ratingDao.insertRating(newRating);
+
+//              itemDao.deleteItem(counteroffer.getRequestedItem());
+//              itemDao.deleteItem(counteroffer.getOfferedItem());
 
                 callback.onSuccess(xChangeId);
             } catch (Exception e) {
