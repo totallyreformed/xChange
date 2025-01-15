@@ -486,6 +486,16 @@ public class UserRepository {
         });
     }
 
+    /**
+     * Fetches a user by their username from the database and provides the result via a callback.
+     * The method runs the database operation on a background thread and posts the result
+     * back to the main thread for UI operations.
+     *
+     * @param username the username of the user to fetch from the database.
+     * @param callback the callback to handle success or failure scenarios.
+     *                 On success, the {@link User} object is provided.
+     *                 On failure, an error message is provided.
+     */
     public void getUserByUsername_Rating(String username, UserCallback callback) {
         executor.execute(() -> {
             try {
