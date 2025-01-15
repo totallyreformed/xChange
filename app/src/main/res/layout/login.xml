@@ -98,7 +98,7 @@
                 android:layout_height="34dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="30dp"
-                android:text="Not Registered yet? Click Here to SignUp"
+                android:text="Not Registered yet? Click Here to Sign Up"
                 android:textColor="@color/button" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
